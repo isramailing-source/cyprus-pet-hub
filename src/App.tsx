@@ -17,7 +17,7 @@ import NotFound from "./pages/NotFound";
 const queryClient = new QueryClient();
 
 const App = () => {
-  console.log('App component rendering - Phase 3: Adding UI Providers');
+  console.log('App component rendering - Phase 4: Adding Routing');
   
   return (
     <QueryClientProvider client={queryClient}>
@@ -26,10 +26,16 @@ const App = () => {
           <TooltipProvider>
             <Toaster />
             <Sonner />
-            <div style={{ padding: '20px', backgroundColor: 'blue', color: 'white', textAlign: 'center' }}>
-              <h1>Phase 3: UI Providers Working!</h1>
-              <p>All providers added: QueryClient, Helmet, Auth, Tooltip, Toaster, Sonner.</p>
-            </div>
+            <BrowserRouter>
+              <Routes>
+                <Route path="/" element={
+                  <div style={{ padding: '20px', backgroundColor: 'blue', color: 'white', textAlign: 'center' }}>
+                    <h1>Phase 4: Routing Working!</h1>
+                    <p>BrowserRouter and Routes are functioning correctly.</p>
+                  </div>
+                } />
+              </Routes>
+            </BrowserRouter>
           </TooltipProvider>
         </AuthProvider>
       </HelmetProvider>
