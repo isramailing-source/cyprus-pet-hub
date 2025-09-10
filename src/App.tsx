@@ -17,7 +17,7 @@ import NotFound from "./pages/NotFound";
 const queryClient = new QueryClient();
 
 const App = () => {
-  console.log('App component rendering - Phase 5: Adding ErrorBoundary');
+  console.log('App component rendering - Phase 6: Testing Index Component');
   
   return (
     <ErrorBoundary>
@@ -29,12 +29,7 @@ const App = () => {
               <Sonner />
               <BrowserRouter>
                 <Routes>
-                  <Route path="/" element={
-                    <div style={{ padding: '20px', backgroundColor: 'blue', color: 'white', textAlign: 'center' }}>
-                      <h1>Phase 5: ErrorBoundary Working!</h1>
-                      <p>All providers with ErrorBoundary are functioning correctly.</p>
-                    </div>
-                  } />
+                  <Route path="/" element={<Index />} />
                 </Routes>
               </BrowserRouter>
             </TooltipProvider>
