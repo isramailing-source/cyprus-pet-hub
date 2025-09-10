@@ -35,7 +35,7 @@ const Categories = () => {
         
         <div className="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-8 gap-4">
           {categories.map((category) => (
-            <Link key={category.name} to={`/marketplace?category=${category.name.toLowerCase()}`}>
+            <Link key={category.name} to={`/forum?category=${category.name.toLowerCase()}`}>
               <Card 
                 className={`${category.color} border-0 cursor-pointer transition-all duration-300 hover:scale-105 hover:shadow-md`}
               >

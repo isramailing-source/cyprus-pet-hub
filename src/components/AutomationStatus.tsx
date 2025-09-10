@@ -132,7 +132,7 @@ export const AutomationStatus = () => {
           <CardContent>
             <div className="text-2xl font-bold">{stats.totalAds}</div>
             <p className="text-xs text-muted-foreground">
-              From Cyprus marketplaces
+              From Cyprus community
             </p>
           </CardContent>
         </Card>

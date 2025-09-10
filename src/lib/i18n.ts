@@ -7,7 +7,6 @@ const resources = {
     common: {
       // Navigation
       home: "Home",
-      marketplace: "Marketplace",
       community: "Community",
       admin: "Admin",
       
@@ -56,7 +55,6 @@ const resources = {
     common: {
       // Navigation
       home: "Αρχική",
-      marketplace: "Αγορά",
       community: "Κοινότητα",
       admin: "Διαχείριση",
       
@@ -105,7 +103,6 @@ const resources = {
     common: {
       // Navigation
       home: "Главная",
-      marketplace: "Рынок",
       community: "Сообщество",
       admin: "Админ",
       

@@ -218,7 +218,7 @@ const FeaturedListings = () => {
         </div>
 
         <div className="text-center mt-12">
-          <Link to="/marketplace">
+          <Link to="/forum">
             <Button className="bg-gradient-to-r from-primary to-secondary text-white px-8 py-3 rounded-full hover:opacity-90 transition-opacity font-medium">
               {t('viewAllListings')}
             </Button>

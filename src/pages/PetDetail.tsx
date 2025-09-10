@@ -115,10 +115,10 @@ const PetDetail = () => {
           <div className="container mx-auto px-4 py-8 text-center">
             <h1 className="text-2xl font-bold mb-4">Pet Not Found</h1>
             <p className="text-muted-foreground mb-6">The pet you're looking for doesn't exist or has been removed.</p>
-            <Link to="/marketplace">
+            <Link to="/forum">
               <Button>
                 <ArrowLeft className="w-4 h-4 mr-2" />
-                Back to Marketplace
+                Back to Community
               </Button>
             </Link>
           </div>
@@ -144,10 +144,10 @@ const PetDetail = () => {
         <Header />
         <main className="container mx-auto px-4 py-8">
           <div className="mb-6">
-            <Link to="/marketplace">
+            <Link to="/forum">
               <Button variant="ghost" className="mb-4">
                 <ArrowLeft className="w-4 h-4 mr-2" />
-                Back to Marketplace
+                Back to Community
               </Button>
             </Link>
           </div>

@@ -309,7 +309,7 @@ export const AdsList = () => {
         <div>
           <h1 className="text-3xl font-bold mb-2">Cyprus Pets | Find Your Perfect Companion</h1>
           <p className="text-muted-foreground mb-2">
-            Discover pets from trusted Cyprus marketplaces - Bazaraki & Facebook Marketplace
+            Join our community of pet lovers and discover amazing companions
           </p>
           <div className="flex items-center gap-4 text-sm text-muted-foreground">
             <div className="flex items-center gap-2">
