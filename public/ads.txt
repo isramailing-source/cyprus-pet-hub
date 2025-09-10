@@ -1,0 +1,8 @@
+# ads.txt file for CyprusPets
+# This file is required by Google AdSense for verification
+# Replace the publisher ID below with your actual AdSense publisher ID when you get approved
+
+google.com, pub-4659190065021043, DIRECT, f08c47fec0942fa0
+
+# Note: This ads.txt file helps verify your site ownership for ad networks
+# Make sure to update this with any additional ad networks you use
