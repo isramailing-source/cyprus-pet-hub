@@ -47,6 +47,12 @@ export default {
           DEFAULT: "hsl(var(--card))",
           foreground: "hsl(var(--card-foreground))",
         },
+        // Cyprus Pet Marketplace Colors
+        cyprus: {
+          blue: "hsl(var(--cyprus-blue))",
+          coral: "hsl(var(--cyprus-coral))",
+          gold: "hsl(var(--cyprus-gold))",
+        },
         sidebar: {
           DEFAULT: "hsl(var(--sidebar-background))",
           foreground: "hsl(var(--sidebar-foreground))",
