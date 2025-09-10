@@ -1,5 +1,5 @@
 import { useState, useEffect } from "react";
-import { createClient } from "@supabase/supabase-js";
+import { supabase } from "@/integrations/supabase/client";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
@@ -8,24 +8,26 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { MapPin, Euro, ExternalLink, Search } from "lucide-react";
 import { useToast } from "@/components/ui/use-toast";
 
-const supabase = createClient(
-  import.meta.env.VITE_SUPABASE_URL || "",
-  import.meta.env.VITE_SUPABASE_ANON_KEY || ""
-);
 
 interface Ad {
   id: string;
   title: string;
-  description: string;
-  price: number;
-  currency: string;
-  location: string;
-  contact_info: any;
-  images: string[];
-  category: string;
-  source_website: string;
+  description: string | null;
+  price: number | null;
+  currency: string | null;
+  location: string | null;
+  email: string | null;
+  phone: string | null;
+  seller_name: string | null;
+  images: string[] | null;
+  category_id: string | null;
+  age: string | null;
+  breed: string | null;
+  gender: string | null;
+  source_name: string;
   source_url: string;
   scraped_at: string;
+  is_active: boolean;
 }
 
 export const AdsList = () => {
@@ -192,13 +194,13 @@ export const AdsList = () => {
               <div className="flex justify-between items-start">
                 <CardTitle className="text-lg line-clamp-2">{ad.title}</CardTitle>
                 <Badge variant="secondary" className="text-xs">
-                  {ad.source_website}
+                  {ad.source_name}
                 </Badge>
               </div>
             </CardHeader>
             <CardContent className="space-y-4">
               <p className="text-sm text-muted-foreground line-clamp-3">
-                {ad.description}
+                {ad.description || 'No description available'}
               </p>
               
               <div className="flex items-center justify-between">
