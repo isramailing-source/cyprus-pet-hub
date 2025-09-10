@@ -27,7 +27,22 @@ serve(async (req) => {
       throw categoryError
     }
 
+    // Validate that we have categories
+    if (!categories || categories.length === 0) {
+      console.error('No categories found in database')
+      throw new Error('No categories available for article generation')
+    }
+
     console.log('Available categories:', categories)
+    
+    // Create a default category fallback (use dogs as default)
+    const defaultCategory = categories.find(cat => cat.slug === 'dogs') || categories[0]
+    if (!defaultCategory || !defaultCategory.id) {
+      console.error('No valid default category found')
+      throw new Error('Invalid category structure in database')
+    }
+    
+    console.log('Default category selected:', defaultCategory)
     
     // Define comprehensive article topics inspired by Cesar Milan's philosophy
     const topics = [
@@ -185,13 +200,31 @@ serve(async (req) => {
         // Select random topic for each article
         const randomTopic = topics[Math.floor(Math.random() * topics.length)]
         
-        // Find matching category from database
-        const matchingCategory = categories.find(cat => cat.slug === randomTopic.category) || categories[0]
+        // Find matching category from database with proper validation
+        let matchingCategory = categories.find(cat => cat.slug === randomTopic.category)
+        
+        // If no matching category found, use default category
+        if (!matchingCategory) {
+          console.warn(`Category '${randomTopic.category}' not found, using default category`)
+          matchingCategory = defaultCategory
+        }
+        
+        // Validate that we have a proper category with valid UUID
+        if (!matchingCategory || !matchingCategory.id || typeof matchingCategory.id !== 'string') {
+          console.error(`Invalid category for article ${i + 1}:`, matchingCategory)
+          throw new Error(`Invalid category structure: ${JSON.stringify(matchingCategory)}`)
+        }
         
         console.log(`Generating article ${i + 1}/${articlesToGenerate}: ${randomTopic.title}`)
+        console.log(`Using category:`, { id: matchingCategory.id, slug: matchingCategory.slug, name: matchingCategory.name })
         
         // Generate comprehensive article content
         const articleData = await generateCesarInspiredContent(randomTopic, matchingCategory)
+        
+        // Validate article data before insertion
+        if (!articleData || !articleData.title || !articleData.content) {
+          throw new Error('Generated article data is incomplete')
+        }
         
         // Generate URL-friendly slug with timestamp to avoid conflicts
         const baseSlug = randomTopic.title.toLowerCase()
@@ -202,31 +235,41 @@ serve(async (req) => {
         
         const uniqueSlug = `${baseSlug}-${Date.now()}-${i}`
         
+        // Prepare article data for insertion with validation
+        const articleToInsert = {
+          title: articleData.title,
+          content: articleData.content,
+          excerpt: articleData.excerpt,
+          slug: uniqueSlug,
+          meta_title: articleData.metaTitle,
+          meta_description: articleData.metaDescription,
+          tags: articleData.tags || [],
+          category_id: matchingCategory.id, // This should be a valid UUID
+          is_published: true,
+          published_at: new Date().toISOString(),
+          author: 'Cyprus Pet Psychology Expert'
+        }
+        
+        console.log(`Inserting article with category_id: ${matchingCategory.id}`)
+        
         // Insert article into database with proper category_id
         const { data, error } = await supabase
           .from('articles')
-          .insert({
-            title: articleData.title,
-            content: articleData.content,
-            excerpt: articleData.excerpt,
-            slug: uniqueSlug,
-            meta_title: articleData.metaTitle,
-            meta_description: articleData.metaDescription,
-            tags: articleData.tags,
-            category_id: matchingCategory.id,
-            is_published: true,
-            published_at: new Date().toISOString(),
-            author: 'Cyprus Pet Psychology Expert'
-          })
+          .insert(articleToInsert)
           .select()
           .single()
 
         if (error) {
           console.error(`Database error for article ${i + 1}:`, error)
+          console.error(`Article data that failed:`, { 
+            title: articleToInsert.title, 
+            category_id: articleToInsert.category_id,
+            slug: articleToInsert.slug 
+          })
           errors.push(`Article ${i + 1}: ${error.message}`)
         } else {
           generatedArticles.push(data)
-          console.log(`✅ Article ${i + 1} created: ${data.title}`)
+          console.log(`✅ Article ${i + 1} created successfully: ${data.title}`)
         }
         
         // Small delay between articles to prevent overwhelming the database
@@ -240,14 +283,20 @@ serve(async (req) => {
 
     console.log(`Batch generation complete! Successfully created ${generatedArticles.length} articles.`)
     
+    if (errors.length > 0) {
+      console.error('Errors occurred during generation:', errors)
+    }
+    
     return new Response(
       JSON.stringify({ 
-        success: true, 
+        success: generatedArticles.length > 0, // Only success if at least one article was created
         articlesGenerated: generatedArticles.length,
         totalAttempted: articlesToGenerate,
-        articles: generatedArticles.map(a => ({ title: a.title, slug: a.slug })),
+        articles: generatedArticles.map(a => ({ title: a.title, slug: a.slug, id: a.id })),
         errors: errors,
-        message: `Successfully generated ${generatedArticles.length} comprehensive Cesar Milan-inspired articles!`
+        message: errors.length === 0 
+          ? `Successfully generated ${generatedArticles.length} comprehensive Cesar Milan-inspired articles!`
+          : `Generated ${generatedArticles.length} articles with ${errors.length} errors. Check logs for details.`
       }),
       { 
         headers: { ...corsHeaders, 'Content-Type': 'application/json' },
