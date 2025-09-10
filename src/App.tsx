@@ -17,16 +17,20 @@ import NotFound from "./pages/NotFound";
 const queryClient = new QueryClient();
 
 const App = () => {
-  console.log('App component rendering - Phase 2: Adding AuthProvider');
+  console.log('App component rendering - Phase 3: Adding UI Providers');
   
   return (
     <QueryClientProvider client={queryClient}>
       <HelmetProvider>
         <AuthProvider>
-          <div style={{ padding: '20px', backgroundColor: 'blue', color: 'white', textAlign: 'center' }}>
-            <h1>Phase 2: AuthProvider Working!</h1>
-            <p>QueryClient, HelmetProvider, and AuthProvider added successfully.</p>
-          </div>
+          <TooltipProvider>
+            <Toaster />
+            <Sonner />
+            <div style={{ padding: '20px', backgroundColor: 'blue', color: 'white', textAlign: 'center' }}>
+              <h1>Phase 3: UI Providers Working!</h1>
+              <p>All providers added: QueryClient, Helmet, Auth, Tooltip, Toaster, Sonner.</p>
+            </div>
+          </TooltipProvider>
         </AuthProvider>
       </HelmetProvider>
     </QueryClientProvider>
