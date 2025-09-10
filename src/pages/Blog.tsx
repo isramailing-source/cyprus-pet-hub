@@ -7,7 +7,7 @@ const Blog = () => {
   return (
     <>
       <Helmet>
-        <title>Pet Care Blog Cyprus | Expert Tips & Guides</title>
+        <title>Pet Care Blog Cyprus | Cyprus Pets Expert Tips & Guides</title>
         <meta 
           name="description" 
           content="Expert pet care advice for Cyprus pet owners. Learn about pet hygiene, training, nutrition, and health care in the Mediterranean climate." 

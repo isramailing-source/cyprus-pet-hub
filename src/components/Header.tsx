@@ -18,8 +18,8 @@ const Header = () => {
               <span className="text-white font-bold text-lg">🐾</span>
             </div>
             <Link to="/" className="flex flex-col">
-              <h1 className="text-xl font-bold text-foreground">CyprusPets</h1>
-              <p className="text-xs text-muted-foreground">Cyprus Pet Marketplace</p>
+              <h1 className="text-xl font-bold text-foreground">Cyprus Pets</h1>
+              <p className="text-xs text-muted-foreground">cyprus-pets.com</p>
             </Link>
           </div>
 

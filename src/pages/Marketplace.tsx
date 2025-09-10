@@ -7,7 +7,7 @@ const Marketplace = () => {
   return (
     <>
       <Helmet>
-        <title>Pet Marketplace Cyprus | Buy & Sell Pets Online</title>
+        <title>Pet Marketplace Cyprus | Cyprus Pets Buy & Sell Online</title>
         <meta 
           name="description" 
           content="Find pets for sale in Cyprus from trusted local marketplaces. Dogs, cats, birds, and more from verified sellers across the island." 

@@ -9,7 +9,7 @@ const Index = () => {
   return (
     <>
       <Helmet>
-        <title>PetsCyprus | Find Your Perfect Pet in Cyprus</title>
+        <title>Cyprus Pets | Find Your Perfect Pet in Cyprus</title>
         <meta 
           name="description" 
           content="Cyprus's premier pet marketplace. Find dogs, cats, birds and exotic pets from trusted local sellers. Expert pet care advice and community." 
@@ -20,9 +20,9 @@ const Index = () => {
           {JSON.stringify({
             "@context": "https://schema.org",
             "@type": "WebSite",
-            "name": "PetsCyprus",
+            "name": "Cyprus Pets",
             "description": "Cyprus's premier pet marketplace and care resource",
-            "url": "https://petscyprus.com"
+            "url": "https://cyprus-pets.com"
           })}
         </script>
       </Helmet>

@@ -12,8 +12,8 @@ const Footer = () => {
                 <span className="text-white font-bold text-lg">🐾</span>
               </div>
               <div>
-                <h3 className="text-xl font-bold">CyprusPets</h3>
-                <p className="text-xs opacity-80">Cyprus Pet Marketplace</p>
+                <h3 className="text-xl font-bold">Cyprus Pets</h3>
+                <p className="text-xs opacity-80">cyprus-pets.com</p>
               </div>
             </div>
             <p className="text-sm opacity-80 leading-relaxed">
@@ -57,7 +57,7 @@ const Footer = () => {
               </div>
               <div className="flex items-center space-x-2">
                 <Mail className="w-4 h-4" />
-                <span className="opacity-80">info@cypruspets.com</span>
+                <span className="opacity-80">info@cyprus-pets.com</span>
               </div>
             </div>
           </div>
@@ -68,7 +68,7 @@ const Footer = () => {
             Made with <Heart className="w-4 h-4 mx-1 text-red-400" /> for Cyprus pet lovers
           </p>
           <p className="text-xs opacity-60 mt-2">
-            © 2024 CyprusPets. All rights reserved.
+            © 2024 Cyprus Pets. All rights reserved.
           </p>
         </div>
       </div>

@@ -7,7 +7,7 @@ const Admin = () => {
   return (
     <>
       <Helmet>
-        <title>Admin Dashboard | PetsCyprus</title>
+        <title>Admin Dashboard | Cyprus Pets</title>
         <meta name="robots" content="noindex, nofollow" />
       </Helmet>
       
