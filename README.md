@@ -1,73 +1,158 @@
-# Welcome to your Lovable project
+# CyprusPets - Cyprus Pet Marketplace
 
-## Project info
+🐾 **A modern, responsive marketplace for pets, equipment, and services in Cyprus**
 
-**URL**: https://lovable.dev/projects/929eb6dd-c881-44a7-be29-f8d1006cb094
+## 🌟 Project Overview
 
-## How can I edit this code?
+CyprusPets is a comprehensive pet marketplace designed specifically for Cyprus, where pet owners and enthusiasts can:
 
-There are several ways of editing your application.
+- **Browse & Search**: Find pets, equipment, and services with advanced search functionality
+- **Post Listings**: Share pet advertisements and services
+- **Local Focus**: Connect with the Cyprus pet community
+- **Multi-Category**: Dogs, cats, birds, equipment, and more
 
-**Use Lovable**
+## ✨ Features
 
-Simply visit the [Lovable Project](https://lovable.dev/projects/929eb6dd-c881-44a7-be29-f8d1006cb094) and start prompting.
+### 🎨 Modern Design
+- **Responsive Design**: Works perfectly on desktop, tablet, and mobile
+- **Mediterranean Theme**: Custom color palette inspired by Cyprus
+- **Smooth Animations**: Engaging user experience with Tailwind animations
+- **Dark/Light Mode**: Adaptive theming support
 
-Changes made via Lovable will be committed automatically to this repo.
+### 🔍 Core Functionality
+- **Advanced Search**: Search by pet type, location, and keywords
+- **Category Browsing**: Organized pet categories (Dogs, Cats, Birds, Equipment)
+- **Featured Listings**: Highlighted premium advertisements
+- **Location Filtering**: Cyprus-specific location targeting
 
-**Use your preferred IDE**
+### 📱 User Experience
+- **Intuitive Navigation**: Clean, user-friendly interface
+- **Quick Actions**: Easy "Post Ad" and search functionality
+- **Mobile Optimized**: Fully responsive mobile experience
+- **SEO Optimized**: Search engine friendly with meta tags
 
-If you want to work locally using your own IDE, you can clone this repo and push changes. Pushed changes will also be reflected in Lovable.
+## 🛠️ Technology Stack
 
-The only requirement is having Node.js & npm installed - [install with nvm](https://github.com/nvm-sh/nvm#installing-and-updating)
+- **Frontend**: React 18 + TypeScript
+- **Styling**: Tailwind CSS + Custom Design System
+- **UI Components**: shadcn/ui + Radix UI
+- **Build Tool**: Vite
+- **Routing**: React Router DOM
+- **State Management**: TanStack Query
+- **Icons**: Lucide React
 
-Follow these steps:
+## 📁 Project Structure
 
-```sh
-# Step 1: Clone the repository using the project's Git URL.
-git clone <YOUR_GIT_URL>
-
-# Step 2: Navigate to the project directory.
-cd <YOUR_PROJECT_NAME>
-
-# Step 3: Install the necessary dependencies.
-npm i
-
-# Step 4: Start the development server with auto-reloading and an instant preview.
-npm run dev
+```
+src/
+├── components/           # Reusable UI components
+│   ├── ui/              # shadcn/ui components
+│   ├── Header.tsx       # Main navigation
+│   ├── HeroSection.tsx  # Landing hero section
+│   ├── Categories.tsx   # Pet category grid
+│   ├── FeaturedListings.tsx # Featured pet listings
+│   ├── PetCard.tsx      # Individual pet card
+│   └── Footer.tsx       # Site footer
+├── pages/               # Page components
+│   ├── Index.tsx        # Home page
+│   └── NotFound.tsx     # 404 page
+├── assets/              # Images and static files
+├── hooks/               # Custom React hooks
+└── lib/                 # Utilities and helpers
 ```
 
-**Edit a file directly in GitHub**
+## 🚀 Getting Started
 
-- Navigate to the desired file(s).
-- Click the "Edit" button (pencil icon) at the top right of the file view.
-- Make your changes and commit the changes.
+### Prerequisites
+- Node.js (v18 or higher)
+- npm or yarn package manager
 
-**Use GitHub Codespaces**
+### Installation
 
-- Navigate to the main page of your repository.
-- Click on the "Code" button (green button) near the top right.
-- Select the "Codespaces" tab.
-- Click on "New codespace" to launch a new Codespace environment.
-- Edit files directly within the Codespace and commit and push your changes once you're done.
+1. **Clone the repository**
+   ```bash
+   git clone <YOUR_GIT_URL>
+   cd cypruspets
+   ```
 
-## What technologies are used for this project?
+2. **Install dependencies**
+   ```bash
+   npm install
+   ```
 
-This project is built with:
+3. **Start development server**
+   ```bash
+   npm run dev
+   ```
 
-- Vite
-- TypeScript
-- React
-- shadcn-ui
-- Tailwind CSS
+4. **Open in browser**
+   ```
+   http://localhost:5173
+   ```
 
-## How can I deploy this project?
+### Build for Production
 
-Simply open [Lovable](https://lovable.dev/projects/929eb6dd-c881-44a7-be29-f8d1006cb094) and click on Share -> Publish.
+```bash
+npm run build
+```
 
-## Can I connect a custom domain to my Lovable project?
+## 🎨 Design System
 
-Yes, you can!
+The project uses a custom design system with:
 
-To connect a domain, navigate to Project > Settings > Domains and click Connect Domain.
+- **Color Palette**: Mediterranean-inspired colors (blues, oranges, earth tones)
+- **Typography**: Modern, readable font stack
+- **Spacing**: Consistent spacing scale
+- **Components**: Reusable, themed UI components
+- **Responsive Grid**: Mobile-first responsive design
 
-Read more here: [Setting up a custom domain](https://docs.lovable.dev/tips-tricks/custom-domain#step-by-step-guide)
+## 🌐 Deployment
+
+### Lovable Platform (Recommended)
+1. Visit [Lovable Project](https://lovable.dev/projects/929eb6dd-c881-44a7-be29-f8d1006cb094)
+2. Click "Share" → "Publish"
+3. Your site will be live instantly
+
+### Other Platforms
+- **Vercel**: Connect your GitHub repository
+- **Netlify**: Deploy from Git or drag & drop build folder
+- **GitHub Pages**: Use GitHub Actions for deployment
+
+## 🔧 Configuration
+
+### Environment Variables
+No environment variables required for basic functionality.
+
+### Custom Domain
+Connect a custom domain through Project Settings → Domains in Lovable.
+
+## 🤝 Contributing
+
+1. Fork the repository
+2. Create a feature branch (`git checkout -b feature/amazing-feature`)
+3. Commit changes (`git commit -m 'Add amazing feature'`)
+4. Push to branch (`git push origin feature/amazing-feature`)
+5. Open a Pull Request
+
+## 📝 Future Enhancements
+
+- **User Authentication**: User accounts and profiles
+- **Database Integration**: Supabase for data persistence
+- **Real-time Chat**: Messaging between users
+- **Payment Integration**: Secure payment processing
+- **Advanced Filtering**: More search and filter options
+- **Multi-language**: Greek and Turkish language support
+
+## 📄 License
+
+This project is open source and available under the [MIT License](LICENSE).
+
+## 📞 Support
+
+- **Documentation**: [Lovable Docs](https://docs.lovable.dev/)
+- **Community**: [Discord Server](https://discord.com/channels/1119885301872070706/1280461670979993613)
+- **Issues**: Create an issue in this repository
+
+---
+
+**Built with ❤️ for the Cyprus pet community**
