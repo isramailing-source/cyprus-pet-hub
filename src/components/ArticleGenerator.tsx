@@ -22,21 +22,58 @@ const ArticleGenerator = () => {
       
       if (error) {
         console.error('Article generation failed:', error);
-        throw error;
+        
+        // Check for specific error types and provide helpful messages
+        let errorMessage = 'Failed to generate articles.';
+        if (error.message?.includes('OpenAI API key')) {
+          errorMessage = 'OpenAI API key is missing or invalid. Please check your API configuration.';
+        } else if (error.message?.includes('rate limit')) {
+          errorMessage = 'API rate limit exceeded. Please wait a moment and try again.';
+        } else if (error.message?.includes('quota exceeded')) {
+          errorMessage = 'API quota exceeded. Please check your OpenAI billing status.';
+        } else if (error.message?.includes('401') || error.message?.includes('Unauthorized')) {
+          errorMessage = 'API authentication failed. Please verify your OpenAI API key.';
+        }
+        
+        toast({
+          title: "Article Generation Failed",
+          description: errorMessage,
+          variant: "destructive",
+        });
+        return;
       }
       
-      setGeneratedCount(data.articlesGenerated || 0);
+      const articlesGenerated = data?.articlesGenerated || 0;
+      const errors = data?.errors || [];
       
-      toast({
-        title: "Article Generation Complete",
-        description: `Successfully generated ${data.articlesGenerated} comprehensive Cesar Milan-inspired articles!`,
-      });
+      setGeneratedCount(articlesGenerated);
+      
+      if (articlesGenerated > 0) {
+        toast({
+          title: "Article Generation Complete",
+          description: `Successfully generated ${articlesGenerated} comprehensive Cesar Milan-inspired articles!${errors.length > 0 ? ` (${errors.length} articles had errors)` : ''}`,
+        });
+      } else {
+        toast({
+          title: "Article Generation Failed",
+          description: errors.length > 0 ? `Generation failed: ${errors[0]}` : 'No articles were generated. Please try again.',
+          variant: "destructive",
+        });
+      }
       
     } catch (error) {
       console.error('Error generating articles:', error);
+      
+      let errorMessage = 'Failed to generate articles. Please try again.';
+      if (error.message?.includes('fetch')) {
+        errorMessage = 'Network error. Please check your connection and try again.';
+      } else if (error.message?.includes('timeout')) {
+        errorMessage = 'Request timed out. Please try again.';
+      }
+      
       toast({
-        title: "Error",
-        description: "Failed to generate articles.",
+        title: "Generation Error",
+        description: errorMessage,
         variant: "destructive",
       });
     } finally {

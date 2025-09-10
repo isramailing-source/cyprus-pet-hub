@@ -322,7 +322,37 @@ async function generateCesarInspiredContent(topic: any, category: any) {
   
   const openAIApiKey = Deno.env.get('OPENAI_API_KEY')
   if (!openAIApiKey) {
-    throw new Error('OpenAI API key not configured')
+    console.error('OpenAI API key not found in environment variables')
+    throw new Error('OpenAI API key not configured. Please set OPENAI_API_KEY in Supabase Edge Function secrets.')
+  }
+  
+  console.log('OpenAI API key found, length:', openAIApiKey.length)
+  
+  // Test API key validity with a simple call first
+  try {
+    const testResponse = await fetch('https://api.openai.com/v1/models', {
+      method: 'GET',
+      headers: {
+        'Authorization': `Bearer ${openAIApiKey}`,
+        'Content-Type': 'application/json',
+      },
+    })
+    
+    if (!testResponse.ok) {
+      console.error('OpenAI API key validation failed:', testResponse.status, testResponse.statusText)
+      if (testResponse.status === 401) {
+        throw new Error('OpenAI API key is invalid or unauthorized. Please check your API key in Supabase secrets.')
+      } else if (testResponse.status === 429) {
+        throw new Error('OpenAI API rate limit exceeded. Please try again later.')
+      } else {
+        throw new Error(`OpenAI API error: ${testResponse.status} ${testResponse.statusText}`)
+      }
+    }
+    
+    console.log('✅ OpenAI API key validation successful')
+  } catch (testError) {
+    console.error('OpenAI API key test failed:', testError)
+    throw testError
   }
 
   const prompt = `Write a comprehensive 1500+ word article about "${topic.title}" for Cyprus pet owners. 
@@ -368,7 +398,22 @@ Write in HTML format with proper headings (h2, h3), paragraphs, and lists. Make 
     })
 
     if (!response.ok) {
-      throw new Error(`OpenAI API error: ${response.status} ${response.statusText}`)
+      const errorText = await response.text()
+      console.error('OpenAI API response error:', {
+        status: response.status,
+        statusText: response.statusText,
+        body: errorText
+      })
+      
+      if (response.status === 401) {
+        throw new Error('OpenAI API authentication failed. Please check your API key configuration.')
+      } else if (response.status === 429) {
+        throw new Error('OpenAI API rate limit exceeded. Please try again later.')
+      } else if (response.status === 402) {
+        throw new Error('OpenAI API quota exceeded. Please check your billing and usage limits.')
+      } else {
+        throw new Error(`OpenAI API error: ${response.status} ${response.statusText}. Details: ${errorText}`)
+      }
     }
 
     const data = await response.json()
