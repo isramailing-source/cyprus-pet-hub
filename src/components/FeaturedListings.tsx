@@ -2,6 +2,9 @@ import PetCard from "./PetCard";
 import goldenRetrieverImage from "@/assets/golden-retriever-cyprus.jpg";
 import britishShorthairImage from "@/assets/british-shorthair-cyprus.jpg";
 import birdsImage from "@/assets/birds-cyprus.jpg";
+import AdInFeed from "@/components/ads/AdInFeed";
+import AdSidebar from "@/components/ads/AdSidebar";
+import AdBanner from "@/components/ads/AdBanner";
 
 const featuredPets = [
   {
@@ -91,16 +94,55 @@ const FeaturedListings = () => {
           </p>
         </div>
         
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-          {featuredPets.map((pet) => (
-            <PetCard key={pet.id} {...pet} />
-          ))}
+        {/* Main content with sidebar */}
+        <div className="grid grid-cols-1 lg:grid-cols-4 gap-8">
+          {/* Main content area */}
+          <div className="lg:col-span-3">
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+              {featuredPets.slice(0, 2).map((pet) => (
+                <PetCard key={pet.id} {...pet} />
+              ))}
+            </div>
+            
+            {/* In-feed ad after 2 listings */}
+            <AdInFeed slot="2345678901" className="my-8" />
+            
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+              {featuredPets.slice(2, 4).map((pet) => (
+                <PetCard key={pet.id} {...pet} />
+              ))}
+            </div>
+            
+            {/* Another in-feed ad */}
+            <AdInFeed slot="3456789012" className="my-8" />
+            
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+              {featuredPets.slice(4).map((pet) => (
+                <PetCard key={pet.id} {...pet} />
+              ))}
+            </div>
+          </div>
+          
+          {/* Sidebar with ads */}
+          <div className="lg:col-span-1 space-y-8">
+            <AdSidebar slot="4567890123" />
+            <AdSidebar slot="5678901234" />
+          </div>
         </div>
 
         <div className="text-center mt-12">
           <button className="bg-gradient-to-r from-primary to-secondary text-white px-8 py-3 rounded-full hover:opacity-90 transition-opacity font-medium">
             View All Listings
           </button>
+        </div>
+        
+        {/* Bottom banner ad */}
+        <div className="ad-spacing-large">
+          <AdBanner 
+            slot="6789012345" 
+            format="horizontal"
+            className="max-w-4xl mx-auto"
+          />
         </div>
       </div>
     </section>

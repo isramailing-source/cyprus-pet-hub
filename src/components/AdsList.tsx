@@ -1,25 +1,18 @@
-import { useState, useEffect } from "react";
-import { supabase } from "@/integrations/supabase/client";
-import { useAuth } from "@/hooks/useAuth";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { Badge } from "@/components/ui/badge";
-import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import { MapPin, Euro, ExternalLink, Search, Lock, User, Phone, Mail } from "lucide-react";
-import { useToast } from "@/components/ui/use-toast";
-import { Link } from "react-router-dom";
-import {
-  Dialog,
-  DialogContent,
-  DialogDescription,
-  DialogFooter,
-  DialogHeader,
-  DialogTitle,
-  DialogTrigger,
-} from "@/components/ui/dialog";
-import { ContactRequestDialog } from "./ContactRequestDialog";
-
+import { useState, useEffect } from 'react';
+import { supabase } from '@/integrations/supabase/client';
+import { useAuth } from '@/hooks/useAuth';
+import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+import { Badge } from '@/components/ui/badge';
+import { Button } from '@/components/ui/button';
+import { Input } from '@/components/ui/input';
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
+import { MapPin, DollarSign, ExternalLink, Search, Lock, User, Phone, Mail } from 'lucide-react';
+import { useToast } from '@/components/ui/use-toast';
+import { Link } from 'react-router-dom';
+import { ContactRequestDialog } from './ContactRequestDialog';
+import AdBanner from '@/components/ads/AdBanner';
+import AdInFeed from '@/components/ads/AdInFeed';
+import AdSidebar from '@/components/ads/AdSidebar';
 
 interface Ad {
   id: string;
@@ -28,7 +21,6 @@ interface Ad {
   price: number | null;
   currency: string | null;
   location: string | null;
-  // Contact info is now accessed through secure function, not directly exposed
   images: string[] | null;
   category_id: string | null;
   age: string | null;
@@ -38,6 +30,7 @@ interface Ad {
   source_url: string;
   scraped_at: string;
   is_active: boolean;
+  original_url?: string;
 }
 
 interface ContactInfo {
@@ -67,22 +60,18 @@ export const AdsList = () => {
 
   useEffect(() => {
     fetchAds();
-  }, [searchTerm, locationFilter, priceRange, user]); // Add user dependency
+  }, [searchTerm, locationFilter, priceRange, user]);
 
   const fetchAds = async () => {
     try {
-      // Use appropriate secure views based on authentication status
-      // This ensures no one can access contact info through direct table queries
       let query;
       
       if (user) {
-        // Authenticated users use the secure authenticated view (no contact info)
         query = supabase
           .from('ads_authenticated')
           .select('*')
           .order('scraped_at', { ascending: false });
       } else {
-        // Anonymous users use the public view
         query = supabase
           .from('ads_public')
           .select('*')
@@ -142,7 +131,6 @@ export const AdsList = () => {
 
       if (error) throw error;
 
-      // Type assertion for the JSON response
       const response = data as ContactRequestResponse;
 
       if (response.success && response.contact_info) {
@@ -197,7 +185,6 @@ export const AdsList = () => {
         description: "Ad scraping initiated. New ads will appear shortly.",
       });
       
-      // Refresh ads after a delay
       setTimeout(fetchAds, 3000);
     } catch (error) {
       console.error('Error triggering scraping:', error);
@@ -269,6 +256,15 @@ export const AdsList = () => {
         )}
       </div>
 
+      {/* Top Banner Ad */}
+      <div className="ad-spacing">
+        <AdBanner 
+          slot="7890123456" 
+          format="horizontal"
+          className="max-w-full mx-auto"
+        />
+      </div>
+
       {/* Filters */}
       <div className="grid grid-cols-1 md:grid-cols-4 gap-4 mb-8">
         <div className="relative">
@@ -316,122 +312,244 @@ export const AdsList = () => {
         </p>
       </div>
 
-      {/* Ads Grid */}
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-        {ads.map((ad) => (
-          <Card key={ad.id} className="hover:shadow-lg transition-shadow">
-            <CardHeader>
-              <div className="flex justify-between items-start">
-                <CardTitle className="text-lg line-clamp-2">{ad.title}</CardTitle>
-                <Badge variant="secondary" className="text-xs">
-                  {ad.source_name}
-                </Badge>
-              </div>
-            </CardHeader>
-            <CardContent className="space-y-4">
-              <p className="text-sm text-muted-foreground line-clamp-3">
-                {ad.description || 'No description available'}
-              </p>
-              
-              <div className="flex items-center justify-between">
-                <div className="flex items-center gap-1 text-lg font-semibold text-primary">
-                  <Euro className="h-4 w-4" />
-                  {ad.price ? ad.price.toLocaleString() : 'Contact for price'}
-                </div>
-                {ad.location && (
-                  <div className="flex items-center gap-1 text-sm text-muted-foreground">
-                    <MapPin className="h-3 w-3" />
-                    {ad.location}
-                  </div>
-                )}
-              </div>
-
-              {/* Secure Contact Information Section */}
-              {user ? (
-                <div className="border-t pt-3 space-y-2">
-                  {contactRequests[ad.id] ? (
-                    <div className="space-y-2 p-3 bg-green-50 border border-green-200 rounded-lg">
-                      <p className="text-xs font-medium text-green-800 uppercase tracking-wide">
-                        Seller Contact Information
-                      </p>
-                      <div className="space-y-1 text-sm">
-                        {contactRequests[ad.id].seller_name && (
-                          <div className="flex items-center gap-2">
-                            <User className="h-3 w-3 text-green-700" />
-                            <span className="font-medium">{contactRequests[ad.id].seller_name}</span>
-                          </div>
-                        )}
-                        {contactRequests[ad.id].email && (
-                          <div className="flex items-center gap-2">
-                            <Mail className="h-3 w-3 text-green-700" />
-                            <a 
-                              href={`mailto:${contactRequests[ad.id].email}`}
-                              className="text-green-800 hover:underline"
-                            >
-                              {contactRequests[ad.id].email}
-                            </a>
-                          </div>
-                        )}
-                        {contactRequests[ad.id].phone && (
-                          <div className="flex items-center gap-2">
-                            <Phone className="h-3 w-3 text-green-700" />
-                            <a 
-                              href={`tel:${contactRequests[ad.id].phone}`}
-                              className="text-green-800 hover:underline"
-                            >
-                              {contactRequests[ad.id].phone}
-                            </a>
-                          </div>
-                        )}
-                      </div>
-                    </div>
-                  ) : (
-                    <ContactRequestDialog
-                      onSubmit={(message) => requestContactInfo(ad.id, message)}
-                      isLoading={requestingContact === ad.id}
-                    />
-                  )}
-                </div>
-              ) : (
-                <div className="border-t pt-3">
-                  <div className="flex items-center gap-2 p-3 bg-amber-50 border border-amber-200 rounded-lg">
-                    <Lock className="h-4 w-4 text-amber-600" />
-                    <div className="text-sm">
-                      <Link to="/auth" className="text-primary hover:underline font-medium">
-                        Sign in
-                      </Link>
-                      <span className="text-amber-700"> to request seller contact information</span>
-                    </div>
-                  </div>
-                </div>
-              )}
-
-              <div className="flex justify-between items-center pt-2">
-                <span className="text-xs text-muted-foreground">
-                  {new Date(ad.scraped_at).toLocaleDateString()}
-                </span>
-                <Button size="sm" asChild>
-                  <a href={ad.source_url} target="_blank" rel="noopener noreferrer">
-                    <ExternalLink className="h-3 w-3 mr-1" />
-                    View Original
-                  </a>
-                </Button>
-              </div>
-            </CardContent>
-          </Card>
-        ))}
-      </div>
-
-      {ads.length === 0 && !loading && (
-        <div className="text-center py-12">
-          <p className="text-muted-foreground mb-4">No ads found matching your criteria.</p>
+      {ads.length === 0 ? (
+        <div className="text-center py-16">
+          <p className="text-muted-foreground text-lg">No ads available at the moment.</p>
+          <p className="text-sm text-muted-foreground mt-2">
+            Try scraping new ads or check back later.
+          </p>
           {isAdmin && (
-            <Button onClick={triggerScraping}>
+            <Button onClick={triggerScraping} className="mt-4">
               Scrape New Listings
             </Button>
           )}
         </div>
+      ) : (
+        <div className="grid grid-cols-1 lg:grid-cols-4 gap-8">
+          {/* Main content area */}
+          <div className="lg:col-span-3">
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+              {ads.slice(0, 4).map((ad) => (
+                <Card key={ad.id} className="hover:shadow-lg transition-shadow">
+                  <CardHeader>
+                    <div className="flex justify-between items-start">
+                      <CardTitle className="text-lg line-clamp-2">{ad.title}</CardTitle>
+                      <Badge variant="secondary" className="text-xs">
+                        {ad.source_name}
+                      </Badge>
+                    </div>
+                  </CardHeader>
+                  <CardContent className="space-y-4">
+                    <p className="text-sm text-muted-foreground line-clamp-3">
+                      {ad.description || 'No description available'}
+                    </p>
+                    
+                    <div className="flex items-center justify-between">
+                      <div className="flex items-center gap-1 text-lg font-semibold text-primary">
+                        <DollarSign className="h-4 w-4" />
+                        {ad.price ? `€${ad.price.toLocaleString()}` : 'Contact for price'}
+                      </div>
+                      {ad.location && (
+                        <div className="flex items-center gap-1 text-sm text-muted-foreground">
+                          <MapPin className="h-3 w-3" />
+                          {ad.location}
+                        </div>
+                      )}
+                    </div>
+
+                    <div className="space-y-2">
+                      <div className="text-sm font-medium text-muted-foreground">
+                        Contact Cyprus Pets:
+                      </div>
+                      <div className="flex flex-col gap-1 text-sm">
+                        <div className="flex items-center gap-2">
+                          <Mail className="w-4 h-4" />
+                          <a href="mailto:info@cyprus-pets.com" className="text-primary hover:underline">
+                            info@cyprus-pets.com
+                          </a>
+                        </div>
+                        <div className="flex items-center gap-2">
+                          <Phone className="w-4 h-4" />
+                          <a href="tel:+35796336767" className="text-primary hover:underline">
+                            +357 96 336767
+                          </a>
+                        </div>
+                      </div>
+                    </div>
+
+                    <div className="flex justify-between items-center pt-2">
+                      <span className="text-xs text-muted-foreground">
+                        {new Date(ad.scraped_at).toLocaleDateString()}
+                      </span>
+                      <Button size="sm" asChild>
+                        <a href={ad.source_url} target="_blank" rel="noopener noreferrer">
+                          <ExternalLink className="h-3 w-3 mr-1" />
+                          View Original
+                        </a>
+                      </Button>
+                    </div>
+                  </CardContent>
+                </Card>
+              ))}
+            </div>
+
+            {/* In-feed ad after first 4 listings */}
+            {ads.length > 4 && (
+              <AdInFeed slot="8901234567" className="my-8" />
+            )}
+
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+              {ads.slice(4, 8).map((ad) => (
+                <Card key={ad.id} className="hover:shadow-lg transition-shadow">
+                  <CardHeader>
+                    <div className="flex justify-between items-start">
+                      <CardTitle className="text-lg line-clamp-2">{ad.title}</CardTitle>
+                      <Badge variant="secondary" className="text-xs">
+                        {ad.source_name}
+                      </Badge>
+                    </div>
+                  </CardHeader>
+                  <CardContent className="space-y-4">
+                    <p className="text-sm text-muted-foreground line-clamp-3">
+                      {ad.description || 'No description available'}
+                    </p>
+                    
+                    <div className="flex items-center justify-between">
+                      <div className="flex items-center gap-1 text-lg font-semibold text-primary">
+                        <DollarSign className="h-4 w-4" />
+                        {ad.price ? `€${ad.price.toLocaleString()}` : 'Contact for price'}
+                      </div>
+                      {ad.location && (
+                        <div className="flex items-center gap-1 text-sm text-muted-foreground">
+                          <MapPin className="h-3 w-3" />
+                          {ad.location}
+                        </div>
+                      )}
+                    </div>
+
+                    <div className="space-y-2">
+                      <div className="text-sm font-medium text-muted-foreground">
+                        Contact Cyprus Pets:
+                      </div>
+                      <div className="flex flex-col gap-1 text-sm">
+                        <div className="flex items-center gap-2">
+                          <Mail className="w-4 h-4" />
+                          <a href="mailto:info@cyprus-pets.com" className="text-primary hover:underline">
+                            info@cyprus-pets.com
+                          </a>
+                        </div>
+                        <div className="flex items-center gap-2">
+                          <Phone className="w-4 h-4" />
+                          <a href="tel:+35796336767" className="text-primary hover:underline">
+                            +357 96 336767
+                          </a>
+                        </div>
+                      </div>
+                    </div>
+
+                    <div className="flex justify-between items-center pt-2">
+                      <span className="text-xs text-muted-foreground">
+                        {new Date(ad.scraped_at).toLocaleDateString()}
+                      </span>
+                      <Button size="sm" asChild>
+                        <a href={ad.source_url} target="_blank" rel="noopener noreferrer">
+                          <ExternalLink className="h-3 w-3 mr-1" />
+                          View Original
+                        </a>
+                      </Button>
+                    </div>
+                  </CardContent>
+                </Card>
+              ))}
+            </div>
+
+            {/* Another in-feed ad */}
+            {ads.length > 8 && (
+              <AdInFeed slot="9012345678" className="my-8" />
+            )}
+
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+              {ads.slice(8).map((ad) => (
+                <Card key={ad.id} className="hover:shadow-lg transition-shadow">
+                  <CardHeader>
+                    <div className="flex justify-between items-start">
+                      <CardTitle className="text-lg line-clamp-2">{ad.title}</CardTitle>
+                      <Badge variant="secondary" className="text-xs">
+                        {ad.source_name}
+                      </Badge>
+                    </div>
+                  </CardHeader>
+                  <CardContent className="space-y-4">
+                    <p className="text-sm text-muted-foreground line-clamp-3">
+                      {ad.description || 'No description available'}
+                    </p>
+                    
+                    <div className="flex items-center justify-between">
+                      <div className="flex items-center gap-1 text-lg font-semibold text-primary">
+                        <DollarSign className="h-4 w-4" />
+                        {ad.price ? `€${ad.price.toLocaleString()}` : 'Contact for price'}
+                      </div>
+                      {ad.location && (
+                        <div className="flex items-center gap-1 text-sm text-muted-foreground">
+                          <MapPin className="h-3 w-3" />
+                          {ad.location}
+                        </div>
+                      )}
+                    </div>
+
+                    <div className="space-y-2">
+                      <div className="text-sm font-medium text-muted-foreground">
+                        Contact Cyprus Pets:
+                      </div>
+                      <div className="flex flex-col gap-1 text-sm">
+                        <div className="flex items-center gap-2">
+                          <Mail className="w-4 h-4" />
+                          <a href="mailto:info@cyprus-pets.com" className="text-primary hover:underline">
+                            info@cyprus-pets.com
+                          </a>
+                        </div>
+                        <div className="flex items-center gap-2">
+                          <Phone className="w-4 h-4" />
+                          <a href="tel:+35796336767" className="text-primary hover:underline">
+                            +357 96 336767
+                          </a>
+                        </div>
+                      </div>
+                    </div>
+
+                    <div className="flex justify-between items-center pt-2">
+                      <span className="text-xs text-muted-foreground">
+                        {new Date(ad.scraped_at).toLocaleDateString()}
+                      </span>
+                      <Button size="sm" asChild>
+                        <a href={ad.source_url} target="_blank" rel="noopener noreferrer">
+                          <ExternalLink className="h-3 w-3 mr-1" />
+                          View Original
+                        </a>
+                      </Button>
+                    </div>
+                  </CardContent>
+                </Card>
+              ))}
+            </div>
+          </div>
+          
+          {/* Sidebar with ads - only show on large screens */}
+          <div className="lg:col-span-1 space-y-8">
+            <AdSidebar slot="0123456789" />
+            <AdSidebar slot="1234567890" />
+          </div>
+        </div>
       )}
+
+      {/* Bottom banner ad */}
+      <div className="ad-spacing-large">
+        <AdBanner 
+          slot="2345678901" 
+          format="horizontal"
+          className="max-w-full mx-auto"
+        />
+      </div>
     </div>
   );
 };

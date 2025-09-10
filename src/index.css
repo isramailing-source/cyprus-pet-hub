@@ -119,3 +119,30 @@ All colors MUST be HSL.
     @apply bg-background text-foreground;
   }
 }
+
+/* AdSense styling */
+@layer components {
+  .ad-container {
+    @apply flex justify-center items-center min-h-[100px] bg-muted/20 rounded-lg border border-border/50;
+  }
+  
+  .ad-container ins {
+    @apply w-full;
+  }
+  
+  /* Responsive ad adjustments */
+  @media (max-width: 768px) {
+    .ad-container {
+      @apply min-h-[250px];
+    }
+  }
+  
+  /* Ad placement spacing */
+  .ad-spacing {
+    @apply my-8;
+  }
+  
+  .ad-spacing-large {
+    @apply my-12;
+  }
+}

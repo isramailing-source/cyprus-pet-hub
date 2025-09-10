@@ -1,4 +1,5 @@
 import { Card, CardContent } from "@/components/ui/card";
+import AdBanner from "@/components/ads/AdBanner";
 
 interface Category {
   name: string;
@@ -44,6 +45,15 @@ const Categories = () => {
               </CardContent>
             </Card>
           ))}
+        </div>
+        
+        {/* Top Banner Ad after Categories */}
+        <div className="ad-spacing">
+          <AdBanner 
+            slot="1234567890" 
+            format="horizontal"
+            className="max-w-4xl mx-auto"
+          />
         </div>
       </div>
     </section>
