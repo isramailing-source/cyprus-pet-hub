@@ -44,7 +44,7 @@ const FeaturedListings = () => {
     queryKey: ['featured-pets'],
     queryFn: async () => {
       const { data, error } = await supabase
-        .from('ads')
+        .from('ads_public')
         .select('*')
         .eq('is_active', true)
         .order('created_at', { ascending: false })
