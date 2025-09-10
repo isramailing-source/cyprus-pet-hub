@@ -12,7 +12,8 @@ import goldenRetrieverImage from "@/assets/golden-retriever-cyprus.jpg";
 import britishShorthairImage from "@/assets/british-shorthair-cyprus.jpg";
 import birdsImage from "@/assets/birds-cyprus.jpg";
 
-const getImageSrc = (images: string[] | null) => {
+// Helper function to get image source with comprehensive fallback handling
+const getImageSrc = (images: string[] | null): string => {
   if (!images || images.length === 0) {
     return goldenRetrieverImage; // Default fallback image
   }
@@ -23,6 +24,9 @@ const getImageSrc = (images: string[] | null) => {
   if (imagePath.includes('golden-retriever-cyprus.jpg')) return goldenRetrieverImage;
   if (imagePath.includes('british-shorthair-cyprus.jpg')) return britishShorthairImage;
   if (imagePath.includes('birds-cyprus.jpg')) return birdsImage;
+  
+  // Handle external URLs or other paths
+  if (imagePath.startsWith('http')) return imagePath;
   
   return goldenRetrieverImage; // Fallback for unknown paths
 };

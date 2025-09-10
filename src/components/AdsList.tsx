@@ -65,13 +65,19 @@ export const AdsList = () => {
   const { user, session, isAdmin } = useAuth();
   const [searchParams] = useSearchParams();
 
-  // Helper function to get correct image source
+  // Helper function to get image source with fallback handling
   const getImageSrc = (imagePath: string): string => {
+    // Handle imported assets
     if (imagePath.includes('/src/assets/british-shorthair-cyprus.jpg')) return britishShorthairImage;
     if (imagePath.includes('/src/assets/golden-retriever-cyprus.jpg')) return goldenRetrieverImage;
     if (imagePath.includes('/src/assets/birds-cyprus.jpg')) return birdsImage;
     if (imagePath.includes('/src/assets/hero-pets-cyprus.jpg')) return heroPetsImage;
-    return heroPetsImage; // fallback
+    
+    // Handle external URLs or other paths
+    if (imagePath.startsWith('http')) return imagePath;
+    
+    // Default fallback
+    return heroPetsImage;
   };
 
   useEffect(() => {
@@ -107,7 +113,7 @@ export const AdsList = () => {
         query = query.ilike('location', `%${locationFilter}%`);
       }
 
-      if (priceRange) {
+      if (priceRange && priceRange !== "all") {
         const [min, max] = priceRange.split('-').map(Number);
         if (max) {
           query = query.gte('price', min).lte('price', max);
@@ -307,7 +313,7 @@ export const AdsList = () => {
             <SelectValue placeholder="Price range" />
           </SelectTrigger>
           <SelectContent>
-            <SelectItem value="">Any price</SelectItem>
+            <SelectItem value="all">Any price</SelectItem>
             <SelectItem value="0-100">€0 - €100</SelectItem>
             <SelectItem value="100-500">€100 - €500</SelectItem>
             <SelectItem value="500-1000">€500 - €1000</SelectItem>
@@ -319,7 +325,7 @@ export const AdsList = () => {
           onClick={() => {
             setSearchTerm("");
             setLocationFilter("");
-            setPriceRange("");
+            setPriceRange("all");
           }}
         >
           Clear Filters

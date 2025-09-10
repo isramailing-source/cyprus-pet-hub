@@ -52,7 +52,7 @@ export const BlogSection = () => {
         query = query.or(`title.ilike.%${searchTerm}%,content.ilike.%${searchTerm}%`);
       }
 
-      if (categoryFilter) {
+      if (categoryFilter && categoryFilter !== "all") {
         query = query.eq('category_id', categoryFilter);
       }
 
@@ -186,7 +186,7 @@ export const BlogSection = () => {
             <SelectValue placeholder="Category" />
           </SelectTrigger>
           <SelectContent>
-            <SelectItem value="">All categories</SelectItem>
+            <SelectItem value="all">All categories</SelectItem>
             <SelectItem value="hygiene">Hygiene</SelectItem>
             <SelectItem value="training">Training</SelectItem>
             <SelectItem value="care">Care</SelectItem>
@@ -196,7 +196,7 @@ export const BlogSection = () => {
           variant="outline" 
           onClick={() => {
             setSearchTerm("");
-            setCategoryFilter("");
+            setCategoryFilter("all");
           }}
         >
           Clear Filters
