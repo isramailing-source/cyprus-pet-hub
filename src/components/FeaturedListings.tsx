@@ -20,13 +20,18 @@ const getImageSrc = (images: string[] | null): string => {
   
   const imagePath = images[0];
   
+  // Handle external URLs first
+  if (imagePath.startsWith('http')) return imagePath;
+  
   // Map specific image paths to imported assets using includes for flexible matching
   if (imagePath.includes('golden-retriever-cyprus.jpg')) return goldenRetrieverImage;
   if (imagePath.includes('british-shorthair-cyprus.jpg')) return britishShorthairImage;
   if (imagePath.includes('birds-cyprus.jpg')) return birdsImage;
   
-  // Handle external URLs or other paths
-  if (imagePath.startsWith('http')) return imagePath;
+  // For other local paths, try to construct the full path
+  if (!imagePath.startsWith('/')) {
+    return `/${imagePath}`;
+  }
   
   return goldenRetrieverImage; // Fallback for unknown paths
 };
@@ -39,7 +44,7 @@ const FeaturedListings = () => {
     queryKey: ['featured-pets'],
     queryFn: async () => {
       const { data, error } = await supabase
-        .from('ads_public')
+        .from('ads')
         .select('*')
         .eq('is_active', true)
         .order('created_at', { ascending: false })

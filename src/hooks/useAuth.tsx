@@ -80,11 +80,20 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
       });
 
       if (error) {
-        toast({
-          title: "Sign up failed",
-          description: error.message,
-          variant: "destructive",
-        });
+        // Handle specific CAPTCHA errors
+        if (error.message.includes('captcha')) {
+          toast({
+            title: "CAPTCHA Required",
+            description: "Please disable CAPTCHA in Supabase Auth settings or contact support. This feature is not implemented yet.",
+            variant: "destructive",
+          });
+        } else {
+          toast({
+            title: "Sign up failed",
+            description: error.message,
+            variant: "destructive",
+          });
+        }
       } else {
         toast({
           title: "Check your email",
@@ -94,6 +103,11 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
 
       return { error };
     } catch (error: any) {
+      toast({
+        title: "Sign up failed",
+        description: "An unexpected error occurred. Please try again.",
+        variant: "destructive",
+      });
       return { error };
     }
   };
@@ -106,11 +120,20 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
       });
 
       if (error) {
-        toast({
-          title: "Sign in failed",
-          description: error.message,
-          variant: "destructive",
-        });
+        // Handle specific CAPTCHA errors
+        if (error.message.includes('captcha')) {
+          toast({
+            title: "CAPTCHA Required",
+            description: "Please disable CAPTCHA in Supabase Auth settings or contact support. This feature is not implemented yet.",
+            variant: "destructive",
+          });
+        } else {
+          toast({
+            title: "Sign in failed",
+            description: error.message,
+            variant: "destructive",
+          });
+        }
       } else {
         toast({
           title: "Welcome back!",
@@ -120,6 +143,11 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
 
       return { error };
     } catch (error: any) {
+      toast({
+        title: "Sign in failed",
+        description: "An unexpected error occurred. Please try again.",
+        variant: "destructive",
+      });
       return { error };
     }
   };
