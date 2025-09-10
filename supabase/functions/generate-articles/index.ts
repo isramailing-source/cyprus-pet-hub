@@ -368,10 +368,10 @@ serve(async (req) => {
 async function generateArticleWithAssistant(params: ArticleGenerationParams): Promise<string> {
   const { topic, lengthWords = 2000, keywords = [], additionalInstructions = '', targetAudience = 'advanced, knowledgeable pet owners who want in-depth insights' } = params;
   
-  const openAIApiKey = Deno.env.get('OPENAI_API_KEY')
-  if (!openAIApiKey) {
-    console.error('OpenAI API key not found in environment variables')
-    throw new Error('OpenAI API key not configured. Please set OPENAI_API_KEY in Supabase Edge Function secrets.')
+  const geminiApiKey = Deno.env.get('GEMINI_API_KEY')
+  if (!geminiApiKey) {
+    console.error('Gemini API key not found in environment variables')
+    throw new Error('Gemini API key not configured. Please set GEMINI_API_KEY in Supabase Edge Function secrets.')
   }
 
   const comprehensivePrompt = `Write a comprehensive, expert-level article inspired by Cesar Millan's pet training philosophy and deep understanding of animal behavior.
@@ -409,53 +409,64 @@ Structure the article with:
 Do not add disclaimers or unrelated text.`
 
   try {
-    const response = await fetch('https://api.openai.com/v1/chat/completions', {
+    const response = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-pro:generateContent?key=${geminiApiKey}`, {
       method: 'POST',
       headers: {
-        'Authorization': `Bearer ${openAIApiKey}`,
         'Content-Type': 'application/json',
       },
       body: JSON.stringify({
-        model: 'gpt-4o-mini',
-        messages: [
-          { 
-            role: 'system', 
-            content: 'You are a world-renowned pet psychology expert who writes in Cesar Millan\'s authoritative style. Create comprehensive, expert-level articles that provide deep insights into animal behavior and practical training techniques. Always write in valid HTML format with proper structure.'
-          },
-          { 
-            role: 'user', 
-            content: comprehensivePrompt
+        contents: [
+          {
+            parts: [
+              {
+                text: `You are a world-renowned pet psychology expert who writes in Cesar Millan's authoritative style. Create comprehensive, expert-level articles that provide deep insights into animal behavior and practical training techniques. Always write in valid HTML format with proper structure.\n\n${comprehensivePrompt}`
+              }
+            ]
           }
         ],
-        max_tokens: 4000,
-        temperature: 0.7,
+        generationConfig: {
+          maxOutputTokens: 4000,
+          temperature: 0.7,
+          topP: 0.8,
+          topK: 40
+        },
+        safetySettings: [
+          {
+            category: "HARM_CATEGORY_HARASSMENT",
+            threshold: "BLOCK_MEDIUM_AND_ABOVE"
+          },
+          {
+            category: "HARM_CATEGORY_HATE_SPEECH",
+            threshold: "BLOCK_MEDIUM_AND_ABOVE"
+          }
+        ]
       }),
     })
 
     if (!response.ok) {
       const errorBody = await response.text()
-      console.error('OpenAI API response error:', {
+      console.error('Gemini API response error:', {
         status: response.status,
         statusText: response.statusText,
         body: errorBody
       })
       
       if (response.status === 429) {
-        throw new Error('OpenAI API rate limit exceeded. Please try again later.')
-      } else if (response.status === 401) {
-        throw new Error('OpenAI API key is invalid. Please check your API key configuration.')
+        throw new Error('Gemini API rate limit exceeded. Please try again later.')
+      } else if (response.status === 401 || response.status === 403) {
+        throw new Error('Gemini API key is invalid. Please check your API key configuration.')
       } else {
-        throw new Error(`OpenAI API error: ${response.status} ${response.statusText}`)
+        throw new Error(`Gemini API error: ${response.status} ${response.statusText}`)
       }
     }
 
     const data = await response.json()
     
-    if (!data.choices || !data.choices[0] || !data.choices[0].message) {
-      throw new Error('Invalid response format from OpenAI API')
+    if (!data.candidates || !data.candidates[0] || !data.candidates[0].content || !data.candidates[0].content.parts || !data.candidates[0].content.parts[0]) {
+      throw new Error('Invalid response format from Gemini API')
     }
 
-    const generatedContent = data.choices[0].message.content
+    const generatedContent = data.candidates[0].content.parts[0].text
     console.log('✅ Expert article generated successfully')
     
     return generatedContent
@@ -466,42 +477,41 @@ Do not add disclaimers or unrelated text.`
   }
 }
 
-// Generate comprehensive Cesar Milan-inspired article content using OpenAI
+// Generate comprehensive Cesar Milan-inspired article content using Gemini
 async function generateCesarInspiredContent(topic: any, category: any) {
   console.log(`Generating AI content for: ${topic.title}`)
   
-  const openAIApiKey = Deno.env.get('OPENAI_API_KEY')
-  if (!openAIApiKey) {
-    console.error('OpenAI API key not found in environment variables')
-    throw new Error('OpenAI API key not configured. Please set OPENAI_API_KEY in Supabase Edge Function secrets.')
+  const geminiApiKey = Deno.env.get('GEMINI_API_KEY')
+  if (!geminiApiKey) {
+    console.error('Gemini API key not found in environment variables')
+    throw new Error('Gemini API key not configured. Please set GEMINI_API_KEY in Supabase Edge Function secrets.')
   }
   
-  console.log('OpenAI API key found, length:', openAIApiKey.length)
+  console.log('Gemini API key found, length:', geminiApiKey.length)
   
   // Test API key validity with a simple call first
   try {
-    const testResponse = await fetch('https://api.openai.com/v1/models', {
+    const testResponse = await fetch(`https://generativelanguage.googleapis.com/v1beta/models?key=${geminiApiKey}`, {
       method: 'GET',
       headers: {
-        'Authorization': `Bearer ${openAIApiKey}`,
         'Content-Type': 'application/json',
       },
     })
     
     if (!testResponse.ok) {
-      console.error('OpenAI API key validation failed:', testResponse.status, testResponse.statusText)
-      if (testResponse.status === 401) {
-        throw new Error('OpenAI API key is invalid or unauthorized. Please check your API key in Supabase secrets.')
+      console.error('Gemini API key validation failed:', testResponse.status, testResponse.statusText)
+      if (testResponse.status === 401 || testResponse.status === 403) {
+        throw new Error('Gemini API key is invalid or unauthorized. Please check your API key in Supabase secrets.')
       } else if (testResponse.status === 429) {
-        throw new Error('OpenAI API rate limit exceeded. Please try again later.')
+        throw new Error('Gemini API rate limit exceeded. Please try again later.')
       } else {
-        throw new Error(`OpenAI API error: ${testResponse.status} ${testResponse.statusText}`)
+        throw new Error(`Gemini API error: ${testResponse.status} ${testResponse.statusText}`)
       }
     }
     
-    console.log('✅ OpenAI API key validation successful')
+    console.log('✅ Gemini API key validation successful')
   } catch (testError) {
-    console.error('OpenAI API key test failed:', testError)
+    console.error('Gemini API key test failed:', testError)
     throw testError
   }
 
@@ -527,47 +537,67 @@ Structure the article with:
 Write in HTML format with proper headings (h2, h3), paragraphs, and lists. Make it informative, authoritative, and engaging.`
 
   try {
-    const response = await fetch('https://api.openai.com/v1/chat/completions', {
+    const response = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-pro:generateContent?key=${geminiApiKey}`, {
       method: 'POST',
       headers: {
-        'Authorization': `Bearer ${openAIApiKey}`,
         'Content-Type': 'application/json',
       },
       body: JSON.stringify({
-        model: 'gpt-4o-mini',
-        messages: [
-          { 
-            role: 'system', 
-            content: 'You are a pet psychology expert who writes in Cesar Milan\'s style. Create comprehensive, practical articles for Cyprus pet owners.'
-          },
-          { role: 'user', content: prompt }
+        contents: [
+          {
+            parts: [
+              {
+                text: `You are a pet psychology expert who writes in Cesar Milan's style. Create comprehensive, practical articles for Cyprus pet owners.\n\n${prompt}`
+              }
+            ]
+          }
         ],
-        max_tokens: 3000,
-        temperature: 0.7,
+        generationConfig: {
+          maxOutputTokens: 3000,
+          temperature: 0.7,
+          topP: 0.8,
+          topK: 40
+        },
+        safetySettings: [
+          {
+            category: "HARM_CATEGORY_HARASSMENT",
+            threshold: "BLOCK_MEDIUM_AND_ABOVE"
+          },
+          {
+            category: "HARM_CATEGORY_HATE_SPEECH",
+            threshold: "BLOCK_MEDIUM_AND_ABOVE"
+          }
+        ]
       }),
     })
 
     if (!response.ok) {
       const errorText = await response.text()
-      console.error('OpenAI API response error:', {
+      console.error('Gemini API response error:', {
         status: response.status,
         statusText: response.statusText,
         body: errorText
       })
       
-      if (response.status === 401) {
-        throw new Error('OpenAI API authentication failed. Please check your API key configuration.')
+      if (response.status === 401 || response.status === 403) {
+        throw new Error('Gemini API authentication failed. Please check your API key configuration.')
       } else if (response.status === 429) {
-        throw new Error('OpenAI API rate limit exceeded. Please try again later.')
+        throw new Error('Gemini API rate limit exceeded. Please try again later.')
       } else if (response.status === 402) {
-        throw new Error('OpenAI API quota exceeded. Please check your billing and usage limits.')
+        throw new Error('Gemini API quota exceeded. Please check your billing and usage limits.')
       } else {
-        throw new Error(`OpenAI API error: ${response.status} ${response.statusText}. Details: ${errorText}`)
+        throw new Error(`Gemini API error: ${response.status} ${response.statusText}. Details: ${errorText}`)
       }
     }
 
     const data = await response.json()
-    const generatedContent = data.choices[0].message.content
+    
+    if (!data.candidates || !data.candidates[0] || !data.candidates[0].content || !data.candidates[0].content.parts || !data.candidates[0].content.parts[0]) {
+      console.error('Invalid Gemini response structure:', data)
+      throw new Error('Failed to generate article content - invalid API response structure')
+    }
+    
+    const generatedContent = data.candidates[0].content.parts[0].text
 
     console.log(`✅ AI content generated successfully (${generatedContent.length} characters)`)
 
