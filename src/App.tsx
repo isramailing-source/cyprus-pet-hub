@@ -17,13 +17,17 @@ import NotFound from "./pages/NotFound";
 const queryClient = new QueryClient();
 
 const App = () => {
-  console.log('App component rendering - TEST VERSION');
+  console.log('App component rendering - Phase 1: Basic Providers');
   
   return (
-    <div style={{ padding: '20px', backgroundColor: 'blue', color: 'white', textAlign: 'center' }}>
-      <h1>React is Working!</h1>
-      <p>If you see this blue background, React has mounted successfully.</p>
-    </div>
+    <QueryClientProvider client={queryClient}>
+      <HelmetProvider>
+        <div style={{ padding: '20px', backgroundColor: 'blue', color: 'white', textAlign: 'center' }}>
+          <h1>Phase 1: Basic Providers Working!</h1>
+          <p>QueryClient and HelmetProvider added successfully.</p>
+        </div>
+      </HelmetProvider>
+    </QueryClientProvider>
   );
 };
 
