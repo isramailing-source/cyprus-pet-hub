@@ -3,6 +3,7 @@ import HeroSection from "@/components/HeroSection";
 import Categories from "@/components/Categories";
 import FeaturedListings from "@/components/FeaturedListings";
 import Footer from "@/components/Footer";
+import OpenAITest from "@/components/OpenAITest";
 import { Helmet } from "react-helmet-async";
 
 const Index = () => {
@@ -33,6 +34,7 @@ const Index = () => {
           <HeroSection />
           <Categories />
           <FeaturedListings />
+          <OpenAITest />
         </main>
         <Footer />
       </div>
