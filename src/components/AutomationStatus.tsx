@@ -1,15 +1,11 @@
 import { useState, useEffect } from "react";
-import { createClient } from "@supabase/supabase-js";
+import { supabase } from "@/integrations/supabase/client";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { RefreshCw, Bot, Globe, Clock } from "lucide-react";
 import { useToast } from "@/components/ui/use-toast";
 
-const supabase = createClient(
-  process.env.VITE_SUPABASE_URL || "",
-  process.env.VITE_SUPABASE_ANON_KEY || ""
-);
 
 export const AutomationStatus = () => {
   const [stats, setStats] = useState({
