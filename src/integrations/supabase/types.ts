@@ -326,9 +326,101 @@ export type Database = {
       }
     }
     Views: {
-      [_ in never]: never
+      ads_public: {
+        Row: {
+          age: string | null
+          breed: string | null
+          category_id: string | null
+          created_at: string | null
+          currency: string | null
+          description: string | null
+          gender: string | null
+          id: string | null
+          images: string[] | null
+          is_active: boolean | null
+          location: string | null
+          price: number | null
+          scraped_at: string | null
+          source_name: string | null
+          source_url: string | null
+          title: string | null
+          updated_at: string | null
+        }
+        Insert: {
+          age?: string | null
+          breed?: string | null
+          category_id?: string | null
+          created_at?: string | null
+          currency?: string | null
+          description?: string | null
+          gender?: string | null
+          id?: string | null
+          images?: string[] | null
+          is_active?: boolean | null
+          location?: string | null
+          price?: number | null
+          scraped_at?: string | null
+          source_name?: string | null
+          source_url?: string | null
+          title?: string | null
+          updated_at?: string | null
+        }
+        Update: {
+          age?: string | null
+          breed?: string | null
+          category_id?: string | null
+          created_at?: string | null
+          currency?: string | null
+          description?: string | null
+          gender?: string | null
+          id?: string | null
+          images?: string[] | null
+          is_active?: boolean | null
+          location?: string | null
+          price?: number | null
+          scraped_at?: string | null
+          source_name?: string | null
+          source_url?: string | null
+          title?: string | null
+          updated_at?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "ads_category_id_fkey"
+            columns: ["category_id"]
+            isOneToOne: false
+            referencedRelation: "categories"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
     }
     Functions: {
+      get_ad_with_contact: {
+        Args: { ad_id: string }
+        Returns: {
+          age: string
+          breed: string
+          category_id: string
+          created_at: string
+          currency: string
+          description: string
+          email: string
+          gender: string
+          id: string
+          images: string[]
+          is_active: boolean
+          location: string
+          phone: string
+          price: number
+          scraped_at: string
+          seller_name: string
+          source_name: string
+          source_url: string
+          title: string
+          updated_at: string
+        }[]
+      }
       get_current_user_role: {
         Args: Record<PropertyKey, never>
         Returns: string

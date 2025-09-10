@@ -43,15 +43,27 @@ export const AdsList = () => {
 
   useEffect(() => {
     fetchAds();
-  }, [searchTerm, locationFilter, priceRange]);
+  }, [searchTerm, locationFilter, priceRange, user]); // Add user dependency
 
   const fetchAds = async () => {
     try {
-      let query = supabase
-        .from('ads')
-        .select('*')
-        .eq('is_active', true)
-        .order('scraped_at', { ascending: false });
+      let query;
+      
+      // Use different data sources based on authentication status
+      if (user) {
+        // Authenticated users can access full ads table
+        query = supabase
+          .from('ads')
+          .select('*')
+          .eq('is_active', true)
+          .order('scraped_at', { ascending: false });
+      } else {
+        // Anonymous users use the public view (no contact info)
+        query = supabase
+          .from('ads_public')
+          .select('*')
+          .order('scraped_at', { ascending: false });
+      }
 
       if (searchTerm) {
         query = query.ilike('title', `%${searchTerm}%`);
@@ -244,6 +256,30 @@ export const AdsList = () => {
                   </div>
                 )}
               </div>
+
+              {/* Show contact info for authenticated users only */}
+              {user && (ad.email || ad.phone || ad.seller_name) && (
+                <div className="border-t pt-3 space-y-2">
+                  <p className="text-xs font-medium text-muted-foreground uppercase tracking-wide">
+                    Seller Contact
+                  </p>
+                  {ad.seller_name && (
+                    <div className="flex items-center gap-2 text-sm">
+                      <span className="font-medium">{ad.seller_name}</span>
+                    </div>
+                  )}
+                  {ad.email && (
+                    <div className="text-sm text-muted-foreground">
+                      📧 {ad.email}
+                    </div>
+                  )}
+                  {ad.phone && (
+                    <div className="text-sm text-muted-foreground">
+                      📞 {ad.phone}
+                    </div>
+                  )}
+                </div>
+              )}
 
               <div className="flex justify-between items-center pt-2">
                 <span className="text-xs text-muted-foreground">
