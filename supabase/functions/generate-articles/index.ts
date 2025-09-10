@@ -6,6 +6,7 @@ interface ArticleGenerationParams {
   lengthWords?: number;
   keywords?: string[];
   additionalInstructions?: string;
+  targetAudience?: string;
 }
 
 const corsHeaders = {
@@ -25,7 +26,7 @@ serve(async (req) => {
     const supabase = createClient(supabaseUrl, supabaseServiceKey)
     
     const body = await req.json()
-    const { topic, lengthWords = 2000, keywords = [], additionalInstructions = '' } = body
+    const { topic, lengthWords = 2000, keywords = [], additionalInstructions = '', targetAudience = 'advanced, knowledgeable pet owners who want in-depth insights' } = body
 
     // Check if this is a custom article generation request
     if (topic) {
@@ -45,6 +46,7 @@ serve(async (req) => {
         lengthWords,
         keywords,
         additionalInstructions,
+        targetAudience,
       })
 
       return new Response(
@@ -362,17 +364,106 @@ serve(async (req) => {
   }
 })
 
-// Mock AI call function. Replace this with your actual integration logic.
-// For example, you may manually input prompt results or build tooling to communicate with this AI.
+// Expert-level article generation using comprehensive Cesar Millan-inspired prompt
 async function generateArticleWithAssistant(params: ArticleGenerationParams): Promise<string> {
-  // Simulate a high-quality article generation process
-  // In practice, this might call your internal system that sends the request to this AI and gets the reply
-  const { topic, lengthWords, keywords, additionalInstructions } = params;
+  const { topic, lengthWords = 2000, keywords = [], additionalInstructions = '', targetAudience = 'advanced, knowledgeable pet owners who want in-depth insights' } = params;
   
-  // This is just a placeholder text to demonstrate structure
-  const articleHtml = `<article><h2>${topic}</h2><p>This is a detailed ${lengthWords}+ word article about ${topic}, focusing on keywords: ${keywords.join(', ')}. ${additionalInstructions}</p><p>Content generated via AI assistant integration.</p></article>`;
-  
-  return articleHtml;
+  const openAIApiKey = Deno.env.get('OPENAI_API_KEY')
+  if (!openAIApiKey) {
+    console.error('OpenAI API key not found in environment variables')
+    throw new Error('OpenAI API key not configured. Please set OPENAI_API_KEY in Supabase Edge Function secrets.')
+  }
+
+  const comprehensivePrompt = `Write a comprehensive, expert-level article inspired by Cesar Millan's pet training philosophy and deep understanding of animal behavior.
+
+Requirements:
+- Length: at least ${lengthWords} words.
+- Target audience: ${targetAudience} — advanced, knowledgeable pet owners who want in-depth insights.
+- Topic: "${topic}".
+- Focus on ${keywords.length > 0 ? keywords.join(', ') : 'animal psychology, behavior management, and expert training techniques'} naturally throughout the article.
+- Include real-life examples, scientific explanations, and advanced practical advice.
+- Avoid generic or superficial content; provide unique insights and actionable tips.
+- Use headings, subheadings, bullet points, and HTML formatting for direct website integration.
+- Additional instructions: ${additionalInstructions}.
+
+Generate the article in valid HTML format including:
+- Title header
+- Structured paragraphs
+- Lists where fitting
+- An engaging introduction and conclusion
+
+Write in Cesar Millan's authoritative style, emphasizing:
+- Pack leadership and calm-assertive energy
+- Exercise, Discipline, Affection formula
+- Understanding animal psychology and behavior
+- Practical techniques for pet owners
+- Real-world examples and scenarios
+
+Structure the article with:
+1. Engaging introduction explaining the topic's importance
+2. 4-5 main sections with practical advice and scientific backing
+3. Specific techniques and step-by-step guidance
+4. Real-world case studies and examples
+5. Conclusion with actionable takeaways
+
+Do not add disclaimers or unrelated text.`
+
+  try {
+    const response = await fetch('https://api.openai.com/v1/chat/completions', {
+      method: 'POST',
+      headers: {
+        'Authorization': `Bearer ${openAIApiKey}`,
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({
+        model: 'gpt-4o-mini',
+        messages: [
+          { 
+            role: 'system', 
+            content: 'You are a world-renowned pet psychology expert who writes in Cesar Millan\'s authoritative style. Create comprehensive, expert-level articles that provide deep insights into animal behavior and practical training techniques. Always write in valid HTML format with proper structure.'
+          },
+          { 
+            role: 'user', 
+            content: comprehensivePrompt
+          }
+        ],
+        max_tokens: 4000,
+        temperature: 0.7,
+      }),
+    })
+
+    if (!response.ok) {
+      const errorBody = await response.text()
+      console.error('OpenAI API response error:', {
+        status: response.status,
+        statusText: response.statusText,
+        body: errorBody
+      })
+      
+      if (response.status === 429) {
+        throw new Error('OpenAI API rate limit exceeded. Please try again later.')
+      } else if (response.status === 401) {
+        throw new Error('OpenAI API key is invalid. Please check your API key configuration.')
+      } else {
+        throw new Error(`OpenAI API error: ${response.status} ${response.statusText}`)
+      }
+    }
+
+    const data = await response.json()
+    
+    if (!data.choices || !data.choices[0] || !data.choices[0].message) {
+      throw new Error('Invalid response format from OpenAI API')
+    }
+
+    const generatedContent = data.choices[0].message.content
+    console.log('✅ Expert article generated successfully')
+    
+    return generatedContent
+
+  } catch (error) {
+    console.error('Error generating expert article:', error)
+    throw new Error(`Failed to generate expert article: ${error.message}`)
+  }
 }
 
 // Generate comprehensive Cesar Milan-inspired article content using OpenAI

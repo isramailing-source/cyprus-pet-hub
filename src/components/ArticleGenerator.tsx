@@ -17,7 +17,8 @@ const ArticleGenerator = () => {
     topic: '',
     lengthWords: 2000,
     keywords: [] as string[],
-    additionalInstructions: ''
+    additionalInstructions: '',
+    targetAudience: 'advanced, knowledgeable pet owners who want in-depth insights'
   });
   const [keywordInput, setKeywordInput] = useState('');
   const [generatedHtml, setGeneratedHtml] = useState('');
@@ -97,7 +98,8 @@ const ArticleGenerator = () => {
           topic: customArticle.topic,
           lengthWords: customArticle.lengthWords,
           keywords: customArticle.keywords,
-          additionalInstructions: customArticle.additionalInstructions
+          additionalInstructions: customArticle.additionalInstructions,
+          targetAudience: customArticle.targetAudience
         }
       });
       
@@ -206,6 +208,16 @@ const ArticleGenerator = () => {
                   placeholder="2000"
                   value={customArticle.lengthWords}
                   onChange={(e) => setCustomArticle(prev => ({ ...prev, lengthWords: parseInt(e.target.value) || 2000 }))}
+                />
+              </div>
+              
+              <div className="space-y-2">
+                <Label htmlFor="targetAudience">Target Audience</Label>
+                <Input
+                  id="targetAudience"
+                  placeholder="e.g., beginner pet owners, advanced trainers, etc."
+                  value={customArticle.targetAudience}
+                  onChange={(e) => setCustomArticle(prev => ({ ...prev, targetAudience: e.target.value }))}
                 />
               </div>
               
