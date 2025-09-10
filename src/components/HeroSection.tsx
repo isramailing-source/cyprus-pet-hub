@@ -21,11 +21,11 @@ const HeroSection = () => {
       <div className="relative z-10 text-center px-4 py-16">
         <div className="max-w-4xl mx-auto">
           <h1 className="text-4xl md:text-6xl font-bold text-white mb-6 leading-tight">
-            Find Your Perfect
-            <span className="bg-gradient-to-r from-cyprus-coral to-cyprus-gold bg-clip-text text-transparent"> Companion</span>
+            Your Complete
+            <span className="bg-gradient-to-r from-cyprus-coral to-cyprus-gold bg-clip-text text-transparent"> Pet Care Guide</span>
           </h1>
           <p className="text-xl md:text-2xl text-white/90 mb-8 leading-relaxed">
-            Cyprus's trusted marketplace for pets, equipment, and everything your furry friends need
+            Expert advice, trusted resources, and community support for Cyprus pet owners
           </p>
 
           {/* Search Bar */}
@@ -34,15 +34,8 @@ const HeroSection = () => {
               <div className="relative flex-1">
                 <Search className="absolute left-4 top-1/2 transform -translate-y-1/2 text-white/70 w-5 h-5" />
                 <Input 
-                  placeholder="What pet are you looking for?" 
+                  placeholder="Search articles, guides, and discussions..." 
                   className="pl-12 bg-white/20 border-white/30 text-white placeholder:text-white/70 h-12"
-                />
-              </div>
-              <div className="relative">
-                <MapPin className="absolute left-4 top-1/2 transform -translate-y-1/2 text-white/70 w-5 h-5" />
-                <Input 
-                  placeholder="Location in Cyprus" 
-                  className="pl-12 bg-white/20 border-white/30 text-white placeholder:text-white/70 h-12 min-w-[200px]"
                 />
               </div>
               <Button size="lg" className="bg-cyprus-coral hover:bg-cyprus-coral/90 h-12 px-8">
@@ -55,16 +48,16 @@ const HeroSection = () => {
           {/* Stats */}
           <div className="flex flex-wrap justify-center gap-8 text-white">
             <div className="text-center">
-              <div className="text-3xl font-bold">1,200+</div>
-              <div className="text-sm opacity-90">Happy Pets</div>
-            </div>
-            <div className="text-center">
-              <div className="text-3xl font-bold">850+</div>
-              <div className="text-sm opacity-90">Active Listings</div>
-            </div>
-            <div className="text-center">
               <div className="text-3xl font-bold">500+</div>
-              <div className="text-sm opacity-90">Cyprus Families</div>
+              <div className="text-sm opacity-90">Expert Articles</div>
+            </div>
+            <div className="text-center">
+              <div className="text-3xl font-bold">2,000+</div>
+              <div className="text-sm opacity-90">Community Members</div>
+            </div>
+            <div className="text-center">
+              <div className="text-3xl font-bold">50+</div>
+              <div className="text-sm opacity-90">Trusted Resources</div>
             </div>
           </div>
         </div>

@@ -1,7 +1,8 @@
 import Header from "@/components/Header";
 import HeroSection from "@/components/HeroSection";
-import Categories from "@/components/Categories";
-import FeaturedListings from "@/components/FeaturedListings";
+import PetResourcesHub from "@/components/PetResourcesHub";
+import FeaturedArticles from "@/components/FeaturedArticles";
+import ForumHighlights from "@/components/ForumHighlights";
 import Footer from "@/components/Footer";
 import { Helmet } from "react-helmet-async";
 
@@ -10,19 +11,19 @@ const Index = () => {
   return (
     <>
       <Helmet>
-        <title>Cyprus Pets | Find Your Perfect Pet in Cyprus</title>
+        <title>Cyprus Pets | Expert Pet Care Advice & Community</title>
         <meta 
           name="description" 
-          content="Cyprus's premier pet marketplace. Find dogs, cats, birds and exotic pets from trusted local sellers. Expert pet care advice and community." 
+          content="Cyprus's premier pet care resource hub. Expert articles, trusted local services, and vibrant community for pet owners across the island." 
         />
-        <meta name="keywords" content="pets cyprus, buy pets cyprus, pet marketplace, dogs cats cyprus, pet care advice" />
+        <meta name="keywords" content="pet care cyprus, pet advice, pet community cyprus, pet resources, pet guides" />
         <link rel="canonical" href="/" />
         <script type="application/ld+json">
           {JSON.stringify({
             "@context": "https://schema.org",
             "@type": "WebSite",
             "name": "Cyprus Pets",
-            "description": "Cyprus's premier pet marketplace and care resource",
+            "description": "Cyprus's premier pet care resource hub and community",
             "url": "https://cyprus-pets.com"
           })}
         </script>
@@ -32,8 +33,9 @@ const Index = () => {
         <Header />
         <main>
           <HeroSection />
-          <Categories />
-          <FeaturedListings />
+          <FeaturedArticles />
+          <PetResourcesHub />
+          <ForumHighlights />
         </main>
         <Footer />
       </div>

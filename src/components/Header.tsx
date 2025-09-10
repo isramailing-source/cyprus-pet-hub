@@ -46,12 +46,12 @@ const Header = () => {
               {t('home')}
             </Link>
             <Link 
-              to="/marketplace" 
+              to="/blog" 
               className={`hover:text-primary transition-colors ${
-                isActive('/marketplace') ? 'text-primary font-medium' : 'text-muted-foreground'
+                isActive('/blog') ? 'text-primary font-medium' : 'text-muted-foreground'
               }`}
             >
-              {t('marketplace')}
+              Blog
             </Link>
             <Link 
               to="/forum" 
@@ -78,15 +78,17 @@ const Header = () => {
           <div className="flex items-center space-x-3">
             <LanguageSwitcher />
             <Button variant="outline" size="sm" asChild>
-              <Link to="/marketplace">
-                {t('browsePets')}
+              <Link to="/forum">
+                Pet Trading
               </Link>
             </Button>
             {user ? (
               <>
-                <Button size="sm" className="bg-gradient-to-r from-primary to-secondary hover:opacity-90">
-                  <Plus className="w-4 h-4 mr-2" />
-                  {t('postAd')}
+                <Button size="sm" className="bg-gradient-to-r from-primary to-secondary hover:opacity-90" asChild>
+                  <Link to="/forum">
+                    <Plus className="w-4 h-4 mr-2" />
+                    Join Community
+                  </Link>
                 </Button>
                 <DropdownMenu>
                   <DropdownMenuTrigger asChild>
@@ -131,7 +133,7 @@ const Header = () => {
           <div className="relative">
             <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-muted-foreground w-4 h-4" />
             <Input 
-              placeholder={t('searchPlaceholder')}
+              placeholder="Search articles and discussions..."
               className="pl-10 pr-4"
             />
           </div>

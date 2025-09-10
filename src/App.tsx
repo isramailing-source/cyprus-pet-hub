@@ -7,8 +7,6 @@ import { HelmetProvider } from "react-helmet-async";
 import { AuthProvider } from "@/hooks/useAuth";
 import ErrorBoundary from "@/components/ErrorBoundary";
 import Index from "./pages/Index";
-import Marketplace from "./pages/Marketplace";
-import PetDetail from "./pages/PetDetail";
 import Blog from "./pages/Blog";
 import Forum from "./pages/Forum";
 import Admin from "./pages/Admin";
@@ -31,8 +29,6 @@ const App = () => {
               <BrowserRouter>
                 <Routes>
                   <Route path="/" element={<Index />} />
-                  <Route path="/marketplace" element={<Marketplace />} />
-                  <Route path="/pet/:id" element={<PetDetail />} />
                   <Route path="/blog" element={<Blog />} />
                   <Route path="/forum" element={<Forum />} />
                   <Route path="/auth" element={<Auth />} />
