@@ -51,12 +51,12 @@ const Header = () => {
               Marketplace
             </Link>
             <Link 
-              to="/blog" 
+              to="/forum" 
               className={`hover:text-primary transition-colors ${
-                isActive('/blog') ? 'text-primary font-medium' : 'text-muted-foreground'
+                isActive('/forum') ? 'text-primary font-medium' : 'text-muted-foreground'
               }`}
             >
-              Pet Care Blog
+              Community
             </Link>
             {isAdmin && (
               <Link 
