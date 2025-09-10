@@ -117,23 +117,38 @@ export const AdsList = () => {
   };
 
   useEffect(() => {
-    // Get category from URL params
-    const category = searchParams.get('category');
-    if (category) {
-      setSearchTerm(category);
-    }
     fetchAds();
   }, [searchTerm, locationFilter, priceRange, user, searchParams]);
 
   const fetchAds = async () => {
     try {
       console.log('🔍 Fetching ads from ads_public view...');
+      const category = searchParams.get('category');
+      
       // Query the ads_public view to get public data without RLS restrictions
       let query = supabase
         .from('ads_public')
         .select('*')
         .eq('is_active', true)
         .order('scraped_at', { ascending: false });
+
+      // Apply category filter by category_id
+      if (category) {
+        console.log('🏷️ Filtering by category slug:', category);
+        // Get the category ID from the slug
+        const { data: categoryData } = await supabase
+          .from('categories')
+          .select('id')
+          .eq('slug', category)
+          .single();
+        
+        if (categoryData) {
+          console.log('✅ Found category ID:', categoryData.id);
+          query = query.eq('category_id', categoryData.id);
+        } else {
+          console.log('❌ Category not found for slug:', category);
+        }
+      }
 
       if (searchTerm) {
         query = query.ilike('title', `%${searchTerm}%`);
