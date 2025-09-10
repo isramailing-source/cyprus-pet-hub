@@ -14,14 +14,19 @@ import birdsImage from "@/assets/birds-cyprus.jpg";
 
 // Helper function to get image source with comprehensive fallback handling
 const getImageSrc = (images: string[] | null): string => {
+  console.log('🖼️ Processing images:', images);
+  
   if (!images || images.length === 0) {
+    console.log('🖼️ No images found, using default:', goldenRetrieverImage);
     return goldenRetrieverImage; // Default fallback image
   }
   
   const imagePath = images[0];
+  console.log('🖼️ Processing image path:', imagePath);
   
   // Handle broken example.com URLs by mapping them to local assets
   if (imagePath.includes('example.com')) {
+    console.log('🖼️ Found example.com URL, mapping to local asset');
     if (imagePath.includes('british') || imagePath.includes('cat')) return britishShorthairImage;
     if (imagePath.includes('golden') || imagePath.includes('dog') || imagePath.includes('puppy')) return goldenRetrieverImage;
     if (imagePath.includes('bird') || imagePath.includes('canary') || imagePath.includes('parakeet')) return birdsImage;
@@ -29,18 +34,31 @@ const getImageSrc = (images: string[] | null): string => {
   }
   
   // Handle working external URLs
-  if (imagePath.startsWith('http')) return imagePath;
+  if (imagePath.startsWith('http')) {
+    console.log('🖼️ Found external URL:', imagePath);
+    return imagePath;
+  }
   
-  // Map specific local asset paths to imported assets
+  // Map database asset paths to imported assets
+  if (imagePath.includes('/src/assets/golden-retriever-cyprus.jpg')) {
+    console.log('🖼️ Mapping to golden retriever image');
+    return goldenRetrieverImage;
+  }
+  if (imagePath.includes('/src/assets/british-shorthair-cyprus.jpg')) {
+    console.log('🖼️ Mapping to british shorthair image');
+    return britishShorthairImage;
+  }
+  if (imagePath.includes('/src/assets/birds-cyprus.jpg')) {
+    console.log('🖼️ Mapping to birds image');
+    return birdsImage;
+  }
+  
+  // Handle any local asset reference
   if (imagePath.includes('golden-retriever-cyprus.jpg')) return goldenRetrieverImage;
   if (imagePath.includes('british-shorthair-cyprus.jpg')) return britishShorthairImage;
   if (imagePath.includes('birds-cyprus.jpg')) return birdsImage;
   
-  // For other local paths, try to construct the full path
-  if (!imagePath.startsWith('/')) {
-    return `/${imagePath}`;
-  }
-  
+  console.log('🖼️ Using fallback image for:', imagePath);
   return goldenRetrieverImage; // Final fallback
 };
 
@@ -111,8 +129,46 @@ const FeaturedListings = () => {
   }
 
   if (error) {
-    console.error('Error fetching featured pets:', error);
+    console.error('❌ Error fetching featured pets:', error);
+    return (
+      <section className="py-16">
+        <div className="container mx-auto px-4">
+          <div className="text-center">
+            <h2 className="text-3xl md:text-4xl font-bold text-foreground mb-4">
+              {t('featuredPets')}
+            </h2>
+            <div className="bg-red-50 border border-red-200 rounded-lg p-6 max-w-md mx-auto">
+              <p className="text-red-600 font-medium">Failed to load pet listings</p>
+              <p className="text-red-500 text-sm mt-2">Please try refreshing the page</p>
+            </div>
+          </div>
+        </div>
+      </section>
+    );
   }
+
+  // Show message if no pets found
+  if (featuredPets.length === 0 && !isLoading) {
+    console.log('⚠️ No pets to display');
+    return (
+      <section className="py-16">
+        <div className="container mx-auto px-4">
+          <div className="text-center">
+            <h2 className="text-3xl md:text-4xl font-bold text-foreground mb-4">
+              {t('featuredPets')}
+            </h2>
+            <div className="bg-yellow-50 border border-yellow-200 rounded-lg p-6 max-w-md mx-auto">
+              <p className="text-yellow-600 font-medium">No pet listings found</p>
+              <p className="text-yellow-500 text-sm mt-2">Check back later for new listings</p>
+            </div>
+          </div>
+        </div>
+      </section>
+    );
+  }
+
+  console.log('🎨 Rendering FeaturedListings with', featuredPets.length, 'pets');
+  
   return (
     <section className="py-16">
       <div className="container mx-auto px-4">
