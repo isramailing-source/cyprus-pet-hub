@@ -8,7 +8,7 @@ import { Input } from '@/components/ui/input';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { MapPin, DollarSign, ExternalLink, Search, Lock, User, Phone, Mail } from 'lucide-react';
 import { useToast } from '@/components/ui/use-toast';
-import { Link } from 'react-router-dom';
+import { Link, useSearchParams } from 'react-router-dom';
 import { ContactRequestDialog } from './ContactRequestDialog';
 import AdBanner from '@/components/ads/AdBanner';
 import AdInFeed from '@/components/ads/AdInFeed';
@@ -63,6 +63,7 @@ export const AdsList = () => {
   const [requestingContact, setRequestingContact] = useState<string | null>(null);
   const { toast } = useToast();
   const { user, session, isAdmin } = useAuth();
+  const [searchParams] = useSearchParams();
 
   // Helper function to get correct image source
   const getImageSrc = (imagePath: string): string => {
@@ -74,8 +75,13 @@ export const AdsList = () => {
   };
 
   useEffect(() => {
+    // Get category from URL params
+    const category = searchParams.get('category');
+    if (category) {
+      setSearchTerm(category);
+    }
     fetchAds();
-  }, [searchTerm, locationFilter, priceRange, user]);
+  }, [searchTerm, locationFilter, priceRange, user, searchParams]);
 
   const fetchAds = async () => {
     try {

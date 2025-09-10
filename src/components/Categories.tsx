@@ -1,4 +1,5 @@
 import { Card, CardContent } from "@/components/ui/card";
+import { Link } from "react-router-dom";
 import AdBanner from "@/components/ads/AdBanner";
 
 interface Category {
@@ -34,16 +35,17 @@ const Categories = () => {
         
         <div className="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-8 gap-4">
           {categories.map((category) => (
-            <Card 
-              key={category.name} 
-              className={`${category.color} border-0 cursor-pointer transition-all duration-300 hover:scale-105 hover:shadow-md`}
-            >
-              <CardContent className="p-6 text-center">
-                <div className="text-3xl mb-3">{category.icon}</div>
-                <h3 className="font-semibold text-sm mb-1">{category.name}</h3>
-                <p className="text-xs text-muted-foreground">{category.count} ads</p>
-              </CardContent>
-            </Card>
+            <Link key={category.name} to={`/marketplace?category=${category.name.toLowerCase()}`}>
+              <Card 
+                className={`${category.color} border-0 cursor-pointer transition-all duration-300 hover:scale-105 hover:shadow-md`}
+              >
+                <CardContent className="p-6 text-center">
+                  <div className="text-3xl mb-3">{category.icon}</div>
+                  <h3 className="font-semibold text-sm mb-1">{category.name}</h3>
+                  <p className="text-xs text-muted-foreground">{category.count} ads</p>
+                </CardContent>
+              </Card>
+            </Link>
           ))}
         </div>
         

@@ -2,6 +2,8 @@ import PetCard from "./PetCard";
 import { useQuery } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
 import { useTranslation } from 'react-i18next';
+import { Link } from "react-router-dom";
+import { Button } from "@/components/ui/button";
 import AdInFeed from "@/components/ads/AdInFeed";
 import AdSidebar from "@/components/ads/AdSidebar";
 import AdBanner from "@/components/ads/AdBanner";
@@ -143,9 +145,11 @@ const FeaturedListings = () => {
         </div>
 
         <div className="text-center mt-12">
-          <button className="bg-gradient-to-r from-primary to-secondary text-white px-8 py-3 rounded-full hover:opacity-90 transition-opacity font-medium">
-            {t('viewAllListings')}
-          </button>
+          <Link to="/marketplace">
+            <Button className="bg-gradient-to-r from-primary to-secondary text-white px-8 py-3 rounded-full hover:opacity-90 transition-opacity font-medium">
+              {t('viewAllListings')}
+            </Button>
+          </Link>
         </div>
         
         {/* Bottom banner ad */}
