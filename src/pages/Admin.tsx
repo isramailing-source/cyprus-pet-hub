@@ -2,6 +2,7 @@ import { useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { useAuth } from "@/hooks/useAuth";
 import { AutomationStatus } from "@/components/AutomationStatus";
+import ArticleGenerator from "@/components/ArticleGenerator";
 import Header from "@/components/Header";
 import Footer from "@/components/Footer";
 import { Helmet } from "react-helmet-async";
@@ -69,8 +70,13 @@ const Admin = () => {
       
       <div className="min-h-screen bg-background">
         <Header />
-        <main>
-          <AutomationStatus />
+        <main className="container mx-auto px-4 py-8">
+          <div className="space-y-8">
+            <AutomationStatus />
+            <div className="flex justify-center">
+              <ArticleGenerator />
+            </div>
+          </div>
         </main>
         <Footer />
       </div>
