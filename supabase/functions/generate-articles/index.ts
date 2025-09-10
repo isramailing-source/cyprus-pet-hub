@@ -33,134 +33,146 @@ serve(async (req) => {
     const topics = [
       {
         title: 'The Cyprus Pack Leader: Establishing Calm-Assertive Energy in Mediterranean Heat',
-        category: 'training',
+        category: 'dogs',
         focus: 'pack leadership, energy management, heat considerations'
       },
       {
         title: 'Exercise, Discipline, Affection: The Cesar Milan Formula for Cyprus Dogs',
-        category: 'training', 
+        category: 'dogs', 
         focus: 'fundamental training philosophy adapted for hot climate'
       },
       {
         title: 'Reading Your Dog\'s Energy: Body Language Mastery for Cyprus Pet Owners',
-        category: 'training',
+        category: 'dogs',
         focus: 'canine psychology, behavior reading, energy states'
       },
       {
         title: 'Rehabilitating Aggressive Dogs: Cesar Milan Techniques for Cyprus Conditions',
-        category: 'training',
+        category: 'dogs',
         focus: 'aggression rehabilitation, calm-assertive methods'
       },
       {
         title: 'The Mediterranean Pack Walk: Building Confidence and Leadership',
-        category: 'training',
+        category: 'dogs',
         focus: 'structured walking, pack dynamics, leadership'
       },
       {
         title: 'Heat Stress and Dog Psychology: Managing Anxiety in Cyprus Summers',
-        category: 'health',
+        category: 'dogs',
         focus: 'stress management, heat-related behavioral changes'
       },
       {
         title: 'Cyprus Canine Nutrition: Fueling Energy and Calm Behavior',
-        category: 'nutrition',
+        category: 'dogs',
         focus: 'diet impact on behavior, energy management through food'
       },
       {
         title: 'Unstable Energy to Balanced Pack: Transforming Problem Dogs in Cyprus',
-        category: 'training',
+        category: 'dogs',
         focus: 'behavior transformation, pack rehabilitation'
       },
       {
         title: 'The Cyprus Alpha: Natural Leadership in Multi-Pet Mediterranean Homes',
-        category: 'training',
+        category: 'dogs',
         focus: 'multi-pet dynamics, natural hierarchy, leadership'
       },
       {
         title: 'Cesar\'s Cyprus Method: Exercise Adaptations for Hot Weather Training',
-        category: 'care',
+        category: 'dogs',
         focus: 'exercise psychology, mental stimulation, climate adaptation'
       },
       {
         title: 'From Reactive to Calm: Socializing Cyprus Dogs Using Pack Psychology',
-        category: 'training',
+        category: 'dogs',
         focus: 'socialization, reactivity training, pack integration'
       },
       {
         title: 'The Calm-Assertive Cyprus Cat: Feline Psychology and Territory Management',
-        category: 'training',
+        category: 'cats',
         focus: 'cat behavior, territory, calm energy application'
       },
       {
         title: 'Cyprus Senior Dogs: Maintaining Pack Position and Dignity in Golden Years',
-        category: 'health',
+        category: 'dogs',
         focus: 'senior dog psychology, pack dynamics, aging gracefully'
       },
       {
         title: 'Mediterranean Puppy Psychology: Building Confident Young Leaders',
-        category: 'training',
+        category: 'dogs',
         focus: 'puppy development, early leadership training, confidence building'
       },
       {
         title: 'The Cyprus Rehabilitation Center: Your Home as a Healing Space',
-        category: 'care',
+        category: 'dogs',
         focus: 'environmental psychology, healing spaces, rehabilitation'
       },
       {
         title: 'Mastering Leash Psychology: The Cyprus Dog Walker\'s Guide to Leadership',
-        category: 'training',
+        category: 'dogs',
         focus: 'leash training, walking leadership, outdoor control'
       },
       {
         title: 'Beach Pack Dynamics: Cesar\'s Method for Cyprus Coastal Training',
-        category: 'training',
+        category: 'dogs',
         focus: 'beach training, water safety, coastal socialization'
       },
       {
         title: 'The Calm-Assertive Cyprus Home: Environmental Dog Psychology',
-        category: 'care',
+        category: 'dogs',
         focus: 'home environment, territorial management, space psychology'
       },
       {
         title: 'Cyprus Dog Nutrition Psychology: Food as Leadership Tool',
-        category: 'nutrition',
+        category: 'dogs',
         focus: 'feeding psychology, resource control, behavioral nutrition'
       },
       {
         title: 'Heat-Adapted Exercise Psychology: Cesar\'s Mediterranean Method',
-        category: 'health',
+        category: 'dogs',
         focus: 'exercise psychology, heat management, activity adaptation'
       },
       {
         title: 'Multi-Dog Cyprus Households: Pack Leadership for Multiple Pets',
-        category: 'training',
+        category: 'dogs',
         focus: 'multi-dog dynamics, pack hierarchy, group leadership'
       },
       {
         title: 'Cyprus Rescue Dog Rehabilitation: From Street to Balanced Family Member',
-        category: 'training',
+        category: 'dogs',
         focus: 'rescue rehabilitation, trust building, behavioral recovery'
       },
       {
         title: 'The Psychology of Cyprus Street Dogs: Understanding Natural Pack Behavior',
-        category: 'training',
+        category: 'dogs',
         focus: 'street dog behavior, natural instincts, wild pack dynamics'
       },
       {
         title: 'Cesar\'s Cyprus Puppy Program: Building Confidence from Day One',
-        category: 'training',
+        category: 'dogs',
         focus: 'puppy psychology, early development, confidence building'
       },
       {
         title: 'Mediterranean Senior Dog Psychology: Aging with Dignity and Leadership',
-        category: 'health',
+        category: 'dogs',
         focus: 'senior care, aging psychology, dignity maintenance'
+      },
+      {
+        title: 'Understanding Cyprus Birds: Behavioral Psychology for Feathered Friends',
+        category: 'birds',
+        focus: 'bird behavior, cage psychology, social dynamics'
+      },
+      {
+        title: 'Small Pet Psychology in Cyprus: Rabbits, Guinea Pigs and Calm Energy',
+        category: 'small-pets',
+        focus: 'small animal behavior, habitat psychology, stress management'
+      },
+      {
+        title: 'Aquatic Psychology: Understanding Fish Behavior in Cyprus Homes',
+        category: 'fish',
+        focus: 'aquarium psychology, environmental enrichment, fish welfare'
       }
     ]
     
-    // Generate 5-10 articles per run for better content volume
-    const articlesToGenerate = Math.floor(Math.random() * 6) + 5 // 5-10 articles
-    console.log(`Generating ${articlesToGenerate} Cesar Milan-inspired articles...`)
     // Generate 5-10 articles per run for better content volume
     const articlesToGenerate = Math.floor(Math.random() * 6) + 5 // 5-10 articles
     console.log(`Generating ${articlesToGenerate} Cesar Milan-inspired articles...`)
