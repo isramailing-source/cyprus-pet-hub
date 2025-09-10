@@ -65,19 +65,55 @@ export const AdsList = () => {
   const { user, session, isAdmin } = useAuth();
   const [searchParams] = useSearchParams();
 
-  // Helper function to get image source with fallback handling
-  const getImageSrc = (imagePath: string): string => {
-    // Handle imported assets
-    if (imagePath.includes('/src/assets/british-shorthair-cyprus.jpg')) return britishShorthairImage;
-    if (imagePath.includes('/src/assets/golden-retriever-cyprus.jpg')) return goldenRetrieverImage;
-    if (imagePath.includes('/src/assets/birds-cyprus.jpg')) return birdsImage;
-    if (imagePath.includes('/src/assets/hero-pets-cyprus.jpg')) return heroPetsImage;
+  // Helper function to get image source with comprehensive fallback handling
+  const getImageSrc = (images: string[] | null): string => {
+    console.log('🖼️ AdsList - Processing images:', images);
     
-    // Handle external URLs or other paths
-    if (imagePath.startsWith('http')) return imagePath;
+    if (!images || images.length === 0) {
+      console.log('🖼️ AdsList - No images found, using default:', goldenRetrieverImage);
+      return goldenRetrieverImage; // Default fallback image
+    }
     
-    // Default fallback
-    return heroPetsImage;
+    const imagePath = images[0];
+    console.log('🖼️ AdsList - Processing image path:', imagePath);
+    
+    // Handle broken example.com URLs by mapping them to local assets
+    if (imagePath.includes('example.com')) {
+      console.log('🖼️ AdsList - Found example.com URL, mapping to local asset');
+      if (imagePath.includes('british') || imagePath.includes('cat')) return britishShorthairImage;
+      if (imagePath.includes('golden') || imagePath.includes('dog') || imagePath.includes('puppy')) return goldenRetrieverImage;
+      if (imagePath.includes('bird') || imagePath.includes('canary') || imagePath.includes('parakeet')) return birdsImage;
+      return goldenRetrieverImage;
+    }
+    
+    // Handle working external URLs
+    if (imagePath.startsWith('http')) {
+      console.log('🖼️ AdsList - Found external URL:', imagePath);
+      return imagePath;
+    }
+    
+    // Map database asset paths to imported assets
+    if (imagePath.includes('/src/assets/golden-retriever-cyprus.jpg')) {
+      console.log('🖼️ AdsList - Mapping to golden retriever image');
+      return goldenRetrieverImage;
+    }
+    if (imagePath.includes('/src/assets/british-shorthair-cyprus.jpg')) {
+      console.log('🖼️ AdsList - Mapping to british shorthair image');
+      return britishShorthairImage;
+    }
+    if (imagePath.includes('/src/assets/birds-cyprus.jpg')) {
+      console.log('🖼️ AdsList - Mapping to birds image');
+      return birdsImage;
+    }
+    
+    // Handle any local asset reference
+    if (imagePath.includes('golden-retriever-cyprus.jpg')) return goldenRetrieverImage;
+    if (imagePath.includes('british-shorthair-cyprus.jpg')) return britishShorthairImage;
+    if (imagePath.includes('birds-cyprus.jpg')) return birdsImage;
+    if (imagePath.includes('hero-pets-cyprus.jpg')) return heroPetsImage;
+    
+    console.log('🖼️ AdsList - Using fallback image for:', imagePath);
+    return goldenRetrieverImage; // Final fallback
   };
 
   useEffect(() => {
@@ -91,9 +127,10 @@ export const AdsList = () => {
 
   const fetchAds = async () => {
     try {
-      // Query the main ads table directly to avoid RLS issues with views
+      console.log('🔍 Fetching ads from ads_public view...');
+      // Query the ads_public view to get public data without RLS restrictions
       let query = supabase
-        .from('ads')
+        .from('ads_public')
         .select('*')
         .eq('is_active', true)
         .order('scraped_at', { ascending: false });
@@ -117,7 +154,12 @@ export const AdsList = () => {
 
       const { data, error } = await query.limit(50);
 
-      if (error) throw error;
+      if (error) {
+        console.error('❌ Database query error:', error);
+        throw error;
+      }
+
+      console.log('✅ Query successful! Found', data?.length || 0, 'ads');
       
       // Sanitize source names to remove external site references
       const sanitizedAds = (data || []).map(ad => ({
@@ -373,9 +415,9 @@ export const AdsList = () => {
                     {/* Pet Image */}
                     {ad.images && ad.images.length > 0 && (
                       <div className="relative h-48 w-full overflow-hidden rounded-md">
-                        <img 
-                          src={getImageSrc(ad.images[0])} 
-                          alt={ad.title}
+                         <img 
+                           src={getImageSrc(ad.images)} 
+                           alt={ad.title}
                           className="h-full w-full object-cover transition-transform hover:scale-105"
                           onError={(e) => {
                             const target = e.target as HTMLImageElement;
@@ -528,9 +570,9 @@ export const AdsList = () => {
                     {/* Pet Image */}
                     {ad.images && ad.images.length > 0 && (
                       <div className="relative h-48 w-full overflow-hidden rounded-md">
-                        <img 
-                          src={getImageSrc(ad.images[0])} 
-                          alt={ad.title}
+                         <img 
+                           src={getImageSrc(ad.images)} 
+                           alt={ad.title}
                           className="h-full w-full object-cover transition-transform hover:scale-105"
                           onError={(e) => {
                             const target = e.target as HTMLImageElement;
