@@ -9,8 +9,8 @@ import { MapPin, Euro, ExternalLink, Search } from "lucide-react";
 import { useToast } from "@/components/ui/use-toast";
 
 const supabase = createClient(
-  process.env.VITE_SUPABASE_URL || "",
-  process.env.VITE_SUPABASE_ANON_KEY || ""
+  import.meta.env.VITE_SUPABASE_URL || "",
+  import.meta.env.VITE_SUPABASE_ANON_KEY || ""
 );
 
 interface Ad {
