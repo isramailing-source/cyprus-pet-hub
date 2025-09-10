@@ -71,7 +71,9 @@ const PetCard = ({
           </div>
           
           <div className="flex items-center justify-between">
-            <span className="text-xl font-bold text-cyprus-coral">€{price}</span>
+            <span className="text-xl font-bold text-cyprus-coral">
+              {price === 'Contact for price' ? price : `€${price}`}
+            </span>
             <Badge variant="outline" className="text-xs">
               {age}
             </Badge>

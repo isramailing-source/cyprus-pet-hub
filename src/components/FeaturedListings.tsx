@@ -20,10 +20,18 @@ const getImageSrc = (images: string[] | null): string => {
   
   const imagePath = images[0];
   
-  // Handle external URLs first
+  // Handle broken example.com URLs by mapping them to local assets
+  if (imagePath.includes('example.com')) {
+    if (imagePath.includes('british') || imagePath.includes('cat')) return britishShorthairImage;
+    if (imagePath.includes('golden') || imagePath.includes('dog') || imagePath.includes('puppy')) return goldenRetrieverImage;
+    if (imagePath.includes('bird') || imagePath.includes('canary') || imagePath.includes('parakeet')) return birdsImage;
+    return goldenRetrieverImage; // Default fallback for other example.com URLs
+  }
+  
+  // Handle working external URLs
   if (imagePath.startsWith('http')) return imagePath;
   
-  // Map specific image paths to imported assets using includes for flexible matching
+  // Map specific local asset paths to imported assets
   if (imagePath.includes('golden-retriever-cyprus.jpg')) return goldenRetrieverImage;
   if (imagePath.includes('british-shorthair-cyprus.jpg')) return britishShorthairImage;
   if (imagePath.includes('birds-cyprus.jpg')) return birdsImage;
@@ -33,7 +41,7 @@ const getImageSrc = (images: string[] | null): string => {
     return `/${imagePath}`;
   }
   
-  return goldenRetrieverImage; // Fallback for unknown paths
+  return goldenRetrieverImage; // Final fallback
 };
 
 const FeaturedListings = () => {
@@ -56,7 +64,7 @@ const FeaturedListings = () => {
       return data.map((ad) => ({
         id: ad.id,
         name: ad.title || 'Pet',
-        price: ad.price ? `${ad.price}` : 'Contact for price',
+        price: ad.price ? parseFloat(ad.price.toString()).toFixed(0) : 'Contact for price',
         location: ad.location || 'Cyprus',
         timePosted: new Date(ad.created_at || '').toLocaleDateString(),
         image: getImageSrc(ad.images),
