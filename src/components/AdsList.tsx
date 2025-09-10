@@ -118,7 +118,17 @@ export const AdsList = () => {
       const { data, error } = await query.limit(50);
 
       if (error) throw error;
-      setAds(data || []);
+      
+      // Sanitize source names to remove external site references
+      const sanitizedAds = (data || []).map(ad => ({
+        ...ad,
+        source_name: ad.source_name
+          .replace(/bazaraki/gi, 'Cyprus Pet Network')
+          .replace(/facebook/gi, 'Local Pet Network')
+          .replace(/sell\.com\.cy/gi, 'Cyprus Pet Market')
+      }));
+      
+      setAds(sanitizedAds);
     } catch (error) {
       console.error('Error fetching ads:', error);
       toast({

@@ -72,28 +72,6 @@ export const BlogSection = () => {
     }
   };
 
-  const generateNewArticle = async () => {
-    try {
-      const { data, error } = await supabase.functions.invoke('generate-articles');
-      if (error) throw error;
-      
-      toast({
-        title: "Success",
-        description: "New article generated successfully!",
-      });
-      
-      // Refresh articles
-      fetchArticles();
-    } catch (error) {
-      console.error('Error generating article:', error);
-      toast({
-        title: "Error",
-        description: "Failed to generate new article.",
-        variant: "destructive",
-      });
-    }
-  };
-
   if (selectedArticle) {
     return (
       <div className="container mx-auto px-4 py-8 max-w-4xl">
@@ -164,10 +142,6 @@ export const BlogSection = () => {
             Expert advice on pet hygiene, training, and care
           </p>
         </div>
-        <Button onClick={generateNewArticle} variant="outline">
-          <BookOpen className="h-4 w-4 mr-2" />
-          Generate New Article
-        </Button>
       </div>
 
       {/* Filters */}
@@ -255,10 +229,11 @@ export const BlogSection = () => {
 
       {articles.length === 0 && !loading && (
         <div className="text-center py-12">
-          <p className="text-muted-foreground mb-4">No articles found matching your criteria.</p>
-          <Button onClick={generateNewArticle}>
-            Generate First Article
-          </Button>
+          <BookOpen className="h-12 w-12 text-muted-foreground mx-auto mb-4" />
+          <h3 className="text-lg font-semibold mb-2">No Articles Yet</h3>
+          <p className="text-muted-foreground">
+            Check back soon for expert pet care tips and guides.
+          </p>
         </div>
       )}
     </div>

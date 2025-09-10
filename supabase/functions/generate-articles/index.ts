@@ -72,7 +72,6 @@ serve(async (req) => {
         slug: slug,
         content: article.content,
         excerpt: article.excerpt,
-        category: randomCategory.category,
         tags: article.tags,
         meta_title: article.meta_title,
         meta_description: article.meta_description,
