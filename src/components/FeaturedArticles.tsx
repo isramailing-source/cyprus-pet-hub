@@ -1,6 +1,6 @@
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import { Clock, User, ArrowRight } from "lucide-react";
 import AdBanner from "@/components/ads/AdBanner";
 import AdSidebar from "@/components/ads/AdSidebar";
@@ -9,6 +9,7 @@ import { supabase } from "@/integrations/supabase/client";
 import { Skeleton } from "@/components/ui/skeleton";
 
 const FeaturedArticles = () => {
+  const navigate = useNavigate();
   const { data: articles = [], isLoading } = useQuery({
     queryKey: ['featured-articles'],
     queryFn: async () => {
@@ -23,6 +24,10 @@ const FeaturedArticles = () => {
       return data || [];
     }
   });
+
+  const handleArticleClick = (article: any) => {
+    navigate('/blog', { state: { selectedArticle: article } });
+  };
 
   if (isLoading) {
     return (
@@ -79,7 +84,7 @@ const FeaturedArticles = () => {
           <div className="lg:col-span-3">
             <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
               {articles.slice(0, 4).map((article, index) => (
-                <Card key={article.id} className="hover:shadow-lg transition-shadow cursor-pointer">
+                <Card key={article.id} className="hover:shadow-lg transition-shadow cursor-pointer" onClick={() => handleArticleClick(article)}>
                   <CardHeader>
                     <div className="flex items-center gap-2 text-sm text-muted-foreground mb-2">
                       <User className="w-4 h-4" />
@@ -126,7 +131,7 @@ const FeaturedArticles = () => {
             {articles.length > 4 && (
               <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                 {articles.slice(4, 6).map((article) => (
-                  <Card key={article.id} className="hover:shadow-lg transition-shadow cursor-pointer">
+                  <Card key={article.id} className="hover:shadow-lg transition-shadow cursor-pointer" onClick={() => handleArticleClick(article)}>
                     <CardHeader>
                       <div className="flex items-center gap-2 text-sm text-muted-foreground mb-2">
                         <User className="w-4 h-4" />

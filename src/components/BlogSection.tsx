@@ -1,4 +1,5 @@
 import { useState, useEffect } from "react";
+import { useLocation } from "react-router-dom";
 import { supabase } from "@/integrations/supabase/client";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
@@ -29,12 +30,20 @@ interface Article {
 }
 
 export const BlogSection = () => {
+  const location = useLocation();
   const [articles, setArticles] = useState<Article[]>([]);
   const [loading, setLoading] = useState(true);
   const [searchTerm, setSearchTerm] = useState("");
   const [categoryFilter, setCategoryFilter] = useState("");
   const [selectedArticle, setSelectedArticle] = useState<Article | null>(null);
   const { toast } = useToast();
+
+  useEffect(() => {
+    // Check if an article was passed from navigation state
+    if (location.state?.selectedArticle) {
+      setSelectedArticle(location.state.selectedArticle);
+    }
+  }, [location.state]);
 
   useEffect(() => {
     fetchArticles();
