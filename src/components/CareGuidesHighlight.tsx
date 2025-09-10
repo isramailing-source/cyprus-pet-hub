@@ -2,6 +2,7 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/com
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Clock, CheckCircle, AlertTriangle, BookOpen } from "lucide-react";
+import { useNavigate } from "react-router-dom";
 
 const featuredGuides = [
   {
@@ -39,6 +40,28 @@ const featuredGuides = [
 ];
 
 const CareGuidesHighlight = () => {
+  const navigate = useNavigate();
+
+  const handleGuideClick = (guide: typeof featuredGuides[0]) => {
+    // Navigate to blog page with search term based on guide topic
+    const searchTerm = guide.topics[0] || guide.title.split(' ')[0];
+    navigate('/blog', { 
+      state: { 
+        searchTerm: searchTerm.toLowerCase(),
+        category: 'care'
+      } 
+    });
+  };
+
+  const handleBrowseAllClick = () => {
+    // Navigate to blog page with care-related filter
+    navigate('/blog', { 
+      state: { 
+        category: 'care',
+        searchTerm: 'care guide'
+      } 
+    });
+  };
   return (
     <section className="py-16 bg-gradient-to-br from-primary/5 to-secondary/5">
       <div className="container mx-auto px-4">
@@ -86,7 +109,7 @@ const CareGuidesHighlight = () => {
                     </Badge>
                   ))}
                 </div>
-                <Button className="w-full" variant="outline">
+                <Button className="w-full" variant="outline" onClick={() => handleGuideClick(guide)}>
                   Read Complete Guide
                 </Button>
               </CardContent>
@@ -95,7 +118,7 @@ const CareGuidesHighlight = () => {
         </div>
         
         <div className="text-center mt-12">
-          <Button className="bg-gradient-to-r from-primary to-secondary text-white px-8 py-3 rounded-full hover:opacity-90 transition-opacity font-medium">
+          <Button className="bg-gradient-to-r from-primary to-secondary text-white px-8 py-3 rounded-full hover:opacity-90 transition-opacity font-medium" onClick={handleBrowseAllClick}>
             Browse All Care Guides
           </Button>
         </div>
