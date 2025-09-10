@@ -14,6 +14,12 @@ import AdBanner from '@/components/ads/AdBanner';
 import AdInFeed from '@/components/ads/AdInFeed';
 import AdSidebar from '@/components/ads/AdSidebar';
 
+// Import assets
+import britishShorthairImage from "@/assets/british-shorthair-cyprus.jpg";
+import goldenRetrieverImage from "@/assets/golden-retriever-cyprus.jpg";
+import birdsImage from "@/assets/birds-cyprus.jpg";
+import heroPetsImage from "@/assets/hero-pets-cyprus.jpg";
+
 interface Ad {
   id: string;
   title: string;
@@ -57,6 +63,15 @@ export const AdsList = () => {
   const [requestingContact, setRequestingContact] = useState<string | null>(null);
   const { toast } = useToast();
   const { user, session, isAdmin } = useAuth();
+
+  // Helper function to get correct image source
+  const getImageSrc = (imagePath: string): string => {
+    if (imagePath.includes('/src/assets/british-shorthair-cyprus.jpg')) return britishShorthairImage;
+    if (imagePath.includes('/src/assets/golden-retriever-cyprus.jpg')) return goldenRetrieverImage;
+    if (imagePath.includes('/src/assets/birds-cyprus.jpg')) return birdsImage;
+    if (imagePath.includes('/src/assets/hero-pets-cyprus.jpg')) return heroPetsImage;
+    return heroPetsImage; // fallback
+  };
 
   useEffect(() => {
     fetchAds();
@@ -340,6 +355,21 @@ export const AdsList = () => {
                     </div>
                   </CardHeader>
                   <CardContent className="space-y-4">
+                    {/* Pet Image */}
+                    {ad.images && ad.images.length > 0 && (
+                      <div className="relative h-48 w-full overflow-hidden rounded-md">
+                        <img 
+                          src={getImageSrc(ad.images[0])} 
+                          alt={ad.title}
+                          className="h-full w-full object-cover transition-transform hover:scale-105"
+                          onError={(e) => {
+                            const target = e.target as HTMLImageElement;
+                            target.src = heroPetsImage;
+                          }}
+                        />
+                      </div>
+                    )}
+                    
                     <p className="text-sm text-muted-foreground line-clamp-3">
                       {ad.description || 'No description available'}
                     </p>
@@ -480,6 +510,21 @@ export const AdsList = () => {
                     </div>
                   </CardHeader>
                   <CardContent className="space-y-4">
+                    {/* Pet Image */}
+                    {ad.images && ad.images.length > 0 && (
+                      <div className="relative h-48 w-full overflow-hidden rounded-md">
+                        <img 
+                          src={getImageSrc(ad.images[0])} 
+                          alt={ad.title}
+                          className="h-full w-full object-cover transition-transform hover:scale-105"
+                          onError={(e) => {
+                            const target = e.target as HTMLImageElement;
+                            target.src = heroPetsImage;
+                          }}
+                        />
+                      </div>
+                    )}
+                    
                     <p className="text-sm text-muted-foreground line-clamp-3">
                       {ad.description || 'No description available'}
                     </p>
