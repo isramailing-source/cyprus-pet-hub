@@ -71,33 +71,42 @@ export const AdsList = () => {
 
   const fetchAds = async () => {
     try {
-      // All users (authenticated and anonymous) now use the same secure data source
-      // Contact information is never directly accessible through this query
-      const query = supabase
-        .from('ads_public')  // Use the secure public view for all users
-        .select('*')
-        .order('scraped_at', { ascending: false });
-
-      let filteredQuery = query;
+      // Use appropriate secure views based on authentication status
+      // This ensures no one can access contact info through direct table queries
+      let query;
+      
+      if (user) {
+        // Authenticated users use the secure authenticated view (no contact info)
+        query = supabase
+          .from('ads_authenticated')
+          .select('*')
+          .order('scraped_at', { ascending: false });
+      } else {
+        // Anonymous users use the public view
+        query = supabase
+          .from('ads_public')
+          .select('*')
+          .order('scraped_at', { ascending: false });
+      }
 
       if (searchTerm) {
-        filteredQuery = filteredQuery.ilike('title', `%${searchTerm}%`);
+        query = query.ilike('title', `%${searchTerm}%`);
       }
 
       if (locationFilter) {
-        filteredQuery = filteredQuery.ilike('location', `%${locationFilter}%`);
+        query = query.ilike('location', `%${locationFilter}%`);
       }
 
       if (priceRange) {
         const [min, max] = priceRange.split('-').map(Number);
         if (max) {
-          filteredQuery = filteredQuery.gte('price', min).lte('price', max);
+          query = query.gte('price', min).lte('price', max);
         } else {
-          filteredQuery = filteredQuery.gte('price', min);
+          query = query.gte('price', min);
         }
       }
 
-      const { data, error } = await filteredQuery.limit(50);
+      const { data, error } = await query.limit(50);
 
       if (error) throw error;
       setAds(data || []);

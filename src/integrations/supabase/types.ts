@@ -256,6 +256,13 @@ export type Database = {
             foreignKeyName: "contact_requests_ad_id_fkey"
             columns: ["ad_id"]
             isOneToOne: false
+            referencedRelation: "ads_authenticated"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "contact_requests_ad_id_fkey"
+            columns: ["ad_id"]
+            isOneToOne: false
             referencedRelation: "ads_public"
             referencedColumns: ["id"]
           },
@@ -374,6 +381,74 @@ export type Database = {
       }
     }
     Views: {
+      ads_authenticated: {
+        Row: {
+          age: string | null
+          breed: string | null
+          category_id: string | null
+          created_at: string | null
+          currency: string | null
+          description: string | null
+          gender: string | null
+          id: string | null
+          images: string[] | null
+          is_active: boolean | null
+          location: string | null
+          price: number | null
+          scraped_at: string | null
+          source_name: string | null
+          source_url: string | null
+          title: string | null
+          updated_at: string | null
+        }
+        Insert: {
+          age?: string | null
+          breed?: string | null
+          category_id?: string | null
+          created_at?: string | null
+          currency?: string | null
+          description?: string | null
+          gender?: string | null
+          id?: string | null
+          images?: string[] | null
+          is_active?: boolean | null
+          location?: string | null
+          price?: number | null
+          scraped_at?: string | null
+          source_name?: string | null
+          source_url?: string | null
+          title?: string | null
+          updated_at?: string | null
+        }
+        Update: {
+          age?: string | null
+          breed?: string | null
+          category_id?: string | null
+          created_at?: string | null
+          currency?: string | null
+          description?: string | null
+          gender?: string | null
+          id?: string | null
+          images?: string[] | null
+          is_active?: boolean | null
+          location?: string | null
+          price?: number | null
+          scraped_at?: string | null
+          source_name?: string | null
+          source_url?: string | null
+          title?: string | null
+          updated_at?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "ads_category_id_fkey"
+            columns: ["category_id"]
+            isOneToOne: false
+            referencedRelation: "categories"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       ads_public: {
         Row: {
           age: string | null
@@ -477,12 +552,41 @@ export type Database = {
         Args: Record<PropertyKey, never>
         Returns: string
       }
+      get_full_ad_details: {
+        Args: { ad_id: string }
+        Returns: {
+          age: string
+          breed: string
+          category_id: string
+          created_at: string
+          currency: string
+          description: string
+          email: string
+          gender: string
+          id: string
+          images: string[]
+          is_active: boolean
+          location: string
+          phone: string
+          price: number
+          scraped_at: string
+          seller_name: string
+          source_name: string
+          source_url: string
+          title: string
+          updated_at: string
+        }[]
+      }
       has_role: {
         Args: {
           _role: Database["public"]["Enums"]["app_role"]
           _user_id: string
         }
         Returns: boolean
+      }
+      log_security_event: {
+        Args: { details?: Json; event_type: string }
+        Returns: undefined
       }
       request_seller_contact: {
         Args: { ad_id: string; requester_message?: string }
