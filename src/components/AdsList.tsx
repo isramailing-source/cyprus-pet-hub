@@ -6,9 +6,19 @@ import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import { MapPin, Euro, ExternalLink, Search, Lock } from "lucide-react";
+import { MapPin, Euro, ExternalLink, Search, Lock, User, Phone, Mail } from "lucide-react";
 import { useToast } from "@/components/ui/use-toast";
 import { Link } from "react-router-dom";
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogFooter,
+  DialogHeader,
+  DialogTitle,
+  DialogTrigger,
+} from "@/components/ui/dialog";
+import { ContactRequestDialog } from "./ContactRequestDialog";
 
 
 interface Ad {
@@ -18,9 +28,7 @@ interface Ad {
   price: number | null;
   currency: string | null;
   location: string | null;
-  email: string | null;
-  phone: string | null;
-  seller_name: string | null;
+  // Contact info is now accessed through secure function, not directly exposed
   images: string[] | null;
   category_id: string | null;
   age: string | null;
@@ -32,12 +40,28 @@ interface Ad {
   is_active: boolean;
 }
 
+interface ContactInfo {
+  email?: string;
+  phone?: string;
+  seller_name?: string;
+}
+
+interface ContactRequestResponse {
+  success?: boolean;
+  contact_info?: ContactInfo;
+  error?: string;
+  message?: string;
+  status?: string;
+}
+
 export const AdsList = () => {
   const [ads, setAds] = useState<Ad[]>([]);
   const [loading, setLoading] = useState(true);
   const [searchTerm, setSearchTerm] = useState("");
   const [locationFilter, setLocationFilter] = useState("");
   const [priceRange, setPriceRange] = useState("");
+  const [contactRequests, setContactRequests] = useState<Record<string, ContactInfo>>({});
+  const [requestingContact, setRequestingContact] = useState<string | null>(null);
   const { toast } = useToast();
   const { user, session, isAdmin } = useAuth();
 
@@ -47,42 +71,33 @@ export const AdsList = () => {
 
   const fetchAds = async () => {
     try {
-      let query;
-      
-      // Use different data sources based on authentication status
-      if (user) {
-        // Authenticated users can access full ads table
-        query = supabase
-          .from('ads')
-          .select('*')
-          .eq('is_active', true)
-          .order('scraped_at', { ascending: false });
-      } else {
-        // Anonymous users use the public view (no contact info)
-        query = supabase
-          .from('ads_public')
-          .select('*')
-          .order('scraped_at', { ascending: false });
-      }
+      // All users (authenticated and anonymous) now use the same secure data source
+      // Contact information is never directly accessible through this query
+      const query = supabase
+        .from('ads_public')  // Use the secure public view for all users
+        .select('*')
+        .order('scraped_at', { ascending: false });
+
+      let filteredQuery = query;
 
       if (searchTerm) {
-        query = query.ilike('title', `%${searchTerm}%`);
+        filteredQuery = filteredQuery.ilike('title', `%${searchTerm}%`);
       }
 
       if (locationFilter) {
-        query = query.ilike('location', `%${locationFilter}%`);
+        filteredQuery = filteredQuery.ilike('location', `%${locationFilter}%`);
       }
 
       if (priceRange) {
         const [min, max] = priceRange.split('-').map(Number);
         if (max) {
-          query = query.gte('price', min).lte('price', max);
+          filteredQuery = filteredQuery.gte('price', min).lte('price', max);
         } else {
-          query = query.gte('price', min);
+          filteredQuery = filteredQuery.gte('price', min);
         }
       }
 
-      const { data, error } = await query.limit(50);
+      const { data, error } = await filteredQuery.limit(50);
 
       if (error) throw error;
       setAds(data || []);
@@ -95,6 +110,57 @@ export const AdsList = () => {
       });
     } finally {
       setLoading(false);
+    }
+  };
+
+  const requestContactInfo = async (adId: string, message: string = "") => {
+    if (!user) {
+      toast({
+        title: "Authentication Required",
+        description: "Please sign in to request seller contact information.",
+        variant: "destructive",
+      });
+      return;
+    }
+
+    setRequestingContact(adId);
+
+    try {
+      const { data, error } = await supabase.rpc('request_seller_contact', {
+        ad_id: adId,
+        requester_message: message.trim() || null
+      });
+
+      if (error) throw error;
+
+      // Type assertion for the JSON response
+      const response = data as ContactRequestResponse;
+
+      if (response.success && response.contact_info) {
+        setContactRequests(prev => ({
+          ...prev,
+          [adId]: response.contact_info!
+        }));
+        toast({
+          title: "Contact Information Retrieved",
+          description: "You can now see the seller's contact details.",
+        });
+      } else if (response.error) {
+        toast({
+          title: "Request Failed",
+          description: response.error,
+          variant: "destructive",
+        });
+      }
+    } catch (error) {
+      console.error('Error requesting contact info:', error);
+      toast({
+        title: "Error",
+        description: "Failed to request contact information. Please try again.",
+        variant: "destructive",
+      });
+    } finally {
+      setRequestingContact(null);
     }
   };
 
@@ -257,27 +323,63 @@ export const AdsList = () => {
                 )}
               </div>
 
-              {/* Show contact info for authenticated users only */}
-              {user && (ad.email || ad.phone || ad.seller_name) && (
+              {/* Secure Contact Information Section */}
+              {user ? (
                 <div className="border-t pt-3 space-y-2">
-                  <p className="text-xs font-medium text-muted-foreground uppercase tracking-wide">
-                    Seller Contact
-                  </p>
-                  {ad.seller_name && (
-                    <div className="flex items-center gap-2 text-sm">
-                      <span className="font-medium">{ad.seller_name}</span>
+                  {contactRequests[ad.id] ? (
+                    <div className="space-y-2 p-3 bg-green-50 border border-green-200 rounded-lg">
+                      <p className="text-xs font-medium text-green-800 uppercase tracking-wide">
+                        Seller Contact Information
+                      </p>
+                      <div className="space-y-1 text-sm">
+                        {contactRequests[ad.id].seller_name && (
+                          <div className="flex items-center gap-2">
+                            <User className="h-3 w-3 text-green-700" />
+                            <span className="font-medium">{contactRequests[ad.id].seller_name}</span>
+                          </div>
+                        )}
+                        {contactRequests[ad.id].email && (
+                          <div className="flex items-center gap-2">
+                            <Mail className="h-3 w-3 text-green-700" />
+                            <a 
+                              href={`mailto:${contactRequests[ad.id].email}`}
+                              className="text-green-800 hover:underline"
+                            >
+                              {contactRequests[ad.id].email}
+                            </a>
+                          </div>
+                        )}
+                        {contactRequests[ad.id].phone && (
+                          <div className="flex items-center gap-2">
+                            <Phone className="h-3 w-3 text-green-700" />
+                            <a 
+                              href={`tel:${contactRequests[ad.id].phone}`}
+                              className="text-green-800 hover:underline"
+                            >
+                              {contactRequests[ad.id].phone}
+                            </a>
+                          </div>
+                        )}
+                      </div>
                     </div>
+                  ) : (
+                    <ContactRequestDialog
+                      onSubmit={(message) => requestContactInfo(ad.id, message)}
+                      isLoading={requestingContact === ad.id}
+                    />
                   )}
-                  {ad.email && (
-                    <div className="text-sm text-muted-foreground">
-                      📧 {ad.email}
+                </div>
+              ) : (
+                <div className="border-t pt-3">
+                  <div className="flex items-center gap-2 p-3 bg-amber-50 border border-amber-200 rounded-lg">
+                    <Lock className="h-4 w-4 text-amber-600" />
+                    <div className="text-sm">
+                      <Link to="/auth" className="text-primary hover:underline font-medium">
+                        Sign in
+                      </Link>
+                      <span className="text-amber-700"> to request seller contact information</span>
                     </div>
-                  )}
-                  {ad.phone && (
-                    <div className="text-sm text-muted-foreground">
-                      📞 {ad.phone}
-                    </div>
-                  )}
+                  </div>
                 </div>
               )}
 

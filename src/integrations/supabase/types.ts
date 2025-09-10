@@ -213,6 +213,54 @@ export type Database = {
         }
         Relationships: []
       }
+      contact_requests: {
+        Row: {
+          ad_id: string
+          created_at: string
+          expires_at: string
+          id: string
+          message: string | null
+          requester_id: string
+          status: string
+          updated_at: string
+        }
+        Insert: {
+          ad_id: string
+          created_at?: string
+          expires_at?: string
+          id?: string
+          message?: string | null
+          requester_id: string
+          status?: string
+          updated_at?: string
+        }
+        Update: {
+          ad_id?: string
+          created_at?: string
+          expires_at?: string
+          id?: string
+          message?: string | null
+          requester_id?: string
+          status?: string
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "contact_requests_ad_id_fkey"
+            columns: ["ad_id"]
+            isOneToOne: false
+            referencedRelation: "ads"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "contact_requests_ad_id_fkey"
+            columns: ["ad_id"]
+            isOneToOne: false
+            referencedRelation: "ads_public"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       profiles: {
         Row: {
           avatar_url: string | null
@@ -396,6 +444,10 @@ export type Database = {
       }
     }
     Functions: {
+      check_contact_request_rate_limit: {
+        Args: Record<PropertyKey, never>
+        Returns: boolean
+      }
       get_ad_with_contact: {
         Args: { ad_id: string }
         Returns: {
@@ -431,6 +483,10 @@ export type Database = {
           _user_id: string
         }
         Returns: boolean
+      }
+      request_seller_contact: {
+        Args: { ad_id: string; requester_message?: string }
+        Returns: Json
       }
       validate_password_strength: {
         Args: { password_text: string }
