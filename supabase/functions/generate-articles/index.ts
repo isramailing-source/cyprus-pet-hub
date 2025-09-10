@@ -1,6 +1,13 @@
 import { serve } from "https://deno.land/std@0.168.0/http/server.ts"
 import { createClient } from 'https://esm.sh/@supabase/supabase-js@2'
 
+interface ArticleGenerationParams {
+  topic: string;
+  lengthWords?: number;
+  keywords?: string[];
+  additionalInstructions?: string;
+}
+
 const corsHeaders = {
   'Access-Control-Allow-Origin': '*',
   'Access-Control-Allow-Headers': 'authorization, x-client-info, apikey, content-type',
@@ -17,6 +24,45 @@ serve(async (req) => {
     
     const supabase = createClient(supabaseUrl, supabaseServiceKey)
     
+    const body = await req.json()
+    const { topic, lengthWords = 2000, keywords = [], additionalInstructions = '' } = body
+
+    // Check if this is a custom article generation request
+    if (topic) {
+      // Custom article generation
+      if (!topic) {
+        return new Response(
+          JSON.stringify({ error: 'Missing required field: topic' }),
+          { 
+            headers: { ...corsHeaders, 'Content-Type': 'application/json' },
+            status: 400 
+          }
+        )
+      }
+
+      const articleHtml = await generateArticleWithAssistant({
+        topic,
+        lengthWords,
+        keywords,
+        additionalInstructions,
+      })
+
+      return new Response(
+        JSON.stringify({
+          article_html: articleHtml,
+          summary: articleHtml.substring(0, 300) + '...',
+          word_count: lengthWords,
+          seo_title: `${topic} - Advanced Pet Article`,
+          seo_meta_description: `In-depth article on ${topic}, generated with AI assistant integration.`,
+        }),
+        { 
+          headers: { ...corsHeaders, 'Content-Type': 'application/json' },
+          status: 200 
+        }
+      )
+    }
+
+    // Existing batch generation logic for when no topic is provided
     // Fetch categories from database to get proper category IDs
     const { data: categories, error: categoryError } = await supabase
       .from('categories')
@@ -315,6 +361,19 @@ serve(async (req) => {
     )
   }
 })
+
+// Mock AI call function. Replace this with your actual integration logic.
+// For example, you may manually input prompt results or build tooling to communicate with this AI.
+async function generateArticleWithAssistant(params: ArticleGenerationParams): Promise<string> {
+  // Simulate a high-quality article generation process
+  // In practice, this might call your internal system that sends the request to this AI and gets the reply
+  const { topic, lengthWords, keywords, additionalInstructions } = params;
+  
+  // This is just a placeholder text to demonstrate structure
+  const articleHtml = `<article><h2>${topic}</h2><p>This is a detailed ${lengthWords}+ word article about ${topic}, focusing on keywords: ${keywords.join(', ')}. ${additionalInstructions}</p><p>Content generated via AI assistant integration.</p></article>`;
+  
+  return articleHtml;
+}
 
 // Generate comprehensive Cesar Milan-inspired article content using OpenAI
 async function generateCesarInspiredContent(topic: any, category: any) {

@@ -1,13 +1,26 @@
 import { useState } from 'react';
 import { Button } from '@/components/ui/button';
+import { Input } from '@/components/ui/input';
+import { Textarea } from '@/components/ui/textarea';
+import { Label } from '@/components/ui/label';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
+import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
+import { Badge } from '@/components/ui/badge';
 import { supabase } from '@/integrations/supabase/client';
 import { useToast } from '@/hooks/use-toast';
-import { Loader2 } from 'lucide-react';
+import { Loader2, Plus, X } from 'lucide-react';
 
 const ArticleGenerator = () => {
   const [loading, setLoading] = useState(false);
   const [generatedCount, setGeneratedCount] = useState(0);
+  const [customArticle, setCustomArticle] = useState({
+    topic: '',
+    lengthWords: 2000,
+    keywords: [] as string[],
+    additionalInstructions: ''
+  });
+  const [keywordInput, setKeywordInput] = useState('');
+  const [generatedHtml, setGeneratedHtml] = useState('');
   const { toast } = useToast();
 
   const generateMultipleArticles = async () => {
@@ -23,18 +36,7 @@ const ArticleGenerator = () => {
       if (error) {
         console.error('Article generation failed:', error);
         
-        // Check for specific error types and provide helpful messages
         let errorMessage = 'Failed to generate articles.';
-        if (error.message?.includes('OpenAI API key')) {
-          errorMessage = 'OpenAI API key is missing or invalid. Please check your API configuration.';
-        } else if (error.message?.includes('rate limit')) {
-          errorMessage = 'API rate limit exceeded. Please wait a moment and try again.';
-        } else if (error.message?.includes('quota exceeded')) {
-          errorMessage = 'API quota exceeded. Please check your OpenAI billing status.';
-        } else if (error.message?.includes('401') || error.message?.includes('Unauthorized')) {
-          errorMessage = 'API authentication failed. Please verify your OpenAI API key.';
-        }
-        
         toast({
           title: "Article Generation Failed",
           description: errorMessage,
@@ -51,7 +53,7 @@ const ArticleGenerator = () => {
       if (articlesGenerated > 0) {
         toast({
           title: "Article Generation Complete",
-          description: `Successfully generated ${articlesGenerated} comprehensive Cesar Milan-inspired articles!${errors.length > 0 ? ` (${errors.length} articles had errors)` : ''}`,
+          description: `Successfully generated ${articlesGenerated} comprehensive articles!${errors.length > 0 ? ` (${errors.length} articles had errors)` : ''}`,
         });
       } else {
         toast({
@@ -65,11 +67,6 @@ const ArticleGenerator = () => {
       console.error('Error generating articles:', error);
       
       let errorMessage = 'Failed to generate articles. Please try again.';
-      if (error.message?.includes('fetch')) {
-        errorMessage = 'Network error. Please check your connection and try again.';
-      } else if (error.message?.includes('timeout')) {
-        errorMessage = 'Request timed out. Please try again.';
-      }
       
       toast({
         title: "Generation Error",
@@ -81,35 +78,202 @@ const ArticleGenerator = () => {
     }
   };
 
+  const generateCustomArticle = async () => {
+    if (!customArticle.topic.trim()) {
+      toast({
+        title: "Missing Topic",
+        description: "Please enter a topic for your custom article.",
+        variant: "destructive",
+      });
+      return;
+    }
+
+    setLoading(true);
+    setGeneratedHtml('');
+    
+    try {
+      const { data, error } = await supabase.functions.invoke('generate-articles', {
+        body: {
+          topic: customArticle.topic,
+          lengthWords: customArticle.lengthWords,
+          keywords: customArticle.keywords,
+          additionalInstructions: customArticle.additionalInstructions
+        }
+      });
+      
+      if (error) {
+        console.error('Custom article generation failed:', error);
+        toast({
+          title: "Generation Failed",
+          description: "Failed to generate custom article. Please try again.",
+          variant: "destructive",
+        });
+        return;
+      }
+      
+      setGeneratedHtml(data.article_html);
+      toast({
+        title: "Article Generated",
+        description: `Successfully generated article: "${data.seo_title}"`,
+      });
+      
+    } catch (error) {
+      console.error('Error generating custom article:', error);
+      toast({
+        title: "Generation Error",
+        description: "Failed to generate custom article. Please try again.",
+        variant: "destructive",
+      });
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const addKeyword = () => {
+    if (keywordInput.trim() && !customArticle.keywords.includes(keywordInput.trim())) {
+      setCustomArticle(prev => ({
+        ...prev,
+        keywords: [...prev.keywords, keywordInput.trim()]
+      }));
+      setKeywordInput('');
+    }
+  };
+
+  const removeKeyword = (keyword: string) => {
+    setCustomArticle(prev => ({
+      ...prev,
+      keywords: prev.keywords.filter(k => k !== keyword)
+    }));
+  };
+
   return (
-    <Card className="w-full max-w-md">
+    <Card className="w-full max-w-2xl">
       <CardHeader>
         <CardTitle>Article Generator</CardTitle>
         <CardDescription>
-          Generate comprehensive Cesar Milan-inspired pet psychology articles for Cyprus
+          Generate comprehensive pet psychology articles using AI assistant integration
         </CardDescription>
       </CardHeader>
-      <CardContent className="space-y-4">
-        <Button 
-          onClick={generateMultipleArticles} 
-          disabled={loading}
-          className="w-full"
-        >
-          {loading ? (
-            <>
-              <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-              Generating Articles... ({generatedCount})
-            </>
-          ) : (
-            'Generate 5-10 New Articles'
-          )}
-        </Button>
-        
-        {generatedCount > 0 && (
-          <p className="text-sm text-muted-foreground text-center">
-            Generated {generatedCount} comprehensive articles successfully
-          </p>
-        )}
+      <CardContent>
+        <Tabs defaultValue="batch" className="w-full">
+          <TabsList className="grid w-full grid-cols-2">
+            <TabsTrigger value="batch">Batch Generate</TabsTrigger>
+            <TabsTrigger value="custom">Custom Article</TabsTrigger>
+          </TabsList>
+          
+          <TabsContent value="batch" className="space-y-4">
+            <div className="text-center space-y-4">
+              <Button 
+                onClick={generateMultipleArticles} 
+                disabled={loading}
+                className="w-full"
+              >
+                {loading ? (
+                  <>
+                    <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                    Generating Articles... ({generatedCount})
+                  </>
+                ) : (
+                  'Generate 5-10 New Articles'
+                )}
+              </Button>
+              
+              {generatedCount > 0 && (
+                <p className="text-sm text-muted-foreground">
+                  Generated {generatedCount} comprehensive articles successfully
+                </p>
+              )}
+            </div>
+          </TabsContent>
+          
+          <TabsContent value="custom" className="space-y-4">
+            <div className="space-y-4">
+              <div className="space-y-2">
+                <Label htmlFor="topic">Article Topic *</Label>
+                <Input
+                  id="topic"
+                  placeholder="e.g., Hydrotherapy for Dogs in Cyprus"
+                  value={customArticle.topic}
+                  onChange={(e) => setCustomArticle(prev => ({ ...prev, topic: e.target.value }))}
+                />
+              </div>
+              
+              <div className="space-y-2">
+                <Label htmlFor="length">Word Count</Label>
+                <Input
+                  id="length"
+                  type="number"
+                  placeholder="2000"
+                  value={customArticle.lengthWords}
+                  onChange={(e) => setCustomArticle(prev => ({ ...prev, lengthWords: parseInt(e.target.value) || 2000 }))}
+                />
+              </div>
+              
+              <div className="space-y-2">
+                <Label>Keywords</Label>
+                <div className="flex gap-2">
+                  <Input
+                    placeholder="Add keyword..."
+                    value={keywordInput}
+                    onChange={(e) => setKeywordInput(e.target.value)}
+                    onKeyPress={(e) => e.key === 'Enter' && addKeyword()}
+                  />
+                  <Button onClick={addKeyword} size="sm" variant="outline">
+                    <Plus className="h-4 w-4" />
+                  </Button>
+                </div>
+                {customArticle.keywords.length > 0 && (
+                  <div className="flex flex-wrap gap-1 mt-2">
+                    {customArticle.keywords.map((keyword, index) => (
+                      <Badge key={index} variant="secondary" className="text-xs">
+                        {keyword}
+                        <X 
+                          className="h-3 w-3 ml-1 cursor-pointer" 
+                          onClick={() => removeKeyword(keyword)}
+                        />
+                      </Badge>
+                    ))}
+                  </div>
+                )}
+              </div>
+              
+              <div className="space-y-2">
+                <Label htmlFor="instructions">Additional Instructions</Label>
+                <Textarea
+                  id="instructions"
+                  placeholder="Any specific requests, style preferences, or focus areas..."
+                  value={customArticle.additionalInstructions}
+                  onChange={(e) => setCustomArticle(prev => ({ ...prev, additionalInstructions: e.target.value }))}
+                />
+              </div>
+              
+              <Button 
+                onClick={generateCustomArticle} 
+                disabled={loading || !customArticle.topic.trim()}
+                className="w-full"
+              >
+                {loading ? (
+                  <>
+                    <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                    Generating Custom Article...
+                  </>
+                ) : (
+                  'Generate Custom Article'
+                )}
+              </Button>
+              
+              {generatedHtml && (
+                <div className="mt-4 p-4 border rounded-lg bg-muted/50">
+                  <h4 className="font-medium mb-2">Generated Article Preview:</h4>
+                  <div 
+                    className="prose prose-sm max-w-none"
+                    dangerouslySetInnerHTML={{ __html: generatedHtml }}
+                  />
+                </div>
+              )}
+            </div>
+          </TabsContent>
+        </Tabs>
       </CardContent>
     </Card>
   );
