@@ -1,6 +1,6 @@
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
-import { ExternalLink, Heart, Stethoscope, GraduationCap, Home } from "lucide-react";
+import { ExternalLink, Heart, Stethoscope, GraduationCap, Home, Car, ShoppingBag, MapPin, Users } from "lucide-react";
 import AdBanner from "@/components/ads/AdBanner";
 
 interface PetResource {
@@ -14,51 +14,83 @@ interface PetResource {
 
 const petResources: PetResource[] = [
   {
-    title: "Cyprus Veterinary Association",
-    description: "Find certified veterinarians and animal hospitals across Cyprus",
-    url: "https://www.cypruvets.com",
+    title: "Pet People Cyprus - Mobile Grooming & Pet Supplies",
+    description: "Visit Pet People Cyprus for mobile pet grooming, home delivery of pet food, and pet supply services available throughout Cyprus.",
+    url: "https://petpeoplecyprus.com",
+    category: "Grooming & Supplies",
+    icon: <ShoppingBag className="w-6 h-6" />,
+    trusted: true
+  },
+  {
+    title: "Pet Boarding, Sitting & Grooming Services in Cyprus",
+    description: "Find trusted pet boarding, pet sitting, and grooming providers on Petbacker Cyprus, a reliable platform connecting Cyprus pet owners with local caregivers.",
+    url: "https://www.petbacker.com/d/cyprus",
+    category: "Pet Care Services",
+    icon: <Home className="w-6 h-6" />,
+    trusted: true
+  },
+  {
+    title: "Pet Taxi Services in Cyprus",
+    description: "Need safe and comfortable transportation for your pet? Explore Pet Taxi Cyprus for professional pet taxi solutions across the island.",
+    url: "https://infotaxicyprus.com/specialized-taxi-cyprus/pet-taxi-cyprus/",
+    category: "Transportation",
+    icon: <Car className="w-6 h-6" />,
+    trusted: true
+  },
+  {
+    title: "Veterinary Clinics and Animal Hospitals in Cyprus",
+    description: "Locate top veterinary services near you with the comprehensive directory on Cyprus Vets, covering clinics, hospitals, and emergency vet care.",
+    url: "https://www.cyprusvets.com",
     category: "Veterinary Care",
     icon: <Stethoscope className="w-6 h-6" />,
     trusted: true
   },
   {
-    title: "Cyprus Animal Welfare Society",
-    description: "Rescue, adoption, and animal welfare services in Cyprus",
-    url: "https://www.caws.org.cy",
-    category: "Animal Welfare",
+    title: "PAWS Dog Shelter in Paphos, Cyprus",
+    description: "Support or adopt pets in need from PAWS Dog Shelter, a dedicated animal rescue center caring for stray and homeless dogs in Paphos.",
+    url: "https://pawsdogshelter.com",
+    category: "Animal Rescue",
     icon: <Heart className="w-6 h-6" />,
     trusted: true
   },
   {
-    title: "Pet Training Academy Cyprus",
-    description: "Professional pet training and behavioral services",
-    url: "https://www.pettrainingcyprus.com",
+    title: "Beasties Pet Shop - Pet Food and Accessories Cyprus",
+    description: "Shop local pet food, toys, and supplies at Beasties Pet Shop Cyprus, a well-known pet retailer serving Cyprus pet owners.",
+    url: "https://www.beastiespetshop.com",
+    category: "Pet Supplies",
+    icon: <ShoppingBag className="w-6 h-6" />,
+    trusted: true
+  },
+  {
+    title: "Professional Dog Training Services in Cyprus",
+    description: "Improve your dog's behavior with expert trainers from PetSpot Cyprus, offering personalized dog training programs on the island.",
+    url: "https://www.petspotpro.com",
     category: "Training",
     icon: <GraduationCap className="w-6 h-6" />,
     trusted: true
   },
   {
-    title: "Cyprus Pet Supplies",
-    description: "Quality pet food, toys, and accessories delivered island-wide",
-    url: "https://www.cyprupets.shop",
-    category: "Pet Supplies",
-    icon: <Home className="w-6 h-6" />,
-    trusted: true
-  },
-  {
-    title: "Mediterranean Pet Care Guide",
-    description: "Specialized care tips for pets in Mediterranean climate",
-    url: "https://www.medpetcare.org",
-    category: "Climate Care",
+    title: "Argos Sanctuary - Cyprus Animal Rescue & Adoption",
+    description: "Adopt or donate to Argos Sanctuary, a Cyprus-based nonprofit providing shelter and care for abandoned cats and dogs.",
+    url: "https://www.argossanctuary.com",
+    category: "Animal Rescue",
     icon: <Heart className="w-6 h-6" />,
     trusted: true
   },
   {
-    title: "Cyprus Emergency Vet Directory",
-    description: "24/7 emergency veterinary services across the island",
-    url: "https://www.emergency-vets-cyprus.com",
-    category: "Emergency Care",
-    icon: <Stethoscope className="w-6 h-6" />,
+    title: "Trusted Pet Sitters & Housesitters in Cyprus",
+    description: "Find dependable pet and house sitters to care for your pets while away through TrustedHousesitters Cyprus.",
+    url: "https://www.trustedhousesitters.com/house-and-pet-sitters/cyprus/",
+    category: "Pet Sitting",
+    icon: <Users className="w-6 h-6" />,
+    trusted: true
+  },
+  {
+    title: "Rosewood Kennels - Quality Pet Boarding in Cyprus",
+    description: "Book trusted and licensed pet boarding services at Rosewood Kennels Cyprus, offering safe daycare and overnight stays for your pets.",
+    url: "https://rosewoodkennelscyprus.com",
+    category: "Pet Boarding",
+    icon: <Home className="w-6 h-6" />,
     trusted: true
   }
 ];
