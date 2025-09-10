@@ -25,43 +25,43 @@ export const AutomationStatus = () => {
   }, []);
 
   const fetchStats = async () => {
+    setLoading(true);
     try {
-      // Get ads count
+      // Get total active ads
       const { count: adsCount } = await supabase
-        .from('ads')
+        .from('ads_public')
         .select('*', { count: 'exact', head: true })
         .eq('is_active', true);
-
-      // Get articles count
+      
+      // Get total published articles
       const { count: articlesCount } = await supabase
         .from('articles')
         .select('*', { count: 'exact', head: true })
         .eq('is_published', true);
-
-      // Get latest scrape
-      const { data: latestAd } = await supabase
-        .from('ads')
-        .select('scraped_at')
-        .order('scraped_at', { ascending: false })
-        .limit(1)
-        .single();
-
-      // Get latest article
-      const { data: latestArticle } = await supabase
-        .from('articles')
-        .select('published_at')
-        .order('published_at', { ascending: false })
-        .limit(1)
-        .single();
-
+      
+      // Get last automation runs from database
+      const { data: scrapeLogs } = await supabase
+        .from('automation_logs')
+        .select('last_run')
+        .eq('task_type', 'scrape')
+        .order('last_run', { ascending: false })
+        .limit(1);
+        
+      const { data: articleLogs } = await supabase
+        .from('automation_logs')
+        .select('last_run')
+        .eq('task_type', 'article')
+        .order('last_run', { ascending: false })
+        .limit(1);
+      
       setStats({
         totalAds: adsCount || 0,
         totalArticles: articlesCount || 0,
-        lastScrape: latestAd?.scraped_at ? new Date(latestAd.scraped_at) : null,
-        lastArticle: latestArticle?.published_at ? new Date(latestArticle.published_at) : null
+        lastScrape: scrapeLogs?.[0]?.last_run ? new Date(scrapeLogs[0].last_run) : null,
+        lastArticle: articleLogs?.[0]?.last_run ? new Date(articleLogs[0].last_run) : null,
       });
     } catch (error) {
-      console.error('Error fetching stats:', error);
+      console.error('Error fetching automation stats:', error);
     } finally {
       setLoading(false);
     }
@@ -210,7 +210,7 @@ export const AutomationStatus = () => {
             <div>
               <h4 className="font-medium">AI Article Generation</h4>
               <p className="text-sm text-muted-foreground">
-                Daily generation of expert pet care articles on hygiene, training, and care
+                Daily generation of comprehensive pet care articles inspired by Cesar Milan's philosophy
               </p>
             </div>
           </div>
