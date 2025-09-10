@@ -41,3 +41,6 @@ verify_jwt = true
 
 [functions.scrape-ads-auto]
 verify_jwt = false
+
+[functions.scrape-ads-enhanced]
+verify_jwt = false

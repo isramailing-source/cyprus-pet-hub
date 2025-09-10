@@ -82,7 +82,10 @@ serve(async (req) => {
           }
           
         } else {
-          // Standard scraping for Bazaraki
+    // Get categories for smart assignment
+          const { data: categories } = await supabase.from('categories').select('*')
+          
+          // Enhanced scraping for all sources
           const response = await fetch(source.scraping_url, {
             headers: {
               'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36',
@@ -102,7 +105,7 @@ serve(async (req) => {
           const html = await response.text()
           console.log(`📄 Fetched ${html.length} characters from ${source.name}`)
           
-          const listings = await parseListings(html, source.selectors, source.base_url, source.name)
+          const listings = await parseListingsEnhanced(html, source.selectors, source.base_url, source.name, categories || [])
           console.log(`📋 Found ${listings.length} listings from ${source.name}`)
           
           for (const listing of listings) {
@@ -121,6 +124,7 @@ serve(async (req) => {
                   breed: listing.breed,
                   age: listing.age,
                   gender: listing.gender,
+                  category_id: listing.category_id,
                   email: 'info@cyprus-pets.com', // Your contact email
                   phone: '+357 96 336767', // Your contact phone
                   seller_name: 'Cyprus Pets Contact'
@@ -242,8 +246,35 @@ async function scrapeFacebookMarketplace(source: ScrapingSource) {
   return fbListings
 }
 
-// Standard HTML parsing for Bazaraki and other sites
-async function parseListings(html: string, selectors: any, baseUrl: string, sourceName: string) {
+// Smart category assignment based on content
+function assignSmartCategory(title: string, description: string, breed: string, categories: any[]) {
+  const content = `${title} ${description} ${breed}`.toLowerCase()
+  
+  // Dog breeds and keywords
+  if (content.match(/dog|puppy|golden|retriever|labrador|shepherd|maltese|pomeranian|beagle|bulldog|chihuahua|husky/)) {
+    return categories.find(cat => cat.slug === 'dogs')?.id || null
+  }
+  
+  // Cat breeds and keywords
+  if (content.match(/cat|kitten|persian|siamese|british|shorthair|maine|coon|ragdoll|bengal|russian|blue/)) {
+    return categories.find(cat => cat.slug === 'cats')?.id || null
+  }
+  
+  // Bird keywords
+  if (content.match(/bird|parrot|canary|budgie|cockatiel|lovebird|finch|parakeet|macaw|conure/)) {
+    return categories.find(cat => cat.slug === 'birds')?.id || null
+  }
+  
+  // Fish keywords
+  if (content.match(/fish|aquarium|goldfish|tropical|marine|freshwater|tank/)) {
+    return categories.find(cat => cat.slug === 'fish')?.id || null
+  }
+  
+  return null // No category match
+}
+
+// Enhanced HTML parsing for Bazaraki and other sites with smart categorization
+async function parseListingsEnhanced(html: string, selectors: any, baseUrl: string, sourceName: string, categories: any[]) {
   const listings = []
   
   try {
@@ -257,7 +288,7 @@ async function parseListings(html: string, selectors: any, baseUrl: string, sour
     const containers = doc.querySelectorAll(selectors.container || '.announcement-container, .listing, .item')
     console.log(`🔍 Found ${containers.length} containers in ${sourceName}`)
     
-    for (let i = 0; i < Math.min(containers.length, 20); i++) {
+    for (let i = 0; i < Math.min(containers.length, 100); i++) {
       const container = containers[i]
       
       try {
@@ -267,8 +298,12 @@ async function parseListings(html: string, selectors: any, baseUrl: string, sour
         
         if (!title || title.length < 5) continue
         
-        // Skip non-pet related items
-        const petKeywords = ['dog', 'cat', 'puppy', 'kitten', 'bird', 'pet', 'animal', 'golden', 'labrador', 'persian', 'siamese']
+        // Enhanced pet keyword detection
+        const petKeywords = [
+          'dog', 'puppy', 'cat', 'kitten', 'bird', 'parrot', 'fish', 'pet', 'animal',
+          'golden', 'retriever', 'labrador', 'maltese', 'persian', 'siamese', 'british',
+          'shorthair', 'canary', 'budgie', 'goldfish', 'aquarium', 'breed', 'pedigree'
+        ]
         const titleLower = title.toLowerCase()
         if (!petKeywords.some(keyword => titleLower.includes(keyword))) continue
 
@@ -324,16 +359,20 @@ async function parseListings(html: string, selectors: any, baseUrl: string, sour
         if (combinedText.includes('male') && !combinedText.includes('female')) gender = 'Male'
         else if (combinedText.includes('female') && !combinedText.includes('male')) gender = 'Female'
 
+        // Smart category assignment
+        const category_id = assignSmartCategory(title, description, breed, categories)
+
         listings.push({
           title: title.substring(0, 200),
           description: description.substring(0, 500),
           price,
           location,
-          images: [],
+          images: ['/src/assets/golden-retriever-cyprus.jpg'],
           url: sourceUrl,
           breed,
           age,
-          gender
+          gender,
+          category_id
         })
         
       } catch (itemError) {

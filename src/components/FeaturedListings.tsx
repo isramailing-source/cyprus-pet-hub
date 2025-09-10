@@ -17,17 +17,12 @@ const getImageSrc = (images: string[] | null) => {
   
   const imagePath = images[0];
   
-  // Map specific image paths to imported assets
-  switch (imagePath) {
-    case '/assets/golden-retriever-cyprus.jpg':
-      return goldenRetrieverImage;
-    case '/assets/british-shorthair-cyprus.jpg':
-      return britishShorthairImage;
-    case '/assets/birds-cyprus.jpg':
-      return birdsImage;
-    default:
-      return goldenRetrieverImage; // Fallback for unknown paths
-  }
+  // Map specific image paths to imported assets using includes for flexible matching
+  if (imagePath.includes('golden-retriever-cyprus.jpg')) return goldenRetrieverImage;
+  if (imagePath.includes('british-shorthair-cyprus.jpg')) return britishShorthairImage;
+  if (imagePath.includes('birds-cyprus.jpg')) return birdsImage;
+  
+  return goldenRetrieverImage; // Fallback for unknown paths
 };
 
 const FeaturedListings = () => {
