@@ -17,32 +17,13 @@ import NotFound from "./pages/NotFound";
 const queryClient = new QueryClient();
 
 const App = () => {
-  console.log('App component rendering');
+  console.log('App component rendering - TEST VERSION');
   
   return (
-  <ErrorBoundary>
-    <QueryClientProvider client={queryClient}>
-      <HelmetProvider>
-        <AuthProvider>
-          <TooltipProvider>
-            <Toaster />
-            <Sonner />
-            <BrowserRouter>
-              <Routes>
-                <Route path="/" element={<Index />} />
-                <Route path="/marketplace" element={<Marketplace />} />
-                <Route path="/blog" element={<Blog />} />
-                <Route path="/forum" element={<Forum />} />
-                <Route path="/auth" element={<Auth />} />
-                <Route path="/admin" element={<Admin />} />
-                <Route path="*" element={<NotFound />} />
-              </Routes>
-            </BrowserRouter>
-          </TooltipProvider>
-        </AuthProvider>
-      </HelmetProvider>
-    </QueryClientProvider>
-  </ErrorBoundary>
+    <div style={{ padding: '20px', backgroundColor: 'blue', color: 'white', textAlign: 'center' }}>
+      <h1>React is Working!</h1>
+      <p>If you see this blue background, React has mounted successfully.</p>
+    </div>
   );
 };
 
