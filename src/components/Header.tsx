@@ -79,7 +79,7 @@ const Header = () => {
             <LanguageSwitcher />
             <Button variant="outline" size="sm" asChild>
               <Link to="/forum">
-                Pet Trading
+                Join Discussions
               </Link>
             </Button>
             {user ? (

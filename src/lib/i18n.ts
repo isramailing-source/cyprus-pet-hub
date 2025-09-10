@@ -8,41 +8,57 @@ const resources = {
       // Navigation
       home: "Home",
       community: "Community",
+      forum: "Forum", 
+      discussions: "Discussions",
+      blog: "Blog",
       admin: "Admin",
       
       // Actions
-      browsePets: "Browse Pets",
-      postAd: "Post Ad",
       signIn: "Sign In",
       signOut: "Sign Out",
       account: "Account",
       profile: "Profile",
       adminDashboard: "Admin Dashboard",
+      joinDiscussions: "Join Discussions",
+      startDiscussion: "Start Discussion",
       
-      // Featured Section
-      featuredPets: "Featured Pets",
-      featuredPetsDescription: "Discover amazing pets looking for their forever homes in Cyprus",
-      viewAllListings: "View All Listings",
-      
-      // Pet Details
+      // Pet Care Topics
       age: "Age",
       breed: "Breed",
-      location: "Location",
-      price: "Price",
+      location: "Location", 
+      petCare: "Pet Care",
+      training: "Training",
+      health: "Health",
+      nutrition: "Nutrition",
       
-      // Search & Filters
-      searchPlaceholder: "Search for pets, equipment...",
+      // Search  
+      searchPlaceholder: "Search articles, guides, and discussions...",
+      
+      // Featured sections
+      featuredDiscussions: "Featured Discussions",
+      featuredDiscussionsDescription: "Join conversations with fellow pet enthusiasts",
+      discussionCategories: "Discussion Categories",
+      viewAllDiscussions: "Join All Discussions",
+      latestTopics: "Latest Topics",
+      popularGuides: "Popular Guides",
+      
+      // Forum specific
+      replies: "Replies",
+      views: "Views",  
+      lastReply: "Last Reply",
+      by: "by",
       
       // Footer
       aboutUs: "About Us",
-      contactUs: "Contact Us",
+      contactUs: "Contact Us", 
       privacyPolicy: "Privacy Policy",
       termsOfService: "Terms of Service",
       
-      // Common
+      // General
       loading: "Loading...",
       error: "Error",
-      noResultsFound: "No results found",
+      noResults: "No results found", 
+      tryAgain: "Try Again",
       
       // Languages
       language: "Language",
@@ -56,30 +72,45 @@ const resources = {
       // Navigation
       home: "Αρχική",
       community: "Κοινότητα",
+      forum: "Φόρουμ",
+      discussions: "Συζητήσεις",
+      blog: "Ιστολόγιο",
       admin: "Διαχείριση",
       
       // Actions
-      browsePets: "Περιήγηση Κατοικίδια",
-      postAd: "Δημοσίευση Αγγελίας",
       signIn: "Σύνδεση",
       signOut: "Αποσύνδεση",
       account: "Λογαριασμός",
       profile: "Προφίλ",
       adminDashboard: "Πίνακας Διαχείρισης",
+      joinDiscussions: "Συμμετοχή στις Συζητήσεις",
+      startDiscussion: "Ξεκινήστε Συζήτηση",
       
-      // Featured Section
-      featuredPets: "Προτεινόμενα Κατοικίδια",
-      featuredPetsDescription: "Ανακαλύψτε υπέροχα κατοικίδια που ψάχνουν για το αιώνιο σπίτι τους στην Κύπρο",
-      viewAllListings: "Δείτε Όλες τις Αγγελίες",
-      
-      // Pet Details
+      // Pet Care Topics
       age: "Ηλικία",
       breed: "Ράτσα",
       location: "Τοποθεσία",
-      price: "Τιμή",
+      petCare: "Φροντίδα Κατοικίδιων",
+      training: "Εκπαίδευση",
+      health: "Υγεία",
+      nutrition: "Διατροφή",
       
-      // Search & Filters
-      searchPlaceholder: "Αναζήτηση κατοικίδιων, εξοπλισμού...",
+      // Search
+      searchPlaceholder: "Αναζήτηση άρθρων, οδηγών και συζητήσεων...",
+      
+      // Featured sections
+      featuredDiscussions: "Προτεινόμενες Συζητήσεις",
+      featuredDiscussionsDescription: "Συμμετάσχετε σε συνομιλίες με άλλους λάτρεις των κατοικίδιων",
+      discussionCategories: "Κατηγορίες Συζητήσεων",
+      viewAllDiscussions: "Συμμετοχή σε Όλες τις Συζητήσεις",
+      latestTopics: "Τελευταία Θέματα",
+      popularGuides: "Δημοφιλείς Οδηγοί",
+      
+      // Forum specific
+      replies: "Απαντήσεις",
+      views: "Προβολές",
+      lastReply: "Τελευταία Απάντηση",
+      by: "από",
       
       // Footer
       aboutUs: "Σχετικά με εμάς",
@@ -87,10 +118,11 @@ const resources = {
       privacyPolicy: "Πολιτική Απορρήτου",
       termsOfService: "Όροι Χρήσης",
       
-      // Common
+      // General
       loading: "Φόρτωση...",
       error: "Σφάλμα",
-      noResultsFound: "Δεν βρέθηκαν αποτελέσματα",
+      noResults: "Δεν βρέθηκαν αποτελέσματα",
+      tryAgain: "Προσπαθήστε Ξανά",
       
       // Languages
       language: "Γλώσσα",
@@ -103,31 +135,46 @@ const resources = {
     common: {
       // Navigation
       home: "Главная",
-      community: "Сообщество",
+      community: "Сообщество", 
+      forum: "Форум",
+      discussions: "Обсуждения",
+      blog: "Блог",
       admin: "Админ",
       
       // Actions
-      browsePets: "Просмотр Питомцев",
-      postAd: "Разместить Объявление",
       signIn: "Войти",
       signOut: "Выйти",
       account: "Аккаунт",
       profile: "Профиль",
       adminDashboard: "Панель Администратора",
+      joinDiscussions: "Присоединиться к Обсуждениям",
+      startDiscussion: "Начать Обсуждение",
       
-      // Featured Section
-      featuredPets: "Рекомендуемые Питомцы",
-      featuredPetsDescription: "Откройте для себя удивительных питомцев, которые ищут свой дом навсегда на Кипре",
-      viewAllListings: "Посмотреть Все Объявления",
-      
-      // Pet Details
+      // Pet Care Topics
       age: "Возраст",
       breed: "Порода",
       location: "Местоположение",
-      price: "Цена",
+      petCare: "Уход за Питомцами",
+      training: "Обучение",
+      health: "Здоровье", 
+      nutrition: "Питание",
       
-      // Search & Filters
-      searchPlaceholder: "Поиск питомцев, оборудования...",
+      // Search
+      searchPlaceholder: "Поиск статей, руководств и обсуждений...",
+      
+      // Featured sections
+      featuredDiscussions: "Рекомендуемые Обсуждения",
+      featuredDiscussionsDescription: "Присоединяйтесь к беседам с другими любителями питомцев",
+      discussionCategories: "Категории Обсуждений",
+      viewAllDiscussions: "Присоединиться ко Всем Обсуждениям", 
+      latestTopics: "Последние Темы",
+      popularGuides: "Популярные Руководства",
+      
+      // Forum specific
+      replies: "Ответы",
+      views: "Просмотры",
+      lastReply: "Последний Ответ", 
+      by: "от",
       
       // Footer
       aboutUs: "О нас",
@@ -135,10 +182,11 @@ const resources = {
       privacyPolicy: "Политика Конфиденциальности",
       termsOfService: "Условия Использования",
       
-      // Common
+      // General
       loading: "Загрузка...",
       error: "Ошибка",
-      noResultsFound: "Результаты не найдены",
+      noResults: "Результаты не найдены",
+      tryAgain: "Попробовать Снова",
       
       // Languages
       language: "Язык",

@@ -4,6 +4,7 @@ import CareGuidesHighlight from "@/components/CareGuidesHighlight";
 import PetResourcesHub from "@/components/PetResourcesHub";
 import FeaturedArticles from "@/components/FeaturedArticles";
 import ForumHighlights from "@/components/ForumHighlights";
+import FeaturedDiscussions from "@/components/FeaturedDiscussions";
 import Footer from "@/components/Footer";
 import { Helmet } from "react-helmet-async";
 
@@ -36,6 +37,7 @@ const Index = () => {
           <HeroSection />
           <CareGuidesHighlight />
           <FeaturedArticles />
+          <FeaturedDiscussions />
           <PetResourcesHub />
           <ForumHighlights />
         </main>
