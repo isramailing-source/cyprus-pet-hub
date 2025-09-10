@@ -1,5 +1,6 @@
 import Header from "@/components/Header";
 import HeroSection from "@/components/HeroSection";
+import CareGuidesHighlight from "@/components/CareGuidesHighlight";
 import PetResourcesHub from "@/components/PetResourcesHub";
 import FeaturedArticles from "@/components/FeaturedArticles";
 import ForumHighlights from "@/components/ForumHighlights";
@@ -33,6 +34,7 @@ const Index = () => {
         <Header />
         <main>
           <HeroSection />
+          <CareGuidesHighlight />
           <FeaturedArticles />
           <PetResourcesHub />
           <ForumHighlights />
