@@ -91,19 +91,12 @@ export const AdsList = () => {
 
   const fetchAds = async () => {
     try {
-      let query;
-      
-      if (user) {
-        query = supabase
-          .from('ads_authenticated')
-          .select('*')
-          .order('scraped_at', { ascending: false });
-      } else {
-        query = supabase
-          .from('ads_public')
-          .select('*')
-          .order('scraped_at', { ascending: false });
-      }
+      // Query the main ads table directly to avoid RLS issues with views
+      let query = supabase
+        .from('ads')
+        .select('*')
+        .eq('is_active', true)
+        .order('scraped_at', { ascending: false });
 
       if (searchTerm) {
         query = query.ilike('title', `%${searchTerm}%`);
