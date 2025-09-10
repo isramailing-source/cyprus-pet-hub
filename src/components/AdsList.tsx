@@ -1,12 +1,14 @@
 import { useState, useEffect } from "react";
 import { supabase } from "@/integrations/supabase/client";
+import { useAuth } from "@/hooks/useAuth";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import { MapPin, Euro, ExternalLink, Search } from "lucide-react";
+import { MapPin, Euro, ExternalLink, Search, Lock } from "lucide-react";
 import { useToast } from "@/components/ui/use-toast";
+import { Link } from "react-router-dom";
 
 
 interface Ad {
@@ -37,6 +39,7 @@ export const AdsList = () => {
   const [locationFilter, setLocationFilter] = useState("");
   const [priceRange, setPriceRange] = useState("");
   const { toast } = useToast();
+  const { user, session, isAdmin } = useAuth();
 
   useEffect(() => {
     fetchAds();
@@ -84,8 +87,22 @@ export const AdsList = () => {
   };
 
   const triggerScraping = async () => {
+    if (!isAdmin) {
+      toast({
+        title: "Access Denied",
+        description: "Only administrators can trigger ad scraping.",
+        variant: "destructive",
+      });
+      return;
+    }
+
     try {
-      const { data, error } = await supabase.functions.invoke('scrape-ads');
+      const { data, error } = await supabase.functions.invoke('scrape-ads', {
+        headers: {
+          Authorization: `Bearer ${session?.access_token}`,
+        }
+      });
+      
       if (error) throw error;
       
       toast({
@@ -98,7 +115,7 @@ export const AdsList = () => {
     } catch (error) {
       console.error('Error triggering scraping:', error);
       toast({
-        title: "Error",
+        title: "Error", 
         description: "Failed to trigger ad scraping.",
         variant: "destructive",
       });
@@ -133,10 +150,22 @@ export const AdsList = () => {
           <p className="text-muted-foreground">
             Discover pets from various Cyprus marketplaces in one place
           </p>
+          {!user && (
+            <div className="mt-2 p-3 bg-muted rounded-lg border">
+              <div className="flex items-center gap-2 text-sm">
+                <Lock className="h-4 w-4" />
+                <span>
+                  <Link to="/auth" className="text-primary hover:underline">Sign in</Link> to access seller contact information
+                </span>
+              </div>
+            </div>
+          )}
         </div>
-        <Button onClick={triggerScraping} variant="outline">
-          Refresh Listings
-        </Button>
+        {isAdmin && (
+          <Button onClick={triggerScraping} variant="outline">
+            Refresh Listings
+          </Button>
+        )}
       </div>
 
       {/* Filters */}
@@ -235,9 +264,11 @@ export const AdsList = () => {
       {ads.length === 0 && !loading && (
         <div className="text-center py-12">
           <p className="text-muted-foreground mb-4">No ads found matching your criteria.</p>
-          <Button onClick={triggerScraping}>
-            Scrape New Listings
-          </Button>
+          {isAdmin && (
+            <Button onClick={triggerScraping}>
+              Scrape New Listings
+            </Button>
+          )}
         </div>
       )}
     </div>

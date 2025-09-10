@@ -20,9 +20,36 @@ serve(async (req) => {
   }
 
   try {
+    // Get the authorization header
+    const authHeader = req.headers.get('Authorization')
+    if (!authHeader) {
+      throw new Error('No authorization header')
+    }
+
     const supabaseUrl = Deno.env.get('SUPABASE_URL')!
     const supabaseServiceRoleKey = Deno.env.get('SUPABASE_SERVICE_ROLE_KEY')!
     const supabase = createClient(supabaseUrl, supabaseServiceRoleKey)
+
+    // Verify the JWT and get user info
+    const jwt = authHeader.replace('Bearer ', '')
+    const { data: { user }, error: authError } = await supabase.auth.getUser(jwt)
+    
+    if (authError || !user) {
+      throw new Error('Invalid authentication')
+    }
+
+    // Check if user has admin role
+    const { data: userRole, error: roleError } = await supabase
+      .from('user_roles')
+      .select('role')
+      .eq('user_id', user.id)
+      .single()
+
+    if (roleError || !userRole || userRole.role !== 'admin') {
+      throw new Error('Insufficient permissions. Admin access required.')
+    }
+
+    console.log(`Admin ${user.email} initiated ad scraping`)
 
     // Get active scraping sources
     const { data: sources, error: sourcesError } = await supabase
@@ -93,11 +120,15 @@ serve(async (req) => {
 
   } catch (error) {
     console.error('Scraping error:', error)
+    
+    // Return appropriate error status
+    const status = error.message.includes('authentication') || error.message.includes('permissions') ? 403 : 500
+    
     return new Response(
       JSON.stringify({ error: error.message }),
       { 
         headers: { ...corsHeaders, 'Content-Type': 'application/json' },
-        status: 500 
+        status 
       }
     )
   }

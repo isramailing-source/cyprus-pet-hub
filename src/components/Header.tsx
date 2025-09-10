@@ -1,10 +1,19 @@
-import { Search, Plus, MapPin } from "lucide-react";
+import { Search, Plus, MapPin, User, LogOut, Settings } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Link, useLocation } from "react-router-dom";
 import { Input } from "@/components/ui/input";
+import { useAuth } from "@/hooks/useAuth";
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuSeparator,
+  DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu";
 
 const Header = () => {
   const location = useLocation();
+  const { user, signOut, isAdmin } = useAuth();
   
   const isActive = (path: string) => location.pathname === path;
   
@@ -49,6 +58,16 @@ const Header = () => {
             >
               Pet Care Blog
             </Link>
+            {isAdmin && (
+              <Link 
+                to="/admin" 
+                className={`hover:text-primary transition-colors ${
+                  isActive('/admin') ? 'text-primary font-medium' : 'text-muted-foreground'
+                }`}
+              >
+                Admin
+              </Link>
+            )}
           </nav>
 
           {/* Actions */}
@@ -58,10 +77,47 @@ const Header = () => {
                 Browse Pets
               </Link>
             </Button>
-            <Button size="sm" className="bg-gradient-to-r from-primary to-secondary hover:opacity-90">
-              <Plus className="w-4 h-4 mr-2" />
-              Post Ad
-            </Button>
+            {user ? (
+              <>
+                <Button size="sm" className="bg-gradient-to-r from-primary to-secondary hover:opacity-90">
+                  <Plus className="w-4 h-4 mr-2" />
+                  Post Ad
+                </Button>
+                <DropdownMenu>
+                  <DropdownMenuTrigger asChild>
+                    <Button variant="outline" size="sm">
+                      <User className="w-4 h-4 mr-2" />
+                      Account
+                    </Button>
+                  </DropdownMenuTrigger>
+                  <DropdownMenuContent align="end">
+                    <DropdownMenuItem>
+                      <User className="w-4 h-4 mr-2" />
+                      Profile
+                    </DropdownMenuItem>
+                    {isAdmin && (
+                      <DropdownMenuItem asChild>
+                        <Link to="/admin">
+                          <Settings className="w-4 h-4 mr-2" />
+                          Admin Dashboard
+                        </Link>
+                      </DropdownMenuItem>
+                    )}
+                    <DropdownMenuSeparator />
+                    <DropdownMenuItem onClick={signOut}>
+                      <LogOut className="w-4 h-4 mr-2" />
+                      Sign Out
+                    </DropdownMenuItem>
+                  </DropdownMenuContent>
+                </DropdownMenu>
+              </>
+            ) : (
+              <Button size="sm" asChild>
+                <Link to="/auth">
+                  Sign In
+                </Link>
+              </Button>
+            )}
           </div>
         </div>
 
