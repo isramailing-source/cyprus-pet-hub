@@ -1,5 +1,5 @@
 import { useState, useEffect } from "react";
-import { createClient } from "@supabase/supabase-js";
+import { supabase } from "@/integrations/supabase/client";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
@@ -8,23 +8,24 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { Calendar, Tag, Search, BookOpen } from "lucide-react";
 import { useToast } from "@/components/ui/use-toast";
 
-const supabase = createClient(
-  process.env.VITE_SUPABASE_URL || "",
-  process.env.VITE_SUPABASE_ANON_KEY || ""
-);
 
 interface Article {
   id: string;
   title: string;
   slug: string;
   content: string;
-  excerpt: string;
-  category: string;
-  tags: string[];
-  meta_title: string;
-  meta_description: string;
-  author: string;
+  excerpt: string | null;
+  category_id: string | null;
+  tags: string[] | null;
+  meta_title: string | null;
+  meta_description: string | null;
+  author: string | null;
   published_at: string;
+  featured_image: string | null;
+  is_published: boolean;
+  created_at: string;
+  updated_at: string;
+  views: number;
 }
 
 export const BlogSection = () => {
@@ -52,7 +53,7 @@ export const BlogSection = () => {
       }
 
       if (categoryFilter) {
-        query = query.eq('category', categoryFilter);
+        query = query.eq('category_id', categoryFilter);
       }
 
       const { data, error } = await query.limit(20);
@@ -112,11 +113,11 @@ export const BlogSection = () => {
                 <Calendar className="h-4 w-4" />
                 {new Date(selectedArticle.published_at).toLocaleDateString()}
               </div>
-              <span>By {selectedArticle.author}</span>
-              <Badge variant="secondary">{selectedArticle.category}</Badge>
+              <span>By {selectedArticle.author || 'Anonymous'}</span>
+              <Badge variant="secondary">{selectedArticle.category_id || 'Uncategorized'}</Badge>
             </div>
             <div className="flex flex-wrap gap-2">
-              {selectedArticle.tags.map((tag) => (
+              {selectedArticle.tags?.map((tag) => (
                 <Badge key={tag} variant="outline" className="text-xs">
                   <Tag className="h-3 w-3 mr-1" />
                   {tag}
@@ -213,7 +214,7 @@ export const BlogSection = () => {
             <CardHeader>
               <div className="flex justify-between items-start mb-2">
                 <Badge variant="secondary" className="text-xs">
-                  {article.category}
+                  {article.category_id || 'Uncategorized'}
                 </Badge>
                 <span className="text-xs text-muted-foreground">
                   {new Date(article.published_at).toLocaleDateString()}
@@ -223,7 +224,7 @@ export const BlogSection = () => {
             </CardHeader>
             <CardContent className="space-y-4">
               <p className="text-sm text-muted-foreground line-clamp-3">
-                {article.excerpt}
+                {article.excerpt || 'No excerpt available.'}
               </p>
               
               <div className="flex flex-wrap gap-1">
