@@ -38,3 +38,6 @@ verify_jwt = true
 
 [functions.generate-articles]
 verify_jwt = true
+
+[functions.scrape-ads-auto]
+verify_jwt = false

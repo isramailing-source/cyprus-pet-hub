@@ -233,12 +233,26 @@ export const AdsList = () => {
     <div className="container mx-auto px-4 py-8">
       <div className="flex flex-col lg:flex-row justify-between items-start lg:items-center mb-8 gap-4">
         <div>
-          <h1 className="text-3xl font-bold mb-2">Pet Listings in Cyprus</h1>
-          <p className="text-muted-foreground">
-            Discover pets from various Cyprus marketplaces in one place
+          <h1 className="text-3xl font-bold mb-2">Cyprus Pets | Find Your Perfect Companion</h1>
+          <p className="text-muted-foreground mb-2">
+            Discover pets from trusted Cyprus marketplaces - Bazaraki & Facebook Marketplace
           </p>
+          <div className="flex items-center gap-4 text-sm text-muted-foreground">
+            <div className="flex items-center gap-2">
+              <span>📧</span>
+              <a href="mailto:info@cyprus-pets.com" className="hover:text-primary">
+                info@cyprus-pets.com
+              </a>
+            </div>
+            <div className="flex items-center gap-2">
+              <span>📞</span>
+              <a href="tel:+35796336767" className="hover:text-primary">
+                +357 96 336767
+              </a>
+            </div>
+          </div>
           {!user && (
-            <div className="mt-2 p-3 bg-muted rounded-lg border">
+            <div className="mt-3 p-3 bg-muted rounded-lg border">
               <div className="flex items-center gap-2 text-sm">
                 <Lock className="h-4 w-4" />
                 <span>

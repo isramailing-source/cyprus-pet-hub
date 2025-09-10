@@ -53,11 +53,15 @@ const Footer = () => {
               </div>
               <div className="flex items-center space-x-2">
                 <Phone className="w-4 h-4" />
-                <span className="opacity-80">+357 99 123 456</span>
+                <a href="tel:+35796336767" className="opacity-80 hover:opacity-100 transition-opacity">
+                  +357 96 336767
+                </a>
               </div>
               <div className="flex items-center space-x-2">
                 <Mail className="w-4 h-4" />
-                <span className="opacity-80">info@cyprus-pets.com</span>
+                <a href="mailto:info@cyprus-pets.com" className="opacity-80 hover:opacity-100 transition-opacity">
+                  info@cyprus-pets.com
+                </a>
               </div>
             </div>
           </div>

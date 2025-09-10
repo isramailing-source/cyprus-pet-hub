@@ -592,6 +592,10 @@ export type Database = {
         Args: { ad_id: string; requester_message?: string }
         Returns: Json
       }
+      run_automated_scraping: {
+        Args: Record<PropertyKey, never>
+        Returns: undefined
+      }
       validate_password_strength: {
         Args: { password_text: string }
         Returns: boolean
