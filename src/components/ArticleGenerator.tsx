@@ -15,29 +15,21 @@ const ArticleGenerator = () => {
     setGeneratedCount(0);
     
     try {
-      // Generate 10 articles in parallel
-      const promises = Array.from({ length: 10 }, () => 
-        supabase.functions.invoke('generate-articles', {
-          body: {}
-        })
-      );
-      
-      const results = await Promise.allSettled(promises);
-      
-      let successCount = 0;
-      results.forEach((result, index) => {
-        if (result.status === 'fulfilled' && !result.value.error) {
-          successCount++;
-          setGeneratedCount(prev => prev + 1);
-        } else {
-          console.error(`Article generation ${index + 1} failed:`, 
-            result.status === 'rejected' ? result.reason : result.value.error);
-        }
+      // Generate articles using the new batch system (5-10 per call)
+      const { data, error } = await supabase.functions.invoke('generate-articles', {
+        body: {}
       });
+      
+      if (error) {
+        console.error('Article generation failed:', error);
+        throw error;
+      }
+      
+      setGeneratedCount(data.articlesGenerated || 0);
       
       toast({
         title: "Article Generation Complete",
-        description: `Successfully generated ${successCount} out of 10 articles.`,
+        description: `Successfully generated ${data.articlesGenerated} comprehensive Cesar Milan-inspired articles!`,
       });
       
     } catch (error) {
@@ -57,7 +49,7 @@ const ArticleGenerator = () => {
       <CardHeader>
         <CardTitle>Article Generator</CardTitle>
         <CardDescription>
-          Generate comprehensive pet care articles for Cyprus
+          Generate comprehensive Cesar Milan-inspired pet psychology articles for Cyprus
         </CardDescription>
       </CardHeader>
       <CardContent className="space-y-4">
@@ -69,16 +61,16 @@ const ArticleGenerator = () => {
           {loading ? (
             <>
               <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-              Generating Articles... ({generatedCount}/10)
+              Generating Articles... ({generatedCount})
             </>
           ) : (
-            'Generate 10 New Articles'
+            'Generate 5-10 New Articles'
           )}
         </Button>
         
         {generatedCount > 0 && (
           <p className="text-sm text-muted-foreground text-center">
-            Generated {generatedCount} articles successfully
+            Generated {generatedCount} comprehensive articles successfully
           </p>
         )}
       </CardContent>

@@ -105,61 +105,137 @@ serve(async (req) => {
         title: 'The Cyprus Rehabilitation Center: Your Home as a Healing Space',
         category: 'care',
         focus: 'environmental psychology, healing spaces, rehabilitation'
+      },
+      {
+        title: 'Mastering Leash Psychology: The Cyprus Dog Walker\'s Guide to Leadership',
+        category: 'training',
+        focus: 'leash training, walking leadership, outdoor control'
+      },
+      {
+        title: 'Beach Pack Dynamics: Cesar\'s Method for Cyprus Coastal Training',
+        category: 'training',
+        focus: 'beach training, water safety, coastal socialization'
+      },
+      {
+        title: 'The Calm-Assertive Cyprus Home: Environmental Dog Psychology',
+        category: 'care',
+        focus: 'home environment, territorial management, space psychology'
+      },
+      {
+        title: 'Cyprus Dog Nutrition Psychology: Food as Leadership Tool',
+        category: 'nutrition',
+        focus: 'feeding psychology, resource control, behavioral nutrition'
+      },
+      {
+        title: 'Heat-Adapted Exercise Psychology: Cesar\'s Mediterranean Method',
+        category: 'health',
+        focus: 'exercise psychology, heat management, activity adaptation'
+      },
+      {
+        title: 'Multi-Dog Cyprus Households: Pack Leadership for Multiple Pets',
+        category: 'training',
+        focus: 'multi-dog dynamics, pack hierarchy, group leadership'
+      },
+      {
+        title: 'Cyprus Rescue Dog Rehabilitation: From Street to Balanced Family Member',
+        category: 'training',
+        focus: 'rescue rehabilitation, trust building, behavioral recovery'
+      },
+      {
+        title: 'The Psychology of Cyprus Street Dogs: Understanding Natural Pack Behavior',
+        category: 'training',
+        focus: 'street dog behavior, natural instincts, wild pack dynamics'
+      },
+      {
+        title: 'Cesar\'s Cyprus Puppy Program: Building Confidence from Day One',
+        category: 'training',
+        focus: 'puppy psychology, early development, confidence building'
+      },
+      {
+        title: 'Mediterranean Senior Dog Psychology: Aging with Dignity and Leadership',
+        category: 'health',
+        focus: 'senior care, aging psychology, dignity maintenance'
       }
     ]
     
-    // Select random topic
-    const randomTopic = topics[Math.floor(Math.random() * topics.length)]
+    // Generate 5-10 articles per run for better content volume
+    const articlesToGenerate = Math.floor(Math.random() * 6) + 5 // 5-10 articles
+    console.log(`Generating ${articlesToGenerate} Cesar Milan-inspired articles...`)
+    // Generate 5-10 articles per run for better content volume
+    const articlesToGenerate = Math.floor(Math.random() * 6) + 5 // 5-10 articles
+    console.log(`Generating ${articlesToGenerate} Cesar Milan-inspired articles...`)
     
-    // Find matching category from database
-    const matchingCategory = categories.find(cat => cat.slug === randomTopic.category) || categories[0]
+    const generatedArticles = []
+    const errors = []
     
-    console.log(`Generating Cesar Milan-inspired article: ${randomTopic.title} (${matchingCategory.name})`)
-    
-    // Generate comprehensive article content
-    const articleData = await generateCesarInspiredContent(randomTopic, matchingCategory)
-    
-    // Generate URL-friendly slug with timestamp to avoid conflicts
-    const baseSlug = randomTopic.title.toLowerCase()
-      .replace(/[^a-z0-9\s-]/g, '')
-      .replace(/\s+/g, '-')
-      .replace(/-+/g, '-')
-      .trim()
-    
-    const uniqueSlug = `${baseSlug}-${Date.now()}`
-    
-    // Insert article into database with proper category_id
-    const { data, error } = await supabase
-      .from('articles')
-      .insert({
-        title: articleData.title,
-        content: articleData.content,
-        excerpt: articleData.excerpt,
-        slug: uniqueSlug,
-        meta_title: articleData.metaTitle,
-        meta_description: articleData.metaDescription,
-        tags: articleData.tags,
-        category_id: matchingCategory.id,
-        is_published: true,
-        published_at: new Date().toISOString(),
-        author: 'Cyprus Pet Psychology Expert'
-      })
-      .select()
-      .single()
+    for (let i = 0; i < articlesToGenerate; i++) {
+      try {
+        // Select random topic for each article
+        const randomTopic = topics[Math.floor(Math.random() * topics.length)]
+        
+        // Find matching category from database
+        const matchingCategory = categories.find(cat => cat.slug === randomTopic.category) || categories[0]
+        
+        console.log(`Generating article ${i + 1}/${articlesToGenerate}: ${randomTopic.title}`)
+        
+        // Generate comprehensive article content
+        const articleData = await generateCesarInspiredContent(randomTopic, matchingCategory)
+        
+        // Generate URL-friendly slug with timestamp to avoid conflicts
+        const baseSlug = randomTopic.title.toLowerCase()
+          .replace(/[^a-z0-9\s-]/g, '')
+          .replace(/\s+/g, '-')
+          .replace(/-+/g, '-')
+          .trim()
+        
+        const uniqueSlug = `${baseSlug}-${Date.now()}-${i}`
+        
+        // Insert article into database with proper category_id
+        const { data, error } = await supabase
+          .from('articles')
+          .insert({
+            title: articleData.title,
+            content: articleData.content,
+            excerpt: articleData.excerpt,
+            slug: uniqueSlug,
+            meta_title: articleData.metaTitle,
+            meta_description: articleData.metaDescription,
+            tags: articleData.tags,
+            category_id: matchingCategory.id,
+            is_published: true,
+            published_at: new Date().toISOString(),
+            author: 'Cyprus Pet Psychology Expert'
+          })
+          .select()
+          .single()
 
-    if (error) {
-      console.error('Database error:', error)
-      throw error
+        if (error) {
+          console.error(`Database error for article ${i + 1}:`, error)
+          errors.push(`Article ${i + 1}: ${error.message}`)
+        } else {
+          generatedArticles.push(data)
+          console.log(`✅ Article ${i + 1} created: ${data.title}`)
+        }
+        
+        // Small delay between articles to prevent overwhelming the database
+        await new Promise(resolve => setTimeout(resolve, 500))
+        
+      } catch (articleError) {
+        console.error(`Error generating article ${i + 1}:`, articleError)
+        errors.push(`Article ${i + 1}: ${articleError.message}`)
+      }
     }
 
-    console.log('Comprehensive Cesar Milan-inspired article created successfully:', data.title)
+    console.log(`Batch generation complete! Successfully created ${generatedArticles.length} articles.`)
     
     return new Response(
       JSON.stringify({ 
         success: true, 
-        article: data,
-        category: matchingCategory.name,
-        message: 'Cesar Milan-inspired article generated and published successfully'
+        articlesGenerated: generatedArticles.length,
+        totalAttempted: articlesToGenerate,
+        articles: generatedArticles.map(a => ({ title: a.title, slug: a.slug })),
+        errors: errors,
+        message: `Successfully generated ${generatedArticles.length} comprehensive Cesar Milan-inspired articles!`
       }),
       { 
         headers: { ...corsHeaders, 'Content-Type': 'application/json' },
@@ -168,7 +244,7 @@ serve(async (req) => {
     )
 
   } catch (error) {
-    console.error('Error generating article:', error)
+    console.error('Error in batch article generation:', error)
     return new Response(
       JSON.stringify({ error: error.message }),
       { 
