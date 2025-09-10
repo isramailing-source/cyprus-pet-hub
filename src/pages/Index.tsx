@@ -6,6 +6,7 @@ import Footer from "@/components/Footer";
 import { Helmet } from "react-helmet-async";
 
 const Index = () => {
+  console.log('Index component rendering');
   return (
     <>
       <Helmet>

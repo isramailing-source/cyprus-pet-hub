@@ -4,6 +4,7 @@ import { Search, MapPin, Heart } from "lucide-react";
 import heroImage from "@/assets/hero-pets-cyprus.jpg";
 
 const HeroSection = () => {
+  console.log('HeroSection component rendering');
   return (
     <section className="relative min-h-[60vh] flex items-center justify-center bg-gradient-to-br from-primary/10 to-secondary/10">
       {/* Background Image */}
