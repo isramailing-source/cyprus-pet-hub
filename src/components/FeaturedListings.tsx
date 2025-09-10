@@ -1,96 +1,113 @@
 import PetCard from "./PetCard";
-import goldenRetrieverImage from "@/assets/golden-retriever-cyprus.jpg";
-import britishShorthairImage from "@/assets/british-shorthair-cyprus.jpg";
-import birdsImage from "@/assets/birds-cyprus.jpg";
+import { useQuery } from "@tanstack/react-query";
+import { supabase } from "@/integrations/supabase/client";
+import { useTranslation } from 'react-i18next';
 import AdInFeed from "@/components/ads/AdInFeed";
 import AdSidebar from "@/components/ads/AdSidebar";
 import AdBanner from "@/components/ads/AdBanner";
+import { Skeleton } from "@/components/ui/skeleton";
+import goldenRetrieverImage from "@/assets/golden-retriever-cyprus.jpg";
+import britishShorthairImage from "@/assets/british-shorthair-cyprus.jpg";
+import birdsImage from "@/assets/birds-cyprus.jpg";
 
-const featuredPets = [
-  {
-    id: "1",
-    name: "Golden Buddy",
-    price: "800",
-    location: "Limassol",
-    timePosted: "2 hours ago",
-    image: goldenRetrieverImage,
-    category: "Dogs",
-    age: "3 months",
-    breed: "Golden Retriever",
-    isFavorited: true
-  },
-  {
-    id: "2",
-    name: "Luna",
-    price: "450",
-    location: "Nicosia",
-    timePosted: "5 hours ago",
-    image: britishShorthairImage,
-    category: "Cats",
-    age: "6 months",
-    breed: "British Shorthair",
-    isFavorited: false
-  },
-  {
-    id: "3",
-    name: "Colorful Parrots",
-    price: "250",
-    location: "Paphos",
-    timePosted: "1 day ago",
-    image: birdsImage,
-    category: "Birds",
-    age: "1 year",
-    breed: "Mixed Parrots",
-    isFavorited: false
-  },
-  {
-    id: "4",
-    name: "Bella",
-    price: "600",
-    location: "Larnaca",
-    timePosted: "2 days ago",
-    image: goldenRetrieverImage,
-    category: "Dogs",
-    age: "4 months",
-    breed: "Labrador Mix",
-    isFavorited: true
-  },
-  {
-    id: "5",
-    name: "Whiskers",
-    price: "300",
-    location: "Famagusta",
-    timePosted: "3 days ago",
-    image: britishShorthairImage,
-    category: "Cats",
-    age: "8 months",
-    breed: "Persian Cat",
-    isFavorited: false
-  },
-  {
-    id: "6",
-    name: "Canary Duo",
-    price: "120",
-    location: "Kyrenia",
-    timePosted: "4 days ago",
-    image: birdsImage,
-    category: "Birds",
-    age: "6 months",
-    breed: "Canaries",
-    isFavorited: true
+const getImageSrc = (images: string[] | null) => {
+  if (!images || images.length === 0) {
+    return goldenRetrieverImage; // Default fallback image
   }
-];
+  
+  const imagePath = images[0];
+  
+  // Map specific image paths to imported assets
+  switch (imagePath) {
+    case '/assets/golden-retriever-cyprus.jpg':
+      return goldenRetrieverImage;
+    case '/assets/british-shorthair-cyprus.jpg':
+      return britishShorthairImage;
+    case '/assets/birds-cyprus.jpg':
+      return birdsImage;
+    default:
+      return goldenRetrieverImage; // Fallback for unknown paths
+  }
+};
 
 const FeaturedListings = () => {
+  const { t } = useTranslation();
+  
+  // Fetch real pet data from database
+  const { data: featuredPets = [], isLoading, error } = useQuery({
+    queryKey: ['featured-pets'],
+    queryFn: async () => {
+      const { data, error } = await supabase
+        .from('ads_public')
+        .select('*')
+        .eq('is_active', true)
+        .order('created_at', { ascending: false })
+        .limit(6);
+      
+      if (error) throw error;
+      
+      // Transform data to match PetCard props
+      return data.map((ad) => ({
+        id: ad.id,
+        name: ad.title || 'Pet',
+        price: ad.price ? `${ad.price}` : 'Contact for price',
+        location: ad.location || 'Cyprus',
+        timePosted: new Date(ad.created_at || '').toLocaleDateString(),
+        image: getImageSrc(ad.images),
+        category: 'Pet', // Default category since we don't have category names in view
+        age: ad.age || 'Unknown',
+        breed: ad.breed || 'Mixed',
+        isFavorited: false
+      }));
+    }
+  });
+
+  if (isLoading) {
+    return (
+      <section className="py-16">
+        <div className="container mx-auto px-4">
+          <div className="text-center mb-12">
+            <h2 className="text-3xl md:text-4xl font-bold text-foreground mb-4">
+              {t('featuredPets')}
+            </h2>
+            <p className="text-lg text-muted-foreground max-w-2xl mx-auto">
+              {t('featuredPetsDescription')}
+            </p>
+          </div>
+          
+          <div className="grid grid-cols-1 lg:grid-cols-4 gap-8">
+            <div className="lg:col-span-3">
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                {[...Array(6)].map((_, i) => (
+                  <div key={i} className="bg-card rounded-lg border p-4">
+                    <Skeleton className="h-48 w-full mb-4" />
+                    <Skeleton className="h-4 w-3/4 mb-2" />
+                    <Skeleton className="h-4 w-1/2" />
+                  </div>
+                ))}
+              </div>
+            </div>
+            <div className="lg:col-span-1 space-y-8">
+              <AdSidebar slot="4567890123" />
+            </div>
+          </div>
+        </div>
+      </section>
+    );
+  }
+
+  if (error) {
+    console.error('Error fetching featured pets:', error);
+  }
   return (
     <section className="py-16">
       <div className="container mx-auto px-4">
         <div className="text-center mb-12">
           <h2 className="text-3xl md:text-4xl font-bold text-foreground mb-4">
-            Featured Pets
+            {t('featuredPets')}
           </h2>
           <p className="text-lg text-muted-foreground max-w-2xl mx-auto">
-            Discover amazing pets looking for their forever homes in Cyprus
+            {t('featuredPetsDescription')}
           </p>
         </div>
         
@@ -132,7 +149,7 @@ const FeaturedListings = () => {
 
         <div className="text-center mt-12">
           <button className="bg-gradient-to-r from-primary to-secondary text-white px-8 py-3 rounded-full hover:opacity-90 transition-opacity font-medium">
-            View All Listings
+            {t('viewAllListings')}
           </button>
         </div>
         

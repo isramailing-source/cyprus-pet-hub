@@ -3,6 +3,8 @@ import { Button } from "@/components/ui/button";
 import { Link, useLocation } from "react-router-dom";
 import { Input } from "@/components/ui/input";
 import { useAuth } from "@/hooks/useAuth";
+import { useTranslation } from 'react-i18next';
+import LanguageSwitcher from "@/components/LanguageSwitcher";
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -14,6 +16,7 @@ import {
 const Header = () => {
   const location = useLocation();
   const { user, signOut, isAdmin } = useAuth();
+  const { t } = useTranslation();
   
   const isActive = (path: string) => location.pathname === path;
   
@@ -40,7 +43,7 @@ const Header = () => {
                 isActive('/') ? 'text-primary font-medium' : 'text-muted-foreground'
               }`}
             >
-              Home
+              {t('home')}
             </Link>
             <Link 
               to="/marketplace" 
@@ -48,15 +51,16 @@ const Header = () => {
                 isActive('/marketplace') ? 'text-primary font-medium' : 'text-muted-foreground'
               }`}
             >
-              Marketplace
+              {t('marketplace')}
             </Link>
             <Link 
               to="/forum" 
-              className={`hover:text-primary transition-colors ${
+              className={`hover:text-primary transition-colors relative ${
                 isActive('/forum') ? 'text-primary font-medium' : 'text-muted-foreground'
               }`}
             >
-              Community
+              {t('community')}
+              <span className="absolute -top-1 -right-1 bg-cyprus-coral text-white text-xs rounded-full w-2 h-2"></span>
             </Link>
             {isAdmin && (
               <Link 
@@ -65,48 +69,49 @@ const Header = () => {
                   isActive('/admin') ? 'text-primary font-medium' : 'text-muted-foreground'
                 }`}
               >
-                Admin
+                {t('admin')}
               </Link>
             )}
           </nav>
 
           {/* Actions */}
           <div className="flex items-center space-x-3">
+            <LanguageSwitcher />
             <Button variant="outline" size="sm" asChild>
               <Link to="/marketplace">
-                Browse Pets
+                {t('browsePets')}
               </Link>
             </Button>
             {user ? (
               <>
                 <Button size="sm" className="bg-gradient-to-r from-primary to-secondary hover:opacity-90">
                   <Plus className="w-4 h-4 mr-2" />
-                  Post Ad
+                  {t('postAd')}
                 </Button>
                 <DropdownMenu>
                   <DropdownMenuTrigger asChild>
                     <Button variant="outline" size="sm">
                       <User className="w-4 h-4 mr-2" />
-                      Account
+                      {t('account')}
                     </Button>
                   </DropdownMenuTrigger>
                   <DropdownMenuContent align="end">
                     <DropdownMenuItem>
                       <User className="w-4 h-4 mr-2" />
-                      Profile
+                      {t('profile')}
                     </DropdownMenuItem>
                     {isAdmin && (
                       <DropdownMenuItem asChild>
                         <Link to="/admin">
                           <Settings className="w-4 h-4 mr-2" />
-                          Admin Dashboard
+                          {t('adminDashboard')}
                         </Link>
                       </DropdownMenuItem>
                     )}
                     <DropdownMenuSeparator />
                     <DropdownMenuItem onClick={signOut}>
                       <LogOut className="w-4 h-4 mr-2" />
-                      Sign Out
+                      {t('signOut')}
                     </DropdownMenuItem>
                   </DropdownMenuContent>
                 </DropdownMenu>
@@ -114,7 +119,7 @@ const Header = () => {
             ) : (
               <Button size="sm" asChild>
                 <Link to="/auth">
-                  Sign In
+                  {t('signIn')}
                 </Link>
               </Button>
             )}
@@ -126,7 +131,7 @@ const Header = () => {
           <div className="relative">
             <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-muted-foreground w-4 h-4" />
             <Input 
-              placeholder="Search for pets, equipment..." 
+              placeholder={t('searchPlaceholder')}
               className="pl-10 pr-4"
             />
           </div>
