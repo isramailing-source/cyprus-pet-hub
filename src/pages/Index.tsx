@@ -11,6 +11,7 @@ import FeaturedProductsSection from '@/components/affiliates/FeaturedProductsSec
 import AffiliateNetworkBanner from '@/components/affiliates/AffiliateNetworkBanner';
 import EnhancedAffiliateSidebar from '@/components/affiliates/EnhancedAffiliateSidebar';
 import EnhancedAdManager from '@/components/ads/EnhancedAdManager';
+import TestAffiliateSync from '@/components/TestAffiliateSync';
 import { Helmet } from "react-helmet-async";
 
 const Index = () => {
@@ -47,6 +48,11 @@ const Index = () => {
           {/* Main Content */}
           <main className="flex-1">
             <EnhancedPetHero />
+            
+            {/* Temporary Test Sync Component */}
+            <div className="container mx-auto px-4 py-6">
+              <TestAffiliateSync />
+            </div>
             
             {/* Enhanced Ad Manager - Between Sections */}
             <EnhancedAdManager placement="between-sections" />
