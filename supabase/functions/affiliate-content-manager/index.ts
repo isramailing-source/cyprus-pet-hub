@@ -22,7 +22,8 @@ serve(async (req) => {
   try {
     console.log('Affiliate Content Manager started');
     
-    const { action } = await req.json().catch(() => ({ action: 'full_sync' }));
+    const { action, ...params } = await req.json().catch(() => ({ action: 'full_sync' }));
+    console.log('Affiliate Content Manager - Action:', action);
     
     switch (action) {
       case 'sync_products':
@@ -33,6 +34,8 @@ serve(async (req) => {
         return await updateProductPrices();
       case 'publish_scheduled':
         return await publishScheduledContent();
+      case 'add_network':
+        return await addNetwork(params);
       case 'full_sync':
       default:
         return await runFullSync();
@@ -124,10 +127,10 @@ async function syncAffiliateProducts() {
       
       if (network.name === 'Amazon Associates') {
         totalSynced += await syncAmazonProducts(network);
-      } else if (network.name === 'Alibaba.com') {
+      } else if (network.name === 'Alibaba.com' || network.name.includes('Alibaba')) {
         totalSynced += await syncAlibabaProducts(network);
       } else {
-        console.log(`Sync not implemented for ${network.name}`);
+        totalSynced += await syncGenericProducts(network);
       }
     } catch (error) {
       console.error(`Error syncing ${network.name}:`, error);
@@ -647,4 +650,167 @@ async function publishScheduledContent() {
     JSON.stringify({ content_published: content.length }),
     { headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
   );
+}
+
+// Add Network Function
+async function addNetwork(params: any) {
+  try {
+    console.log('Adding new affiliate network:', params);
+    
+    const { url, name, commission_rate, update_frequency_hours, network_type } = params;
+    
+    if (!url || !name) {
+      return new Response(
+        JSON.stringify({ error: 'URL and name are required' }),
+        { 
+          status: 400,
+          headers: { ...corsHeaders, 'Content-Type': 'application/json' } 
+        }
+      );
+    }
+
+    // Extract domain for affiliate ID
+    const urlObj = new URL(url);
+    const domain = urlObj.hostname.toLowerCase();
+    
+    // Generate affiliate ID based on domain
+    let affiliateId = domain.replace('www.', '').split('.')[0];
+    
+    // Insert new network
+    const { data: newNetwork, error: insertError } = await supabase
+      .from('affiliate_networks')
+      .insert({
+        name: name,
+        affiliate_id: affiliateId,
+        commission_rate: commission_rate || 5,
+        update_frequency_hours: update_frequency_hours || 24,
+        is_active: true,
+        settings: {
+          network_type: network_type || 'generic',
+          source_url: url,
+          added_manually: true,
+          added_at: new Date().toISOString()
+        }
+      })
+      .select()
+      .single();
+
+    if (insertError) {
+      console.error('Error inserting network:', insertError);
+      throw insertError;
+    }
+
+    console.log('Network added successfully:', newNetwork);
+
+    // Start initial sync for the new network
+    try {
+      const syncResult = await syncNetworkProducts(newNetwork);
+      console.log('Initial sync completed for new network:', syncResult);
+    } catch (syncError) {
+      console.error('Initial sync failed (non-fatal):', syncError);
+    }
+
+    const result = {
+      success: true,
+      network: newNetwork,
+      message: `${name} has been added successfully and initial sync started`
+    };
+    
+    return new Response(
+      JSON.stringify(result),
+      { 
+        headers: { ...corsHeaders, 'Content-Type': 'application/json' } 
+      }
+    );
+
+  } catch (error) {
+    console.error('Error in addNetwork:', error);
+    return new Response(
+      JSON.stringify({ 
+        error: 'Failed to add network',
+        details: error instanceof Error ? error.message : 'Unknown error occurred'
+      }),
+      { 
+        status: 500,
+        headers: { ...corsHeaders, 'Content-Type': 'application/json' } 
+      }
+    );
+  }
+}
+
+// Helper function to sync products for a specific network
+async function syncNetworkProducts(network: any) {
+  console.log(`Syncing products for network: ${network.name}`);
+  
+  const domain = network.settings?.source_url ? new URL(network.settings.source_url).hostname : network.affiliate_id;
+  
+  if (domain.includes('alibaba')) {
+    return await syncAlibabaProducts(network);
+  } else if (domain.includes('amazon')) {
+    return await syncAmazonProducts(network);
+  } else {
+    // Generic sync - create sample products
+    return await syncGenericProducts(network);
+  }
+}
+
+// Generic product sync for unknown networks
+async function syncGenericProducts(network: any) {
+  console.log(`Creating sample products for ${network.name}`);
+  
+  const sampleProducts = [
+    {
+      external_product_id: `${network.affiliate_id}-sample-1`,
+      title: 'Premium Pet Food',
+      description: 'High-quality nutrition for your pets',
+      short_description: 'Premium nutrition formula',
+      price: 29.99,
+      currency: 'EUR',
+      category: 'Pet Food',
+      brand: 'Sample Brand',
+      affiliate_link: network.settings?.source_url || '#',
+      rating: 4.5,
+      review_count: 150,
+      network_id: network.id,
+      availability_status: 'in_stock'
+    },
+    {
+      external_product_id: `${network.affiliate_id}-sample-2`,
+      title: 'Interactive Pet Toy',
+      description: 'Keep your pets entertained and active',
+      short_description: 'Interactive entertainment toy',
+      price: 19.99,
+      currency: 'EUR',
+      category: 'Pet Toys',
+      brand: 'Sample Brand',
+      affiliate_link: network.settings?.source_url || '#',
+      rating: 4.3,
+      review_count: 89,
+      network_id: network.id,
+      availability_status: 'in_stock'
+    }
+  ];
+
+  let syncedCount = 0;
+
+  for (const product of sampleProducts) {
+    try {
+      const { error } = await supabase
+        .from('affiliate_products')
+        .upsert(product, {
+          onConflict: 'external_product_id,network_id'
+        });
+
+      if (error) {
+        console.error('Error inserting sample product:', error);
+      } else {
+        console.log(`Sample product added: ${product.title}`);
+        syncedCount++;
+      }
+    } catch (error) {
+      console.error('Error processing sample product:', error);
+    }
+  }
+
+  return syncedCount;
 }

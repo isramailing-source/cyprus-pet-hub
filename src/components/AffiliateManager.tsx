@@ -12,6 +12,7 @@ import { AlertCircle, RefreshCw, TrendingUp, ShoppingBag, FileText, DollarSign }
 import { supabase } from '@/integrations/supabase/client';
 import { toast } from 'sonner';
 import { useAuth } from '@/hooks/useAuth';
+import AddNetworkDialog from './AddNetworkDialog';
 
 interface AffiliateStats {
   totalProducts: number;
@@ -313,7 +314,10 @@ export default function AffiliateManager() {
         <TabsContent value="networks">
           <Card>
             <CardHeader>
-              <CardTitle>Affiliate Networks</CardTitle>
+              <div className="flex items-center justify-between">
+                <CardTitle>Affiliate Networks</CardTitle>
+                <AddNetworkDialog onNetworkAdded={fetchData} />
+              </div>
             </CardHeader>
             <CardContent>
               <div className="space-y-4">
