@@ -1,5 +1,9 @@
 import bannerAffiliate from "@/assets/banner-sidebar-affiliate.jpg";
 import bannerGrooming from "@/assets/banner-grooming-tools.jpg";
+import bannerPetFood from "@/assets/banner-pet-food-products.jpg";
+import bannerPetCare from "@/assets/banner-pet-care-essentials.jpg";
+import bannerInteractiveToys from "@/assets/banner-interactive-toys.jpg";
+import bannerComfortBeds from "@/assets/banner-comfort-beds.jpg";
 
 interface AmazonWidgetProps {
   searchPhrase?: string;
@@ -16,6 +20,18 @@ const AmazonWidget = ({
   const getBannerImage = () => {
     if (searchPhrase?.toLowerCase().includes('grooming') || searchPhrase?.toLowerCase().includes('clippers')) {
       return bannerGrooming;
+    }
+    if (searchPhrase?.toLowerCase().includes('bed') || searchPhrase?.toLowerCase().includes('orthopedic')) {
+      return bannerComfortBeds;
+    }
+    if (searchPhrase?.toLowerCase().includes('interactive') || searchPhrase?.toLowerCase().includes('toys')) {
+      return bannerInteractiveToys;
+    }
+    if (searchPhrase?.toLowerCase().includes('food') || searchPhrase?.toLowerCase().includes('treats')) {
+      return bannerPetFood;
+    }
+    if (searchPhrase?.toLowerCase().includes('health') || searchPhrase?.toLowerCase().includes('care')) {
+      return bannerPetCare;
     }
     return bannerAffiliate;
   };

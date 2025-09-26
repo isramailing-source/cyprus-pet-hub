@@ -5,6 +5,7 @@ import birdsColorfulParrot from '@/assets/pets-birds-colorful-parrot.jpg';
 import fieldCuteRabbit from '@/assets/pets-field-cute-rabbit.jpg';
 import vineyardBorderCollie from '@/assets/pets-vineyard-border-collie.jpg';
 import architectureMaineCoon from '@/assets/pets-architecture-maine-coon.jpg';
+import greyPitbullCyprus from '@/assets/pets-grey-pitbull-cyprus.jpg';
 
 const PetImageGallery = () => {
   const petImages = [
@@ -37,6 +38,11 @@ const PetImageGallery = () => {
       src: architectureMaineCoon,
       alt: "Maine Coon cat on ancient Cyprus architecture",
       category: "cats"
+    },
+    {
+      src: greyPitbullCyprus,
+      alt: "Grey pitbull in Mediterranean Cyprus garden",
+      category: "dogs"
     }
   ];
 
