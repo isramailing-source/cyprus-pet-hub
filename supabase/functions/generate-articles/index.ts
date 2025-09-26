@@ -236,8 +236,8 @@ serve(async (req) => {
       }
     ]
     
-    // Generate 5-10 articles per run for better content volume
-    const articlesToGenerate = Math.floor(Math.random() * 6) + 5 // 5-10 articles
+    // Generate 2-3 articles per run to avoid rate limits
+    const articlesToGenerate = Math.floor(Math.random() * 2) + 2 // 2-3 articles
     console.log(`Generating ${articlesToGenerate} Cesar Milan-inspired articles...`)
     
     const generatedArticles = []
@@ -266,7 +266,7 @@ serve(async (req) => {
         console.log(`Generating article ${i + 1}/${articlesToGenerate}: ${randomTopic.title}`)
         console.log(`Using category:`, { id: matchingCategory.id, slug: matchingCategory.slug, name: matchingCategory.name })
         
-        // Generate comprehensive article content
+        // Generate comprehensive article content with retry logic
         const articleData = await generateCesarInspiredContent(randomTopic, matchingCategory)
         
         // Validate article data before insertion
@@ -320,12 +320,13 @@ serve(async (req) => {
           console.log(`✅ Article ${i + 1} created successfully: ${data.title}`)
         }
         
-        // Small delay between articles to prevent overwhelming the database
-        await new Promise(resolve => setTimeout(resolve, 500))
+        // Longer delay between articles to prevent rate limiting
+        await new Promise(resolve => setTimeout(resolve, Math.random() * 10000 + 15000)) // 15-25 seconds
         
       } catch (articleError) {
         console.error(`Error generating article ${i + 1}:`, articleError)
-        errors.push(`Article ${i + 1}: ${articleError.message}`)
+        const errorMessage = articleError instanceof Error ? articleError.message : 'Unknown error occurred'
+        errors.push(`Article ${i + 1}: ${errorMessage}`)
       }
     }
 
@@ -354,8 +355,9 @@ serve(async (req) => {
 
   } catch (error) {
     console.error('Error in batch article generation:', error)
+    const errorMessage = error instanceof Error ? error.message : 'Unknown error occurred'
     return new Response(
-      JSON.stringify({ error: error.message }),
+      JSON.stringify({ error: errorMessage }),
       { 
         headers: { ...corsHeaders, 'Content-Type': 'application/json' },
         status: 500 
@@ -473,11 +475,12 @@ Do not add disclaimers or unrelated text.`
 
   } catch (error) {
     console.error('Error generating expert article:', error)
-    throw new Error(`Failed to generate expert article: ${error.message}`)
+    const errorMessage = error instanceof Error ? error.message : 'Unknown error occurred'
+    throw new Error(`Failed to generate expert article: ${errorMessage}`)
   }
 }
 
-// Generate comprehensive Cesar Milan-inspired article content using Gemini
+// Generate comprehensive Cesar Milan-inspired article content using Gemini with retry logic
 async function generateCesarInspiredContent(topic: any, category: any) {
   console.log(`Generating AI content for: ${topic.title}`)
   
@@ -488,33 +491,36 @@ async function generateCesarInspiredContent(topic: any, category: any) {
   }
   
   console.log('Gemini API key found, length:', geminiApiKey.length)
-  
-  // Test API key validity with a simple call first
-  try {
-    const testResponse = await fetch(`https://generativelanguage.googleapis.com/v1beta/models?key=${geminiApiKey}`, {
-      method: 'GET',
-      headers: {
-        'Content-Type': 'application/json',
-      },
-    })
-    
-    if (!testResponse.ok) {
-      console.error('Gemini API key validation failed:', testResponse.status, testResponse.statusText)
-      if (testResponse.status === 401 || testResponse.status === 403) {
-        throw new Error('Gemini API key is invalid or unauthorized. Please check your API key in Supabase secrets.')
-      } else if (testResponse.status === 429) {
-        throw new Error('Gemini API rate limit exceeded. Please try again later.')
+
+  // Retry logic with exponential backoff
+  const maxRetries = 3
+  for (let attempt = 0; attempt < maxRetries; attempt++) {
+    try {
+      console.log(`Attempt ${attempt + 1} for: ${topic.title}`)
+      
+      // Add random delay to avoid hitting rate limits
+      if (attempt > 0) {
+        const delay = Math.pow(2, attempt) * 30000 + Math.random() * 10000 // 30s, 60s, 120s + random
+        console.log(`Waiting ${Math.floor(delay / 1000)}s before retry...`)
+        await new Promise(resolve => setTimeout(resolve, delay))
+      }
+
+      return await attemptArticleGeneration(topic, category, geminiApiKey)
+    } catch (error) {
+      console.error(`Attempt ${attempt + 1} failed:`, error)
+      const errorMessage = error instanceof Error ? error.message : 'Unknown error occurred'
+      
+      if (errorMessage.includes('rate limit') && attempt < maxRetries - 1) {
+        console.log(`Rate limit hit, will retry in a moment...`)
+        continue
       } else {
-        throw new Error(`Gemini API error: ${testResponse.status} ${testResponse.statusText}`)
+        throw error
       }
     }
-    
-    console.log('✅ Gemini API key validation successful')
-  } catch (testError) {
-    console.error('Gemini API key test failed:', testError)
-    throw testError
   }
+}
 
+async function attemptArticleGeneration(topic: any, category: any, geminiApiKey: string) {
   const prompt = `Write a comprehensive 1500+ word article about "${topic.title}" for Cyprus pet owners. 
 
 Topic Focus: ${topic.focus}
@@ -623,12 +629,10 @@ Write in HTML format with proper headings (h2, h3), paragraphs, and lists. Make 
 }
 
 // Generate tags based on category and focus areas
-
-// Generate tags based on category and focus areas
 function generateCesarTags(category: string, focus: string): string[] {
   const baseTags = ['cyprus pets', 'cesar milan', 'dog training', 'pack leadership', 'mediterranean pets']
   
-  const categoryTags = {
+  const categoryTags: Record<string, string[]> = {
     dogs: ['dog psychology', 'behavior modification', 'calm assertive energy', 'pack hierarchy', 'obedience training'],
     cats: ['cat behavior', 'feline psychology', 'territory management', 'independence training'],
     birds: ['bird behavior', 'cage psychology', 'social dynamics', 'environmental enrichment'],
