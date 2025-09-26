@@ -74,6 +74,9 @@ const Footer = () => {
           <p className="text-xs opacity-60 mt-2">
             © 2024 Cyprus Pets. All rights reserved.
           </p>
+          <p className="text-xs opacity-60 mt-2 max-w-2xl mx-auto">
+            Cyprus Pets is a participant in the Amazon Services LLC Associates Program, an affiliate advertising program designed to provide a means for sites to earn advertising fees by advertising and linking to Amazon.com.
+          </p>
         </div>
       </div>
     </footer>

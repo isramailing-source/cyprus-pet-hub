@@ -4,6 +4,8 @@ import { Link, useNavigate } from "react-router-dom";
 import { Clock, User, ArrowRight } from "lucide-react";
 import AdBanner from "@/components/ads/AdBanner";
 import AdSidebar from "@/components/ads/AdSidebar";
+import AmazonBanner from "@/components/affiliates/AmazonBanner";
+import AffiliateSidebar from "@/components/affiliates/AffiliateSidebar";
 import { useQuery } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
 import { Skeleton } from "@/components/ui/skeleton";
@@ -60,7 +62,7 @@ const FeaturedArticles = () => {
               </div>
             </div>
             <div className="lg:col-span-1">
-              <AdSidebar slot="4567890123" />
+              <AffiliateSidebar />
             </div>
           </div>
         </div>
@@ -117,13 +119,20 @@ const FeaturedArticles = () => {
               ))}
             </div>
             
-            {/* Insert ad banner after 4 articles */}
+            {/* Insert Amazon banner after 4 articles */}
             {articles.length > 4 && (
               <div className="my-8">
-                <AdBanner 
-                  slot="2345678901" 
-                  format="horizontal"
-                  className="max-w-4xl mx-auto"
+                <AmazonBanner 
+                  linkId="featured_articles_middle_banner"
+                  width={728}
+                  height={90}
+                  className="hidden md:block mx-auto"
+                />
+                <AmazonBanner 
+                  linkId="featured_articles_middle_banner_mobile"
+                  width={320}
+                  height={100}
+                  className="md:hidden mx-auto"
                 />
               </div>
             )}
@@ -167,8 +176,7 @@ const FeaturedArticles = () => {
           </div>
           
           <div className="lg:col-span-1 space-y-8">
-            <AdSidebar slot="4567890123" />
-            <AdSidebar slot="5678901234" />
+            <AffiliateSidebar />
           </div>
         </div>
 
