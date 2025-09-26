@@ -1,4 +1,5 @@
-import { useEffect, useRef } from 'react';
+import bannerAffiliate from "@/assets/banner-sidebar-affiliate.jpg";
+import bannerGrooming from "@/assets/banner-grooming-tools.jpg";
 
 interface AmazonWidgetProps {
   searchPhrase?: string;
@@ -11,48 +12,45 @@ const AmazonWidget = ({
   category = "PetSupplies",
   className = ""
 }: AmazonWidgetProps) => {
-  const widgetRef = useRef<HTMLDivElement>(null);
-
-  useEffect(() => {
-    // Dynamically load Amazon widget script
-    const script = document.createElement('script');
-    script.type = 'text/javascript';
-    script.async = true;
-    script.src = '//z-na.amazon-adsystem.com/widgets/onejs?MarketPlace=US';
-    
-    // Set Amazon variables before loading script
-    (window as any).amzn_assoc_placement = "adunit0";
-    (window as any).amzn_assoc_search_bar = "false";
-    (window as any).amzn_assoc_tracking_id = "cypruspets20-20";
-    (window as any).amzn_assoc_ad_mode = "search";
-    (window as any).amzn_assoc_ad_type = "smart";
-    (window as any).amzn_assoc_marketplace = "amazon";
-    (window as any).amzn_assoc_region = "US";
-    (window as any).amzn_assoc_default_search_phrase = searchPhrase;
-    (window as any).amzn_assoc_default_category = category;
-
-    if (widgetRef.current) {
-      widgetRef.current.appendChild(script);
+  // Choose banner based on search phrase
+  const getBannerImage = () => {
+    if (searchPhrase?.toLowerCase().includes('grooming') || searchPhrase?.toLowerCase().includes('clippers')) {
+      return bannerGrooming;
     }
+    return bannerAffiliate;
+  };
 
-    return () => {
-      // Cleanup
-      if (widgetRef.current && script.parentNode) {
-        script.parentNode.removeChild(script);
-      }
-    };
-  }, [searchPhrase, category]);
+  const getAffiliateUrl = () => {
+    const encodedSearch = encodeURIComponent(searchPhrase || 'pet supplies');
+    return `https://www.amazon.com/s?k=${encodedSearch}&tag=cypruspets20-20`;
+  };
 
   return (
-    <div className={`amazon-widget ${className}`}>
-      <div className="text-xs text-muted-foreground mb-2 text-center">
+    <div className={`relative overflow-hidden rounded-lg border bg-card shadow-sm ${className}`}>
+      <div className="text-xs text-muted-foreground mb-2 text-center pt-2">
         Recommended Products
       </div>
-      <div 
-        ref={widgetRef}
-        className="rounded-lg border bg-card p-4 shadow-sm"
-        style={{ minHeight: '200px' }}
-      />
+      <a 
+        href={getAffiliateUrl()}
+        target="_blank" 
+        rel="nofollow sponsored"
+        className="block hover:opacity-90 transition-opacity"
+      >
+        <img 
+          src={getBannerImage()}
+          alt={`${searchPhrase} - Premium Pet Products`}
+          className="w-full h-48 object-cover"
+        />
+        <div className="absolute inset-0 bg-gradient-to-t from-black/30 to-transparent" />
+        <div className="absolute bottom-2 left-2 right-2">
+          <p className="text-white text-sm font-medium shadow-text">
+            {searchPhrase?.includes('grooming') ? 'Professional Grooming Tools' : 'Premium Pet Supplies'}
+          </p>
+          <p className="text-white/80 text-xs">
+            Shop on Amazon →
+          </p>
+        </div>
+      </a>
     </div>
   );
 };

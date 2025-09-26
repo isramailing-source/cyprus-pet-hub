@@ -1,20 +1,20 @@
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Search, MapPin, Heart } from "lucide-react";
-import heroImage from "@/assets/hero-pets-cyprus.jpg";
+import heroImage from "@/assets/hero-cyprus-pets-bg.jpg";
 
 const HeroSection = () => {
   console.log('HeroSection component rendering');
   return (
-    <section className="relative min-h-[60vh] flex items-center justify-center bg-gradient-to-br from-primary/10 to-secondary/10">
+    <section className="relative min-h-[70vh] flex items-center justify-center overflow-hidden">
       {/* Background Image */}
       <div className="absolute inset-0 z-0">
         <img 
           src={heroImage} 
-          alt="Happy pets in Cyprus" 
-          className="w-full h-full object-cover opacity-20"
+          alt="Happy pets in beautiful Cyprus Mediterranean landscape" 
+          className="w-full h-full object-cover"
         />
-        <div className="absolute inset-0 bg-gradient-to-r from-primary/80 to-secondary/60"></div>
+        <div className="absolute inset-0 bg-gradient-to-r from-primary/70 to-secondary/50"></div>
       </div>
 
       {/* Content */}
