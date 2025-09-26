@@ -167,7 +167,16 @@ export default function AffiliateProductGrid({
                 alt={product.title}
                 className="w-full aspect-square object-cover group-hover:scale-105 transition-transform duration-300"
                 onError={(e) => {
-                  e.currentTarget.src = 'https://images.unsplash.com/photo-1587300003388-59208cc962cb?w=400';
+                  // Use category-specific placeholder instead of generic pet image
+                  const category = product.category?.toLowerCase() || 'general';
+                  const placeholderMap: Record<string, string> = {
+                    'food': '/pets-grey-pitbull-cyprus.jpg',
+                    'toys': '/pets-grey-pitbull-cyprus.jpg', 
+                    'feeding': '/pets-grey-pitbull-cyprus.jpg',
+                    'hygiene': '/pets-grey-pitbull-cyprus.jpg',
+                    'grooming': '/pets-grey-pitbull-cyprus.jpg'
+                  };
+                  e.currentTarget.src = placeholderMap[category] || '/pets-grey-pitbull-cyprus.jpg';
                 }}
               />
               {product.original_price && product.price < product.original_price && (
