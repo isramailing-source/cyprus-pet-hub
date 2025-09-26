@@ -38,7 +38,7 @@ const FeaturedProductsSection = ({
 
   const fetchProducts = async () => {
     try {
-      // First try to get featured products
+      // First try to get featured products with network information
       let { data, error } = await supabase
         .from('affiliate_products')
         .select(`
@@ -52,9 +52,10 @@ const FeaturedProductsSection = ({
           category,
           short_description,
           network_id,
-          affiliate_networks!inner(name)
+          affiliate_networks!inner(name, is_active)
         `)
         .eq('is_active', true)
+        .eq('affiliate_networks.is_active', true)
         .eq('is_featured', true)
         .order('created_at', { ascending: false })
         .limit(limit);
@@ -74,9 +75,10 @@ const FeaturedProductsSection = ({
             category,
             short_description,
             network_id,
-            affiliate_networks!inner(name)
+            affiliate_networks!inner(name, is_active)
           `)
           .eq('is_active', true)
+          .eq('affiliate_networks.is_active', true)
           .order('created_at', { ascending: false })
           .limit(limit);
         
@@ -102,6 +104,7 @@ const FeaturedProductsSection = ({
       setProducts(formattedProducts);
     } catch (error) {
       console.error('Error fetching featured products:', error);
+      setProducts([]);
     } finally {
       setLoading(false);
     }

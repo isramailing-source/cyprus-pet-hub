@@ -33,7 +33,7 @@ const FeaturedDiscussions = () => {
   const { data: featuredTopics = [], isLoading, error } = useQuery({
     queryKey: ['featured-topics'],
     queryFn: async () => {
-      // Now we can use the foreign key relationships with automatic joins
+      // Use simple joins with foreign key relationships
       const { data: topicsData, error: topicsError } = await supabase
         .from('forum_topics')
         .select(`
@@ -45,8 +45,8 @@ const FeaturedDiscussions = () => {
           created_at,
           user_id,
           category_id,
-          profiles!forum_topics_user_id_fkey(display_name),
-          forum_categories!forum_topics_category_id_fkey(name, icon)
+          profiles!inner(display_name),
+          forum_categories!inner(name, icon)
         `)
         .eq('moderation_status', 'approved')
         .order('created_at', { ascending: false })
