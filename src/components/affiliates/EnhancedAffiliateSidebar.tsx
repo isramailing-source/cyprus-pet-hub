@@ -3,17 +3,9 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { ExternalLink, Star, ShoppingCart } from 'lucide-react';
 import { supabase } from '@/integrations/supabase/client';
-import { useAuth } from '@/hooks/useAuth';
 import AmazonBanner from './AmazonBanner';
 import AffiliateDisclosure from './AffiliateDisclosure';
 
-interface AffiliateNetwork {
-  id: string;
-  name: string;
-  affiliate_id: string | null;
-  commission_rate: number | null;
-  is_active: boolean;
-}
 
 interface AffiliateProduct {
   id: string;
@@ -32,10 +24,8 @@ interface EnhancedAffiliateSidebarProps {
 }
 
 const EnhancedAffiliateSidebar = ({ className = "" }: EnhancedAffiliateSidebarProps) => {
-  const [networks, setNetworks] = useState<AffiliateNetwork[]>([]);
   const [featuredProducts, setFeaturedProducts] = useState<AffiliateProduct[]>([]);
   const [loading, setLoading] = useState(true);
-  const { isAdmin } = useAuth();
 
   useEffect(() => {
     fetchData();
@@ -43,13 +33,6 @@ const EnhancedAffiliateSidebar = ({ className = "" }: EnhancedAffiliateSidebarPr
 
   const fetchData = async () => {
     try {
-      // Fetch active networks
-      const { data: networksData } = await supabase
-        .from('affiliate_networks')
-        .select('*')
-        .eq('is_active', true)
-        .limit(5);
-
       // Fetch featured products
       const { data: productsData } = await supabase
         .from('affiliate_products')
@@ -58,7 +41,6 @@ const EnhancedAffiliateSidebar = ({ className = "" }: EnhancedAffiliateSidebarPr
         .eq('is_featured', true)
         .limit(6);
 
-      if (networksData) setNetworks(networksData);
       if (productsData) setFeaturedProducts(productsData);
     } catch (error) {
       console.error('Error fetching affiliate data:', error);
@@ -91,7 +73,7 @@ const EnhancedAffiliateSidebar = ({ className = "" }: EnhancedAffiliateSidebarPr
         <div className="animate-pulse">
           <div className="h-32 bg-muted rounded-lg mb-4"></div>
           <div className="h-48 bg-muted rounded-lg mb-4"></div>
-          <div className="h-32 bg-muted rounded-lg"></div>
+          <div className="h-24 bg-muted rounded-lg"></div>
         </div>
       </div>
     );
@@ -159,31 +141,6 @@ const EnhancedAffiliateSidebar = ({ className = "" }: EnhancedAffiliateSidebarPr
         </CardContent>
       </Card>
 
-      {/* Trusted Partners - Admin Only */}
-      {isAdmin && (
-        <Card>
-          <CardHeader>
-            <CardTitle className="text-lg">Trusted Partners</CardTitle>
-          </CardHeader>
-          <CardContent>
-            <div className="space-y-3">
-              {networks.map((network) => (
-                <div key={network.id} className="flex items-center justify-between p-2 bg-muted/30 rounded">
-                  <div>
-                    <h4 className="font-medium text-sm">{network.name}</h4>
-                    {network.commission_rate && (
-                      <p className="text-xs text-muted-foreground">
-                        Up to {network.commission_rate}% commission
-                      </p>
-                    )}
-                  </div>
-                  <div className="w-2 h-2 bg-green-500 rounded-full"></div>
-                </div>
-              ))}
-            </div>
-          </CardContent>
-        </Card>
-      )}
 
       {/* Secondary Banner */}
       <AmazonBanner 
