@@ -1,0 +1,60 @@
+# Robots.txt for Cyprus Pet Hub - Pet Community Forum & Blog
+# https://cyprus-pet-hub.vercel.app/robots.txt
+
+# Allow all search engines to crawl the entire site
+User-agent: *
+Allow: /
+
+# Disallow private/admin areas (if any exist)
+Disallow: /admin/
+Disallow: /api/
+Disallow: /private/
+Disallow: /_next/
+Disallow: /node_modules/
+
+# Prevent indexing of duplicate content
+Disallow: /*?utm_*
+Disallow: /*?sort=*
+Disallow: /*&sort=*
+Disallow: /*?page=*
+Disallow: /*&page=*
+
+# Allow important pages for forum/blog content
+Allow: /forum/
+Allow: /blog/
+Allow: /resources/
+Allow: /community/
+Allow: /guides/
+Allow: /articles/
+Allow: /discussions/
+
+# Crawl delay to be respectful to server resources
+Crawl-delay: 1
+
+# Sitemap location
+Sitemap: https://cyprus-pet-hub.vercel.app/sitemap.xml
+
+# Search engine specific rules
+User-agent: Googlebot
+Allow: /
+Crawl-delay: 1
+
+User-agent: Bingbot
+Allow: /
+Crawl-delay: 1
+
+User-agent: facebookexternalhit
+Allow: /
+
+User-agent: Twitterbot
+Allow: /
+
+# Block problematic crawlers
+User-agent: SemrushBot
+Disallow: /
+
+User-agent: AhrefsBot
+Disallow: /
+
+User-agent: MJ12bot
+Disallow: /
