@@ -1,6 +1,5 @@
 import { serve } from "https://deno.land/std@0.168.0/http/server.ts"
 import { createClient } from 'https://esm.sh/@supabase/supabase-js@2'
-
 interface ArticleGenerationParams {
   topic: string;
   lengthWords?: number;
@@ -8,17 +7,14 @@ interface ArticleGenerationParams {
   additionalInstructions?: string;
   targetAudience?: string;
 }
-
 const corsHeaders = {
   'Access-Control-Allow-Origin': '*',
   'Access-Control-Allow-Headers': 'authorization, x-client-info, apikey, content-type',
 }
-
 serve(async (req) => {
   if (req.method === 'OPTIONS') {
     return new Response('ok', { headers: corsHeaders })
   }
-
   try {
     const supabaseUrl = Deno.env.get('SUPABASE_URL')!
     const supabaseServiceKey = Deno.env.get('SUPABASE_SERVICE_ROLE_KEY')!
@@ -26,8 +22,7 @@ serve(async (req) => {
     const supabase = createClient(supabaseUrl, supabaseServiceKey)
     
     const body = await req.json()
-    const { topic, lengthWords = 2000, keywords = [], additionalInstructions = '', targetAudience = 'advanced, knowledgeable pet owners who want in-depth insights' } = body
-
+    const { topic, lengthWords = 10000, keywords = [], additionalInstructions = '', targetAudience = 'advanced, knowledgeable pet owners who want in-depth insights' } = body
     // Check if this is a custom article generation request
     if (topic) {
       // Custom article generation
@@ -40,7 +35,6 @@ serve(async (req) => {
           }
         )
       }
-
       const articleHtml = await generateArticleWithAssistant({
         topic,
         lengthWords,
@@ -48,7 +42,6 @@ serve(async (req) => {
         additionalInstructions,
         targetAudience,
       })
-
       return new Response(
         JSON.stringify({
           article_html: articleHtml,
@@ -63,7 +56,6 @@ serve(async (req) => {
         }
       )
     }
-
     // Existing batch generation logic for when no topic is provided
     // Fetch categories from database to get proper category IDs
     const { data: categories, error: categoryError } = await supabase
@@ -74,13 +66,11 @@ serve(async (req) => {
       console.error('Error fetching categories:', categoryError)
       throw categoryError
     }
-
     // Validate that we have categories
     if (!categories || categories.length === 0) {
       console.error('No categories found in database')
       throw new Error('No categories available for article generation')
     }
-
     console.log('Available categories:', categories)
     
     // Create a default category fallback (use dogs as default)
@@ -306,7 +296,6 @@ serve(async (req) => {
           .insert(articleToInsert)
           .select()
           .single()
-
         if (error) {
           console.error(`Database error for article ${i + 1}:`, error)
           console.error(`Article data that failed:`, { 
@@ -329,7 +318,6 @@ serve(async (req) => {
         errors.push(`Article ${i + 1}: ${errorMessage}`)
       }
     }
-
     console.log(`Batch generation complete! Successfully created ${generatedArticles.length} articles.`)
     
     if (errors.length > 0) {
@@ -352,7 +340,6 @@ serve(async (req) => {
         status: 200 
       }
     )
-
   } catch (error) {
     console.error('Error in batch article generation:', error)
     const errorMessage = error instanceof Error ? error.message : 'Unknown error occurred'
@@ -365,19 +352,16 @@ serve(async (req) => {
     )
   }
 })
-
 // Expert-level article generation using comprehensive Cesar Millan-inspired prompt
 async function generateArticleWithAssistant(params: ArticleGenerationParams): Promise<string> {
-  const { topic, lengthWords = 2000, keywords = [], additionalInstructions = '', targetAudience = 'advanced, knowledgeable pet owners who want in-depth insights' } = params;
+  const { topic, lengthWords = 10000, keywords = [], additionalInstructions = '', targetAudience = 'advanced, knowledgeable pet owners who want in-depth insights' } = params;
   
   const geminiApiKey = Deno.env.get('GEMINI_API_KEY')
   if (!geminiApiKey) {
     console.error('Gemini API key not found in environment variables')
     throw new Error('Gemini API key not configured. Please set GEMINI_API_KEY in Supabase Edge Function secrets.')
   }
-
   const comprehensivePrompt = `Write a comprehensive, expert-level article inspired by Cesar Millan's pet training philosophy and deep understanding of animal behavior.
-
 Requirements:
 - Length: at least ${lengthWords} words.
 - Target audience: ${targetAudience} — advanced, knowledgeable pet owners who want in-depth insights.
@@ -387,262 +371,21 @@ Requirements:
 - Avoid generic or superficial content; provide unique insights and actionable tips.
 - Use headings, subheadings, bullet points, and HTML formatting for direct website integration.
 - Additional instructions: ${additionalInstructions}.
-
 Generate the article in valid HTML format including:
 - Title header
 - Structured paragraphs
 - Lists where fitting
 - An engaging introduction and conclusion
-
 Write in Cesar Millan's authoritative style, emphasizing:
 - Pack leadership and calm-assertive energy
 - Exercise, Discipline, Affection formula
 - Understanding animal psychology and behavior
 - Practical techniques for pet owners
 - Real-world examples and scenarios
-
 Structure the article with:
 1. Engaging introduction explaining the topic's importance
 2. 4-5 main sections with practical advice and scientific backing
 3. Specific techniques and step-by-step guidance
 4. Real-world case studies and examples
 5. Conclusion with actionable takeaways
-
-Do not add disclaimers or unrelated text.`
-
-  try {
-    const response = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-pro:generateContent?key=${geminiApiKey}`, {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-      },
-      body: JSON.stringify({
-        contents: [
-          {
-            parts: [
-              {
-                text: `You are a world-renowned pet psychology expert who writes in Cesar Millan's authoritative style. Create comprehensive, expert-level articles that provide deep insights into animal behavior and practical training techniques. Always write in valid HTML format with proper structure.\n\n${comprehensivePrompt}`
-              }
-            ]
-          }
-        ],
-        generationConfig: {
-          maxOutputTokens: 4000,
-          temperature: 0.7,
-          topP: 0.8,
-          topK: 40
-        },
-        safetySettings: [
-          {
-            category: "HARM_CATEGORY_HARASSMENT",
-            threshold: "BLOCK_MEDIUM_AND_ABOVE"
-          },
-          {
-            category: "HARM_CATEGORY_HATE_SPEECH",
-            threshold: "BLOCK_MEDIUM_AND_ABOVE"
-          }
-        ]
-      }),
-    })
-
-    if (!response.ok) {
-      const errorBody = await response.text()
-      console.error('Gemini API response error:', {
-        status: response.status,
-        statusText: response.statusText,
-        body: errorBody
-      })
-      
-      if (response.status === 429) {
-        throw new Error('Gemini API rate limit exceeded. Please try again later.')
-      } else if (response.status === 401 || response.status === 403) {
-        throw new Error('Gemini API key is invalid. Please check your API key configuration.')
-      } else {
-        throw new Error(`Gemini API error: ${response.status} ${response.statusText}`)
-      }
-    }
-
-    const data = await response.json()
-    
-    if (!data.candidates || !data.candidates[0] || !data.candidates[0].content || !data.candidates[0].content.parts || !data.candidates[0].content.parts[0]) {
-      throw new Error('Invalid response format from Gemini API')
-    }
-
-    const generatedContent = data.candidates[0].content.parts[0].text
-    console.log('✅ Expert article generated successfully')
-    
-    return generatedContent
-
-  } catch (error) {
-    console.error('Error generating expert article:', error)
-    const errorMessage = error instanceof Error ? error.message : 'Unknown error occurred'
-    throw new Error(`Failed to generate expert article: ${errorMessage}`)
-  }
-}
-
-// Generate comprehensive Cesar Milan-inspired article content using Gemini with retry logic
-async function generateCesarInspiredContent(topic: any, category: any) {
-  console.log(`Generating AI content for: ${topic.title}`)
-  
-  const geminiApiKey = Deno.env.get('GEMINI_API_KEY')
-  if (!geminiApiKey) {
-    console.error('Gemini API key not found in environment variables')
-    throw new Error('Gemini API key not configured. Please set GEMINI_API_KEY in Supabase Edge Function secrets.')
-  }
-  
-  console.log('Gemini API key found, length:', geminiApiKey.length)
-
-  // Retry logic with exponential backoff
-  const maxRetries = 3
-  for (let attempt = 0; attempt < maxRetries; attempt++) {
-    try {
-      console.log(`Attempt ${attempt + 1} for: ${topic.title}`)
-      
-      // Add random delay to avoid hitting rate limits
-      if (attempt > 0) {
-        const delay = Math.pow(2, attempt) * 30000 + Math.random() * 10000 // 30s, 60s, 120s + random
-        console.log(`Waiting ${Math.floor(delay / 1000)}s before retry...`)
-        await new Promise(resolve => setTimeout(resolve, delay))
-      }
-
-      return await attemptArticleGeneration(topic, category, geminiApiKey)
-    } catch (error) {
-      console.error(`Attempt ${attempt + 1} failed:`, error)
-      const errorMessage = error instanceof Error ? error.message : 'Unknown error occurred'
-      
-      if (errorMessage.includes('rate limit') && attempt < maxRetries - 1) {
-        console.log(`Rate limit hit, will retry in a moment...`)
-        continue
-      } else {
-        throw error
-      }
-    }
-  }
-}
-
-async function attemptArticleGeneration(topic: any, category: any, geminiApiKey: string) {
-  const prompt = `Write a comprehensive 1500+ word article about "${topic.title}" for Cyprus pet owners. 
-
-Topic Focus: ${topic.focus}
-Category: ${category.name}
-
-Write in Cesar Milan's style and philosophy, emphasizing:
-- Pack leadership and calm-assertive energy
-- Exercise, Discipline, Affection formula
-- Adaptation to Cyprus's Mediterranean climate and culture
-- Practical techniques for Cyprus pet owners
-- Real-world examples and scenarios
-
-Structure the article with:
-1. Engaging introduction explaining the topic's importance in Cyprus
-2. 3-4 main sections with practical advice
-3. Specific techniques and step-by-step guidance
-4. Cyprus-specific considerations (heat, culture, lifestyle)
-5. Conclusion with actionable takeaways
-
-Write in HTML format with proper headings (h2, h3), paragraphs, and lists. Make it informative, authoritative, and engaging.`
-
-  try {
-    const response = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-pro:generateContent?key=${geminiApiKey}`, {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-      },
-      body: JSON.stringify({
-        contents: [
-          {
-            parts: [
-              {
-                text: `You are a pet psychology expert who writes in Cesar Milan's style. Create comprehensive, practical articles for Cyprus pet owners.\n\n${prompt}`
-              }
-            ]
-          }
-        ],
-        generationConfig: {
-          maxOutputTokens: 3000,
-          temperature: 0.7,
-          topP: 0.8,
-          topK: 40
-        },
-        safetySettings: [
-          {
-            category: "HARM_CATEGORY_HARASSMENT",
-            threshold: "BLOCK_MEDIUM_AND_ABOVE"
-          },
-          {
-            category: "HARM_CATEGORY_HATE_SPEECH",
-            threshold: "BLOCK_MEDIUM_AND_ABOVE"
-          }
-        ]
-      }),
-    })
-
-    if (!response.ok) {
-      const errorText = await response.text()
-      console.error('Gemini API response error:', {
-        status: response.status,
-        statusText: response.statusText,
-        body: errorText
-      })
-      
-      if (response.status === 401 || response.status === 403) {
-        throw new Error('Gemini API authentication failed. Please check your API key configuration.')
-      } else if (response.status === 429) {
-        throw new Error('Gemini API rate limit exceeded. Please try again later.')
-      } else if (response.status === 402) {
-        throw new Error('Gemini API quota exceeded. Please check your billing and usage limits.')
-      } else {
-        throw new Error(`Gemini API error: ${response.status} ${response.statusText}. Details: ${errorText}`)
-      }
-    }
-
-    const data = await response.json()
-    
-    if (!data.candidates || !data.candidates[0] || !data.candidates[0].content || !data.candidates[0].content.parts || !data.candidates[0].content.parts[0]) {
-      console.error('Invalid Gemini response structure:', data)
-      throw new Error('Failed to generate article content - invalid API response structure')
-    }
-    
-    const generatedContent = data.candidates[0].content.parts[0].text
-
-    console.log(`✅ AI content generated successfully (${generatedContent.length} characters)`)
-
-    const title = topic.title
-    const content = generatedContent
-    const excerpt = `Master ${topic.focus} with proven techniques adapted for Cyprus. Learn from Cesar Milan's philosophy applied to Mediterranean pet ownership challenges and opportunities.`
-    const tags = generateCesarTags(category.slug, topic.focus)
-    const metaTitle = `${title} | Cyprus Pet Psychology & Training`
-    const metaDescription = `Expert guidance on ${topic.focus} for Cyprus pet owners. Cesar Milan-inspired techniques for better communication, leadership, and harmony with your pets in Mediterranean conditions.`
-
-    return {
-      title,
-      content,
-      excerpt,
-      tags,
-      metaTitle,
-      metaDescription
-    }
-  } catch (error) {
-    console.error('Error generating AI content:', error)
-    throw error
-  }
-}
-
-// Generate tags based on category and focus areas
-function generateCesarTags(category: string, focus: string): string[] {
-  const baseTags = ['cyprus pets', 'cesar milan', 'dog training', 'pack leadership', 'mediterranean pets']
-  
-  const categoryTags: Record<string, string[]> = {
-    dogs: ['dog psychology', 'behavior modification', 'calm assertive energy', 'pack hierarchy', 'obedience training'],
-    cats: ['cat behavior', 'feline psychology', 'territory management', 'independence training'],
-    birds: ['bird behavior', 'cage psychology', 'social dynamics', 'environmental enrichment'],
-    fish: ['aquarium psychology', 'environmental enrichment', 'fish welfare', 'aquatic behavior'],
-    'small-pets': ['small animal behavior', 'habitat psychology', 'stress management', 'enrichment'],
-    reptiles: ['reptile behavior', 'habitat management', 'environmental needs', 'care psychology'],
-    'farm-animals': ['livestock behavior', 'animal husbandry', 'farm psychology', 'rural care']
-  }
-  
-  const focusKeywords = focus.split(',').map(f => f.trim())
-  
-  return [...baseTags, ...(categoryTags[category] || categoryTags['dogs']), ...focusKeywords].slice(0, 8)
-}
+Do not add
