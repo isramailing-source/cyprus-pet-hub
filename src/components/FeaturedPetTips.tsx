@@ -2,7 +2,6 @@ import { Card, CardContent } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Heart, Thermometer, Scissors, MapPin, FileText, Users } from 'lucide-react';
 import AmazonWidget from '@/components/affiliates/AmazonWidget';
-import EnhancedPetHero from '@/components/EnhancedPetHero';
 
 const FeaturedPetTips = () => {
   const tips = [
@@ -39,11 +38,6 @@ const FeaturedPetTips = () => {
   return (
     <div className="py-16 bg-gradient-to-br from-cyprus-blue/25 via-cyprus-gold/20 to-cyprus-green/25">
       <div className="container mx-auto px-4">
-        {/* Enhanced Pet Hero Section */}
-        <div className="mb-12">
-          <EnhancedPetHero />
-        </div>
-        
         <div className="text-center mb-12">
           <h2 className="text-3xl font-bold text-foreground mb-4">Quick Pet Care Tips</h2>
           <p className="text-lg text-muted-foreground max-w-2xl mx-auto">

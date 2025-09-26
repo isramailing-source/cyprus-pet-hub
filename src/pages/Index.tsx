@@ -1,5 +1,5 @@
 import Header from "@/components/Header";
-import HeroSection from "@/components/HeroSection";
+import EnhancedPetHero from "@/components/EnhancedPetHero";
 import CareGuidesHighlight from "@/components/CareGuidesHighlight";
 import PetResourcesHub from "@/components/PetResourcesHub";
 import FeaturedArticles from "@/components/FeaturedArticles";
@@ -46,7 +46,7 @@ const Index = () => {
         <div className="flex">
           {/* Main Content */}
           <main className="flex-1">
-            <HeroSection />
+            <EnhancedPetHero />
             
             {/* Enhanced Ad Manager - Between Sections */}
             <EnhancedAdManager placement="between-sections" />
