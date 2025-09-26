@@ -23,17 +23,18 @@ const AmazonBanner = ({
         Recommended Products
       </div>
       <a 
-        href="https://amzn.to/3YourAffiliateLink" 
+        href={`https://www.amazon.com/s?k=${encodeURIComponent('pet supplies')}&tag=cypruspets20-20`}
         target="_blank" 
         rel="nofollow sponsored"
         className="block hover:opacity-90 transition-opacity"
       >
-        <img 
-          src={bannerImage}
-          alt="Premium Pet Products - Cyprus Pets Recommended"
-          className="w-full h-auto object-cover"
-          style={{ maxWidth: `${width}px`, maxHeight: `${height}px` }}
-        />
+        <div className="aspect-video w-full overflow-hidden" style={{ maxWidth: `${width}px` }}>
+          <img 
+            src={bannerImage}
+            alt="Premium Pet Products - Cyprus Pets Recommended"
+            className="w-full h-full object-contain transition-transform hover:scale-105"
+          />
+        </div>
         <div className="absolute inset-0 bg-gradient-to-t from-black/20 to-transparent" />
         <div className="absolute bottom-2 left-2 right-2">
           <p className="text-white text-xs font-medium shadow-text">

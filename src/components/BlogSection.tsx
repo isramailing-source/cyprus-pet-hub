@@ -280,10 +280,7 @@ export const BlogSection = () => {
                               <span>{article.views}</span>
                             </div>
                           </div>
-                          <Button variant="ghost" size="sm" className="group-hover:bg-primary/10 group-hover:text-primary transition-colors">
-                            Read More
-                            <ArrowRight className="w-4 h-4 ml-1 group-hover:translate-x-1 transition-transform" />
-                          </Button>
+                          <ArrowRight className="w-4 h-4 text-primary group-hover:translate-x-1 transition-transform" />
                         </div>
                       </div>
                     </Card>

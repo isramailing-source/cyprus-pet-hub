@@ -43,11 +43,13 @@ const AmazonWidget = ({
         rel="nofollow sponsored"
         className="block hover:opacity-90 transition-opacity"
       >
-        <img 
-          src={getBannerImage()}
-          alt={`${searchPhrase} - Premium Pet Products`}
-          className="w-full h-48 object-cover"
-        />
+        <div className="aspect-video w-full overflow-hidden">
+          <img 
+            src={getBannerImage()}
+            alt={`${searchPhrase} - Premium Pet Products`}
+            className="w-full h-full object-contain transition-transform hover:scale-105"
+          />
+        </div>
         <div className="absolute inset-0 bg-gradient-to-t from-black/30 to-transparent" />
         <div className="absolute bottom-2 left-2 right-2">
           <p className="text-white text-sm font-medium shadow-text">
