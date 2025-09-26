@@ -7,3 +7,5 @@ export { default as AffiliateDisclosure } from './AffiliateDisclosure';
 export { default as PetProductShowcase } from './PetProductShowcase';
 export { default as DynamicAffiliateWidget } from './DynamicAffiliateWidget';
 export { default as FeaturedProductsSection } from './FeaturedProductsSection';
+export { default as AffiliateNetworkBanner } from './AffiliateNetworkBanner';
+export { default as EnhancedAffiliateSidebar } from './EnhancedAffiliateSidebar';

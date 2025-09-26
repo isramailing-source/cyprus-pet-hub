@@ -8,6 +8,9 @@ import FeaturedDiscussions from "@/components/FeaturedDiscussions";
 import Footer from "@/components/Footer";
 import AmazonBanner from "@/components/affiliates/AmazonBanner";
 import FeaturedProductsSection from '@/components/affiliates/FeaturedProductsSection';
+import AffiliateNetworkBanner from '@/components/affiliates/AffiliateNetworkBanner';
+import EnhancedAffiliateSidebar from '@/components/affiliates/EnhancedAffiliateSidebar';
+import EnhancedAdManager from '@/components/ads/EnhancedAdManager';
 import { Helmet } from "react-helmet-async";
 
 const Index = () => {
@@ -36,64 +39,89 @@ const Index = () => {
       
       <div className="min-h-screen bg-background">
         <Header />
-        <main>
-          <HeroSection />
-          <CareGuidesHighlight />
-          
-          {/* Amazon Affiliate Banner - Hero Section */}
-          <section className="py-8 bg-muted/30">
-            <div className="container mx-auto px-4 flex justify-center">
-              <AmazonBanner
-                linkId="homepage_hero_banner"
-                width={728}
-                height={90}
-                className="hidden md:block"
-              />
-              <AmazonBanner
-                linkId="homepage_hero_banner_mobile"
-                width={320}
-                height={100}
-                className="md:hidden"
-              />
-            </div>
-          </section>
-          
-          {/* Affiliate Link Section */}
-          <section className="py-6 bg-gradient-to-r from-blue-50 to-green-50 border-l-4 border-primary">
-            <div className="container mx-auto px-4">
-              <div className="bg-white rounded-lg shadow-sm p-6 max-w-4xl mx-auto">
-                <div className="flex items-center justify-between flex-wrap gap-4">
-                  <div className="flex-1">
-                    <h3 className="text-xl font-semibold text-gray-800 mb-2">🌟 Recommended Pet Products & Services</h3>
-                    <p className="text-gray-600 mb-4">Discover premium pet care products and services recommended by our community experts.</p>
-                  </div>
-                  <div className="flex-shrink-0">
-                    <a 
-                      href="https://rzekl.com/g/1e8d114494475461c4ad16525dc3e8/" 
-                      target="_blank" 
-                      rel="nofollow sponsored"
-                      className="inline-block bg-primary text-white px-6 py-3 rounded-lg font-medium hover:bg-primary/90 transition-colors duration-200 shadow-md hover:shadow-lg"
-                    >
-                      🛍️ Shop Premium Pet Products
-                    </a>
+        
+        {/* Enhanced Ad Manager - Header */}
+        <EnhancedAdManager placement="header" />
+        
+        <div className="flex">
+          {/* Main Content */}
+          <main className="flex-1">
+            <HeroSection />
+            
+            {/* Enhanced Ad Manager - Between Sections */}
+            <EnhancedAdManager placement="between-sections" />
+            
+            <CareGuidesHighlight />
+            
+            {/* Affiliate Network Rotating Banner */}
+            <section className="py-8">
+              <div className="container mx-auto px-4">
+                <AffiliateNetworkBanner className="mb-8" />
+              </div>
+            </section>
+            
+            {/* Enhanced Ad Manager - Inline */}
+            <EnhancedAdManager placement="inline" />
+            
+            {/* Affiliate Link Section */}
+            <section className="py-6 bg-gradient-to-r from-blue-50 to-green-50 border-l-4 border-primary">
+              <div className="container mx-auto px-4">
+                <div className="bg-white rounded-lg shadow-sm p-6 max-w-4xl mx-auto">
+                  <div className="flex items-center justify-between flex-wrap gap-4">
+                    <div className="flex-1">
+                      <h3 className="text-xl font-semibold text-gray-800 mb-2">🌟 Recommended Pet Products & Services</h3>
+                      <p className="text-gray-600 mb-4">Discover premium pet care products and services recommended by our community experts.</p>
+                    </div>
+                    <div className="flex-shrink-0">
+                      <a 
+                        href="https://rzekl.com/g/1e8d114494475461c4ad16525dc3e8/" 
+                        target="_blank" 
+                        rel="nofollow sponsored"
+                        className="inline-block bg-primary text-white px-6 py-3 rounded-lg font-medium hover:bg-primary/90 transition-colors duration-200 shadow-md hover:shadow-lg"
+                      >
+                        🛍️ Shop Premium Pet Products
+                      </a>
+                    </div>
                   </div>
                 </div>
               </div>
+            </section>
+            
+            {/* Featured Products Section */}
+            <FeaturedProductsSection 
+              title="Recommended Products & Services for Cyprus Pet Owners"
+              limit={8}
+              className="mb-8"
+            />
+            
+            {/* Enhanced Ad Manager - Between Sections */}
+            <EnhancedAdManager placement="between-sections" />
+            
+            <PetResourcesHub />
+            
+            {/* Enhanced Ad Manager - Inline */}
+            <EnhancedAdManager placement="inline" />
+            
+            <FeaturedArticles />
+            
+            {/* Enhanced Ad Manager - Between Sections */}
+            <EnhancedAdManager placement="between-sections" />
+            
+            <ForumHighlights />
+            <FeaturedDiscussions />
+          </main>
+          
+          {/* Enhanced Affiliate Sidebar */}
+          <aside className="hidden lg:block w-80 p-4">
+            <div className="sticky top-4">
+              <EnhancedAffiliateSidebar />
             </div>
-          </section>
-          
-          {/* Featured Products Section */}
-          <FeaturedProductsSection 
-            title="Recommended Products & Services for Cyprus Pet Owners"
-            limit={6}
-            className="mb-8"
-          />
-          
-          <PetResourcesHub />
-          <FeaturedArticles />
-          <ForumHighlights />
-          <FeaturedDiscussions />
-        </main>
+          </aside>
+        </div>
+        
+        {/* Enhanced Ad Manager - Footer */}
+        <EnhancedAdManager placement="footer" />
+        
         <Footer />
       </div>
     </>
