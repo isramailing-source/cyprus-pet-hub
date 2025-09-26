@@ -25,6 +25,13 @@ const AmazonWidget = ({
     return `https://www.amazon.com/s?k=${encodedSearch}&tag=cypruspets20-20`;
   };
 
+  const getDisplayText = () => {
+    if (searchPhrase?.includes('grooming')) return 'Professional Grooming Tools';
+    if (searchPhrase?.includes('health')) return 'Pet Health Essentials';
+    if (searchPhrase?.includes('premium')) return 'Premium Pet Products';
+    return 'Quality Pet Supplies';
+  };
+
   return (
     <div className={`relative overflow-hidden rounded-lg border bg-card shadow-sm ${className}`}>
       <div className="text-xs text-muted-foreground mb-2 text-center pt-2">
@@ -44,7 +51,7 @@ const AmazonWidget = ({
         <div className="absolute inset-0 bg-gradient-to-t from-black/30 to-transparent" />
         <div className="absolute bottom-2 left-2 right-2">
           <p className="text-white text-sm font-medium shadow-text">
-            {searchPhrase?.includes('grooming') ? 'Professional Grooming Tools' : 'Premium Pet Supplies'}
+            {getDisplayText()}
           </p>
           <p className="text-white/80 text-xs">
             Shop on Amazon →

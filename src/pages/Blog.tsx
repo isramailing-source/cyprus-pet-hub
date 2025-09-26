@@ -1,4 +1,5 @@
 import { BlogSection } from "@/components/BlogSection";
+import FeaturedPetTips from "@/components/FeaturedPetTips";
 import Header from "@/components/Header";
 import Footer from "@/components/Footer";
 import { Helmet } from "react-helmet-async";
@@ -20,6 +21,7 @@ const Blog = () => {
         <Header />
         <main>
           <BlogSection />
+          <FeaturedPetTips />
         </main>
         <Footer />
       </div>
