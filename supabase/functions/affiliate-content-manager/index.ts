@@ -248,6 +248,7 @@ async function syncAmazonProducts(network: any) {
             affiliate_link: affiliateLink,
             rating: product.rating,
             review_count: product.review_count,
+            is_featured: Math.random() > 0.5, // 50% chance of being featured
             seo_title: `${product.title} - Best ${product.category} for Cyprus Pets`,
             seo_description: `${product.short_description}. Available in Cyprus with fast shipping. Price: €${product.price}`,
             tags: [product.category, product.subcategory, product.brand.toLowerCase(), 'cyprus', 'pets']
@@ -383,7 +384,7 @@ async function syncAlibabaProducts(network: any) {
             rating: productData.rating,
             review_count: productData.review_count,
             availability_status: 'in_stock',
-            is_featured: false,
+            is_featured: Math.random() > 0.6, // 40% chance of being featured
             is_active: true,
             seo_title: `${productData.title} - Wholesale Pet Supplies`,
             seo_description: `${productData.short_description}. Buy in bulk from trusted wholesale suppliers.`,

@@ -38,7 +38,8 @@ const FeaturedProductsSection = ({
 
   const fetchProducts = async () => {
     try {
-      const { data, error } = await supabase
+      // First try to get featured products
+      let { data, error } = await supabase
         .from('affiliate_products')
         .select(`
           id,
@@ -57,6 +58,31 @@ const FeaturedProductsSection = ({
         .eq('is_featured', true)
         .order('created_at', { ascending: false })
         .limit(limit);
+      
+      // If no featured products found, fall back to any active products
+      if (!error && (!data || data.length === 0)) {
+        const fallback = await supabase
+          .from('affiliate_products')
+          .select(`
+            id,
+            title,
+            price,
+            currency,
+            image_url,
+            affiliate_link,
+            rating,
+            category,
+            short_description,
+            network_id,
+            affiliate_networks!inner(name)
+          `)
+          .eq('is_active', true)
+          .order('created_at', { ascending: false })
+          .limit(limit);
+        
+        data = fallback.data;
+        error = fallback.error;
+      }
       
       if (error) throw error;
 
