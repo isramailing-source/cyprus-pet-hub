@@ -74,8 +74,9 @@ serve(async (req) => {
 
   } catch (error) {
     console.error('Error in openai-chat function:', error);
+    const errorMessage = error instanceof Error ? error.message : 'An unexpected error occurred'
     return new Response(JSON.stringify({ 
-      error: error.message || 'An unexpected error occurred' 
+      error: errorMessage 
     }), {
       status: 500,
       headers: { ...corsHeaders, 'Content-Type': 'application/json' },

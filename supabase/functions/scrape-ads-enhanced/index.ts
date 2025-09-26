@@ -142,11 +142,12 @@ serve(async (req) => {
         })
 
       } catch (error) {
-        console.error(`❌ Error scraping ${source.name}: ${error.message}`)
+        const errorMessage = error instanceof Error ? error.message : 'Unknown scraping error'
+        console.error(`❌ Error scraping ${source.name}: ${errorMessage}`)
         results.push({
           source: source.name,
           success: false,
-          error: error.message
+          error: errorMessage
         })
       }
     }
@@ -206,11 +207,12 @@ serve(async (req) => {
 
   } catch (error) {
     console.error('💥 Enhanced scraping error:', error)
+    const errorMessage = error instanceof Error ? error.message : 'Unknown enhanced scraping error'
     
     return new Response(
       JSON.stringify({ 
         success: false,
-        error: `Enhanced scraping failed: ${error.message}`,
+        error: `Enhanced scraping failed: ${errorMessage}`,
         timestamp: new Date().toISOString()
       }),
       { 
@@ -250,7 +252,7 @@ function assignSmartCategory(title: string, description: string, breed: string, 
 
 // Enhanced HTML parsing with smart categorization
 async function parseListingsEnhanced(html: string, selectors: any, baseUrl: string, sourceName: string, categories: Category[]) {
-  const listings = []
+  const listings: any[] = []
   
   try {
     const doc = new DOMParser().parseFromString(html, "text/html")
@@ -268,7 +270,7 @@ async function parseListingsEnhanced(html: string, selectors: any, baseUrl: stri
       const container = containers[i]
       
       try {
-        const titleEl = container.querySelector(selectors.title || '.title, h2, h3')
+        const titleEl = (container as any).querySelector(selectors.title || '.title, h2, h3')
         const title = titleEl?.textContent?.trim()
         
         if (!title || title.length < 5) continue
@@ -283,7 +285,7 @@ async function parseListingsEnhanced(html: string, selectors: any, baseUrl: stri
         if (!petKeywords.some(keyword => titleLower.includes(keyword))) continue
 
         // Extract price
-        const priceEl = container.querySelector(selectors.price || '.price')
+        const priceEl = (container as any).querySelector(selectors.price || '.price')
         let price = null
         if (priceEl) {
           const priceText = priceEl.textContent?.trim() || ''
@@ -294,16 +296,16 @@ async function parseListingsEnhanced(html: string, selectors: any, baseUrl: stri
         }
 
         // Extract location
-        const locationEl = container.querySelector(selectors.location || '.location')
+        const locationEl = (container as any).querySelector(selectors.location || '.location')
         let location = locationEl?.textContent?.trim() || 'Cyprus'
         location = location.replace(/[^\w\s,.-]/g, '').trim()
 
         // Extract description
-        const descEl = container.querySelector(selectors.description || '.description, p')
+        const descEl = (container as any).querySelector(selectors.description || '.description, p')
         let description = descEl?.textContent?.trim() || title
 
         // Generate source URL
-        const linkEl = container.querySelector(selectors.link || 'a')
+        const linkEl = (container as any).querySelector(selectors.link || 'a')
         let sourceUrl = linkEl?.getAttribute('href')
         if (sourceUrl && !sourceUrl.startsWith('http')) {
           sourceUrl = new URL(sourceUrl, baseUrl).href

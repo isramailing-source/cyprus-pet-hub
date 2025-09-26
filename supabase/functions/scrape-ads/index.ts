@@ -134,7 +134,8 @@ serve(async (req) => {
           .eq('id', source.id)
 
       } catch (error) {
-        const errorMsg = `Error scraping ${source.name}: ${error.message}`
+        const errorMessage = error instanceof Error ? error.message : 'Unknown scraping error'
+        const errorMsg = `Error scraping ${source.name}: ${errorMessage}`
         console.error(errorMsg)
         errors.push(errorMsg)
       }
@@ -156,14 +157,15 @@ serve(async (req) => {
 
   } catch (error) {
     console.error('Scraping error:', error)
+    const errorMessage = error instanceof Error ? error.message : 'Unknown scraping error'
     
     // Return appropriate error status
-    const status = error.message.includes('authentication') || error.message.includes('permissions') ? 403 : 500
+    const status = errorMessage.includes('authentication') || errorMessage.includes('permissions') ? 403 : 500
     
     return new Response(
       JSON.stringify({ 
         success: false,
-        error: error.message 
+        error: errorMessage 
       }),
       { 
         headers: { ...corsHeaders, 'Content-Type': 'application/json' },
@@ -174,7 +176,7 @@ serve(async (req) => {
 })
 
 async function parseListings(html: string, selectors: any, baseUrl: string, sourceName: string) {
-  const listings = []
+  const listings: any[] = []
   
   try {
     // Parse HTML using proper DOM parser
@@ -194,7 +196,7 @@ async function parseListings(html: string, selectors: any, baseUrl: string, sour
       
       try {
         // Extract title
-        const titleEl = container.querySelector(selectors.title || '.title, h2, h3, .name')
+        const titleEl = (container as any).querySelector(selectors.title || '.title, h2, h3, .name')
         const title = titleEl?.textContent?.trim() || `Pet listing from ${sourceName}`
         
         // Skip if title is too short or generic
@@ -203,7 +205,7 @@ async function parseListings(html: string, selectors: any, baseUrl: string, sour
         }
 
         // Extract price
-        const priceEl = container.querySelector(selectors.price || '.price, .cost, .amount')
+        const priceEl = (container as any).querySelector(selectors.price || '.price, .cost, .amount')
         let price = null
         if (priceEl) {
           const priceText = priceEl.textContent?.trim() || ''
@@ -214,7 +216,7 @@ async function parseListings(html: string, selectors: any, baseUrl: string, sour
         }
 
         // Extract location
-        const locationEl = container.querySelector(selectors.location || '.location, .city, .area')
+        const locationEl = (container as any).querySelector(selectors.location || '.location, .city, .area')
         let location = locationEl?.textContent?.trim() || 'Cyprus'
         
         // Clean up location
@@ -222,11 +224,11 @@ async function parseListings(html: string, selectors: any, baseUrl: string, sour
         if (location.length > 50) location = location.substring(0, 47) + '...'
 
         // Extract description
-        const descEl = container.querySelector(selectors.description || '.description, .text, p')
+        const descEl = (container as any).querySelector(selectors.description || '.description, .text, p')
         let description = descEl?.textContent?.trim() || title
 
         // Extract images
-        const imageEl = container.querySelector(selectors.image || 'img')
+        const imageEl = (container as any).querySelector(selectors.image || 'img')
         const images = []
         if (imageEl) {
           let imgSrc = imageEl.getAttribute('src') || imageEl.getAttribute('data-src')
@@ -237,7 +239,7 @@ async function parseListings(html: string, selectors: any, baseUrl: string, sour
         }
 
         // Generate source URL
-        const linkEl = container.querySelector(selectors.link || 'a')
+        const linkEl = (container as any).querySelector(selectors.link || 'a')
         let sourceUrl = linkEl?.getAttribute('href')
         if (sourceUrl && !sourceUrl.startsWith('http')) {
           sourceUrl = new URL(sourceUrl, baseUrl).href

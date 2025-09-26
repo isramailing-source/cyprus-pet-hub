@@ -47,8 +47,9 @@ serve(async (req) => {
         })
       } catch (scrapeError) {
         console.error('Scraping failed:', scrapeError)
+        const errorMessage = scrapeError instanceof Error ? scrapeError.message : 'Unknown scraping error'
         await setLastTaskTime(supabase, 'scrape', Date.now(), 'error', { 
-          error: scrapeError.message 
+          error: errorMessage 
         })
       }
     } else {
@@ -80,8 +81,9 @@ serve(async (req) => {
         })
       } catch (articleError) {
         console.error('Article generation failed:', articleError)
+        const errorMessage = articleError instanceof Error ? articleError.message : 'Unknown article generation error'
         await setLastTaskTime(supabase, 'article', Date.now(), 'error', { 
-          error: articleError.message 
+          error: errorMessage 
         })
       }
     } else {
@@ -103,8 +105,9 @@ serve(async (req) => {
 
   } catch (error) {
     console.error('Schedule error:', error)
+    const errorMessage = error instanceof Error ? error.message : 'Unknown schedule error'
     return new Response(
-      JSON.stringify({ error: error.message }),
+      JSON.stringify({ error: errorMessage }),
       { 
         headers: { ...corsHeaders, 'Content-Type': 'application/json' },
         status: 500 
