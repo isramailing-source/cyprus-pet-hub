@@ -37,6 +37,7 @@ const App = () => {
                   <Route path="/forum" element={<Forum />} />
                   <Route path="/auth" element={<Auth />} />
                   <Route path="/admin" element={<Admin />} />
+                  <Route path="/affiliate" element={<Affiliate />} />
                   <Route path="*" element={<NotFound />} />
                 </Routes>
               </BrowserRouter>
