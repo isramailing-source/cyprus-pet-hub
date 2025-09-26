@@ -100,7 +100,7 @@ export const BlogSection = () => {
   }
 
   return (
-    <div className="min-h-screen bg-background">
+    <div className="min-h-screen bg-gradient-to-br from-cyprus-blue/20 via-cyprus-gold/15 to-cyprus-green/20">
       {selectedArticle ? (
         <div className="container mx-auto px-4 py-8">
           <Button 
@@ -182,7 +182,7 @@ export const BlogSection = () => {
         <div className="container mx-auto px-4 py-12">
           {/* Enhanced Header Section */}
           <div className="text-center mb-12">
-            <div className="gradient-hero rounded-3xl p-12 mb-8 text-white shadow-large">
+            <div className="gradient-hero bg-gradient-to-r from-cyprus-blue/40 via-primary/30 to-cyprus-gold/40 rounded-3xl p-12 mb-8 text-white shadow-elegant border border-primary/20">
               <h1 className="text-5xl font-bold mb-4 leading-tight">Pet Care Expertise</h1>
               <p className="text-xl opacity-90 max-w-2xl mx-auto mb-6">
                 Your trusted source for expert pet care advice in Cyprus's Mediterranean climate
@@ -217,7 +217,7 @@ export const BlogSection = () => {
           <div className="grid grid-cols-1 lg:grid-cols-4 gap-8">
             <div className="lg:col-span-3">
               {/* Enhanced Search and Filter */}
-              <div className="bg-card rounded-2xl p-6 mb-8 border border-border/50 shadow-soft">
+              <div className="bg-gradient-to-br from-card/80 via-cyprus-green/10 to-cyprus-blue/15 backdrop-blur-sm rounded-2xl p-6 mb-8 border border-primary/20 shadow-soft">
                 <div className="flex flex-col md:flex-row gap-4">
                   <div className="flex-1">
                     <div className="relative">
@@ -250,8 +250,8 @@ export const BlogSection = () => {
               <div className="grid grid-cols-1 md:grid-cols-2 gap-8 mb-8">
                 {articles.map((article, index) => (
                   <div key={article.id} className="animate-fade-in" style={{ animationDelay: `${index * 100}ms` }}>
-                    <Card className="h-full hover:shadow-large transition-all duration-300 cursor-pointer group border-border/50 overflow-hidden" onClick={() => setSelectedArticle(article)}>
-                      <div className="gradient-card p-6 h-full flex flex-col">
+                    <Card className="h-full hover:shadow-elegant hover:scale-[1.02] transition-all duration-300 cursor-pointer group border-primary/20 overflow-hidden bg-gradient-to-br from-card/90 via-cyprus-gold/8 to-cyprus-blue/12 backdrop-blur-sm" onClick={() => setSelectedArticle(article)}>
+                      <div className="p-6 h-full flex flex-col">
                         {/* Article Category Badge */}
                         <div className="flex justify-between items-start mb-4">
                           <span className="px-3 py-1 bg-primary/10 text-primary rounded-full text-xs font-medium border border-primary/20">
@@ -304,7 +304,7 @@ export const BlogSection = () => {
               {/* Enhanced Empty State */}
               {articles.length === 0 ? (
                 <div className="text-center py-16">
-                  <div className="bg-gradient-to-br from-primary/10 to-secondary/10 rounded-3xl p-12 max-w-2xl mx-auto border border-primary/20">
+                  <div className="bg-gradient-to-br from-cyprus-blue/20 via-primary/15 to-cyprus-gold/20 rounded-3xl p-12 max-w-2xl mx-auto border border-primary/20 shadow-elegant backdrop-blur-sm">
                     <BookOpen className="w-16 h-16 text-primary mx-auto mb-4" />
                     <h3 className="text-2xl font-semibold text-foreground mb-4">No Articles Found</h3>
                     <p className="text-lg text-muted-foreground mb-4">
@@ -327,7 +327,7 @@ export const BlogSection = () => {
                 <DynamicAffiliateWidget 
                   limit={4}
                   showNetworkBadge={true}
-                  className="mb-6"
+                  className="mb-6 border-primary/20 bg-gradient-to-br from-card/80 via-cyprus-green/10 to-cyprus-blue/10 backdrop-blur-sm shadow-soft"
                 />
                 <AffiliateSidebar />
               </div>

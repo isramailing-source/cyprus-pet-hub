@@ -2,6 +2,7 @@ import { Card, CardContent } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Heart, Thermometer, Scissors, MapPin, FileText, Users } from 'lucide-react';
 import AmazonWidget from '@/components/affiliates/AmazonWidget';
+import EnhancedPetHero from '@/components/EnhancedPetHero';
 
 const FeaturedPetTips = () => {
   const tips = [
@@ -36,8 +37,13 @@ const FeaturedPetTips = () => {
   ];
 
   return (
-    <div className="py-16 bg-gradient-to-br from-primary/5 to-secondary/5">
+    <div className="py-16 bg-gradient-to-br from-cyprus-blue/25 via-cyprus-gold/20 to-cyprus-green/25">
       <div className="container mx-auto px-4">
+        {/* Enhanced Pet Hero Section */}
+        <div className="mb-12">
+          <EnhancedPetHero />
+        </div>
+        
         <div className="text-center mb-12">
           <h2 className="text-3xl font-bold text-foreground mb-4">Quick Pet Care Tips</h2>
           <p className="text-lg text-muted-foreground max-w-2xl mx-auto">
@@ -47,7 +53,7 @@ const FeaturedPetTips = () => {
         
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-12">
           {tips.map((tip, index) => (
-            <Card key={index} className="hover:shadow-medium transition-all duration-300 border-border/50 animate-fade-in" style={{ animationDelay: `${index * 150}ms` }}>
+            <Card key={index} className="hover:shadow-elegant hover:scale-105 transition-all duration-300 border-primary/20 bg-gradient-to-br from-card/90 via-secondary/10 to-accent/15 animate-fade-in" style={{ animationDelay: `${index * 150}ms` }}>
               <CardContent className="p-6 text-center">
                 <div className={`bg-gradient-to-br ${tip.color} rounded-full p-4 w-16 h-16 mx-auto mb-4 flex items-center justify-center`}>
                   <div className={tip.iconColor}>
@@ -63,7 +69,7 @@ const FeaturedPetTips = () => {
 
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
           {/* Community Stats */}
-          <Card className="gradient-card border-border/50 shadow-soft">
+          <Card className="gradient-card border-primary/20 bg-gradient-to-br from-cyprus-blue/20 via-primary/15 to-cyprus-gold/20 shadow-elegant backdrop-blur-sm">
             <CardContent className="p-8 text-center">
               <Heart className="w-12 h-12 text-primary mx-auto mb-4" />
               <h3 className="text-2xl font-bold text-foreground mb-2">Join Our Community</h3>

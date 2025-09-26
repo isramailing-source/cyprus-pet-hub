@@ -22,7 +22,7 @@ const AffiliateSidebar = ({ className = "" }: AffiliateSidebarProps) => {
       />
       
       {/* Comfort Beds Section */}
-      <div className="bg-gradient-to-br from-primary/5 to-secondary/5 rounded-lg p-4 mb-6 border border-primary/10">
+      <div className="bg-gradient-to-br from-cyprus-gold/20 via-primary/15 to-secondary/20 rounded-lg p-4 mb-6 border border-primary/20 shadow-soft">
         <h3 className="text-lg font-semibold mb-2 flex items-center gap-2 text-foreground">
           🛏️ Comfort Beds
         </h3>
@@ -36,7 +36,7 @@ const AffiliateSidebar = ({ className = "" }: AffiliateSidebarProps) => {
       </div>
       
       {/* Grooming Tools Section */}
-      <div className="bg-gradient-to-br from-accent/5 to-primary/5 rounded-lg p-4 mb-6 border border-accent/10">
+      <div className="bg-gradient-to-br from-cyprus-green/20 via-accent/15 to-primary/20 rounded-lg p-4 mb-6 border border-accent/20 shadow-soft">
         <h3 className="text-lg font-semibold mb-2 flex items-center gap-2 text-foreground">
           ✂️ Professional Grooming
         </h3>
