@@ -377,6 +377,13 @@ export type Database = {
             referencedRelation: "affiliate_networks"
             referencedColumns: ["id"]
           },
+          {
+            foreignKeyName: "fk_affiliate_products_network_id"
+            columns: ["network_id"]
+            isOneToOne: false
+            referencedRelation: "affiliate_networks"
+            referencedColumns: ["id"]
+          },
         ]
       }
       article_tags: {
@@ -655,6 +662,20 @@ export type Database = {
         }
         Relationships: [
           {
+            foreignKeyName: "fk_forum_posts_topic_id"
+            columns: ["topic_id"]
+            isOneToOne: false
+            referencedRelation: "forum_topics"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "fk_forum_posts_user_id"
+            columns: ["user_id"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["user_id"]
+          },
+          {
             foreignKeyName: "forum_posts_parent_id_fkey"
             columns: ["parent_id"]
             isOneToOne: false
@@ -723,6 +744,20 @@ export type Database = {
           view_count?: number
         }
         Relationships: [
+          {
+            foreignKeyName: "fk_forum_topics_category_id"
+            columns: ["category_id"]
+            isOneToOne: false
+            referencedRelation: "forum_categories"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "fk_forum_topics_user_id"
+            columns: ["user_id"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["user_id"]
+          },
           {
             foreignKeyName: "forum_topics_category_id_fkey"
             columns: ["category_id"]

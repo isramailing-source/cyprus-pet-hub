@@ -81,7 +81,7 @@ export default function AffiliateManager() {
         .from('affiliate_products')
         .select(`
           *,
-          network:affiliate_networks(name)
+          network:affiliate_networks!fk_affiliate_products_network_id(name)
         `)
         .eq('is_active', true)
         .order('created_at', { ascending: false })

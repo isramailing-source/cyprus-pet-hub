@@ -29,7 +29,7 @@ const ForumHighlights = () => {
         .from('forum_topics')
         .select(`
           *,
-          forum_categories!inner(name, icon)
+          forum_categories!fk_forum_topics_category_id(name, icon)
         `)
         .eq('moderation_status', 'approved')
         .order('created_at', { ascending: false })

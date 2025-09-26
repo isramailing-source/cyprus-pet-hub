@@ -33,7 +33,7 @@ const FeaturedDiscussions = () => {
   const { data: featuredTopics = [], isLoading, error } = useQuery({
     queryKey: ['featured-topics'],
     queryFn: async () => {
-      // First, get forum topics
+      // Now we can use the foreign key relationships with automatic joins
       const { data: topicsData, error: topicsError } = await supabase
         .from('forum_topics')
         .select(`
@@ -44,7 +44,9 @@ const FeaturedDiscussions = () => {
           reply_count,
           created_at,
           user_id,
-          category_id
+          category_id,
+          profiles!forum_topics_user_id_fkey(display_name),
+          forum_categories!forum_topics_category_id_fkey(name, icon)
         `)
         .eq('moderation_status', 'approved')
         .order('created_at', { ascending: false })
@@ -53,27 +55,7 @@ const FeaturedDiscussions = () => {
       if (topicsError) throw topicsError;
       if (!topicsData || topicsData.length === 0) return [];
 
-      // Get unique user IDs and category IDs
-      const userIds = [...new Set(topicsData.map(topic => topic.user_id))];
-      const categoryIds = [...new Set(topicsData.map(topic => topic.category_id).filter(Boolean))];
-
-      // Fetch user profiles
-      const { data: profiles } = await supabase
-        .from('profiles')
-        .select('user_id, display_name')
-        .in('user_id', userIds);
-
-      // Fetch categories
-      const { data: categories } = await supabase
-        .from('forum_categories')
-        .select('id, name, icon')
-        .in('id', categoryIds);
-
-      // Create lookup maps
-      const profilesMap = new Map(profiles?.map(p => [p.user_id, p.display_name]) || []);
-      const categoriesMap = new Map(categories?.map(c => [c.id, { name: c.name, icon: c.icon }]) || []);
-
-      // Combine the data
+      // Transform the data with proper fallbacks
       return topicsData.map((topic: any) => ({
         id: topic.id,
         title: topic.title,
@@ -83,9 +65,9 @@ const FeaturedDiscussions = () => {
         created_at: topic.created_at,
         user_id: topic.user_id,
         category_id: topic.category_id,
-        display_name: profilesMap.get(topic.user_id) || 'Anonymous',
-        category_name: categoriesMap.get(topic.category_id)?.name || 'General',
-        category_icon: categoriesMap.get(topic.category_id)?.icon || '💬'
+        display_name: topic.profiles?.display_name || 'Anonymous',
+        category_name: topic.forum_categories?.name || 'General',
+        category_icon: topic.forum_categories?.icon || '💬'
       }));
     }
   });
