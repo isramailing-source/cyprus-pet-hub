@@ -37,8 +37,8 @@ const FeaturedDiscussions = () => {
         .from('forum_topics')
         .select(`
           *,
-          profiles!forum_topics_user_id_fkey(display_name),
-          forum_categories!forum_topics_category_id_fkey(name, icon)
+          profiles(display_name),
+          forum_categories(name, icon)
         `)
         .eq('moderation_status', 'approved')
         .order('created_at', { ascending: false })

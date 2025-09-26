@@ -42,7 +42,7 @@ export const ForumTopicList = ({ categoryId, onSelectTopic }: ForumTopicListProp
         .from('forum_topics')
         .select(`
           *,
-          profiles!forum_topics_user_id_fkey (display_name)
+          profiles (display_name)
         `)
         .eq('category_id', categoryId)
         .eq('moderation_status', 'approved')
