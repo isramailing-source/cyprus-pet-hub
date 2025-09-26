@@ -4,9 +4,10 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-import { ShoppingBag, Settings, Star, TrendingUp } from 'lucide-react';
+import { ShoppingBag, Settings, Star, TrendingUp, Network, BarChart3 } from 'lucide-react';
 import AffiliateProductGrid from '@/components/AffiliateProductGrid';
 import AffiliateManager from '@/components/AffiliateManager';
+import { AffiliateNetworkShowcase, DealsCarousel, NetworkComparisonTable } from '@/components/affiliates';
 import { useAuth } from '@/hooks/useAuth';
 
 export default function Affiliate() {
@@ -59,17 +60,32 @@ export default function Affiliate() {
         <div className="container mx-auto px-4 py-12">
           {/* Admin Panel */}
           {user && userRole === 'admin' && (
-            <Tabs defaultValue="products" className="space-y-8">
-              <TabsList className="grid w-full grid-cols-2">
+            <Tabs defaultValue="showcase" className="space-y-8">
+              <TabsList className="grid w-full grid-cols-4">
+                <TabsTrigger value="showcase" className="flex items-center gap-2">
+                  <Network className="h-4 w-4" />
+                  Network Showcase
+                </TabsTrigger>
                 <TabsTrigger value="products" className="flex items-center gap-2">
                   <ShoppingBag className="h-4 w-4" />
-                  Product Showcase
+                  Products
+                </TabsTrigger>
+                <TabsTrigger value="comparison" className="flex items-center gap-2">
+                  <BarChart3 className="h-4 w-4" />
+                  Compare Networks
                 </TabsTrigger>
                 <TabsTrigger value="management" className="flex items-center gap-2">
                   <Settings className="h-4 w-4" />
-                  Affiliate Management
+                  Management
                 </TabsTrigger>
               </TabsList>
+
+              <TabsContent value="showcase">
+                <div className="space-y-12">
+                  <DealsCarousel />
+                  <AffiliateNetworkShowcase />
+                </div>
+              </TabsContent>
 
               <TabsContent value="products">
                 <ProductShowcase 
@@ -79,19 +95,28 @@ export default function Affiliate() {
                 />
               </TabsContent>
 
+              <TabsContent value="comparison">
+                <NetworkComparisonTable />
+              </TabsContent>
+
               <TabsContent value="management">
                 <AffiliateManager />
               </TabsContent>
             </Tabs>
           )}
 
-          {/* Public Product Showcase */}
+          {/* Public Multi-Network Showcase */}
           {(!user || userRole !== 'admin') && (
-            <ProductShowcase 
-              categories={categories}
-              selectedCategory={selectedCategory}
-              onCategoryChange={setSelectedCategory}
-            />
+            <div className="space-y-12">
+              <DealsCarousel />
+              <AffiliateNetworkShowcase />
+              <NetworkComparisonTable />
+              <ProductShowcase 
+                categories={categories}
+                selectedCategory={selectedCategory}
+                onCategoryChange={setSelectedCategory}
+              />
+            </div>
           )}
         </div>
       </div>
