@@ -25,41 +25,41 @@ interface FeaturedProduct {
 const featuredProducts: FeaturedProduct[] = [
   {
     id: "1",
-    name: "Premium Orthopedic Dog Bed",
+    name: "Furhaven Orthopedic Dog Bed",
     description: "Memory foam support for senior dogs and large breeds with removable washable cover",
     rating: 4.8,
     price: "$79.99",
-    amazonId: "B08JCMQZXL",
+    amazonId: "B01NCKR5TE",
     image: "/api/placeholder/300/200",
     category: "dog"
   },
   {
     id: "2", 
-    name: "Professional Pet Grooming Clippers",
+    name: "Wahl Bravura Pet Clipper Kit",
     description: "Quiet motor, ceramic blades, perfect for dogs and cats of all coat types",
     rating: 4.6,
     price: "$45.99",
-    amazonId: "B07GCKQNPX",
+    amazonId: "B0002RJW4G",
     image: "/api/placeholder/300/200",
     category: "grooming"
   },
   {
     id: "3",
-    name: "Airtight Dog Food Storage Container",
+    name: "Vittles Vault Stackable Pet Food Storage",
     description: "BPA-free, pest-proof storage with measuring cup and wheels for easy transport",
     rating: 4.7,
     price: "$34.99",
-    amazonId: "B01NAVIG4Y",
+    amazonId: "B0002DK2D6",
     image: "/api/placeholder/300/200",
     category: "dog"
   },
   {
     id: "4",
-    name: "Interactive Cat Puzzle Feeder",
+    name: "Nina Ottosson by Outward Hound Puzzle Feeder",
     description: "Slow feeding puzzle toy that stimulates hunting instincts and prevents overeating",
     rating: 4.5,
     price: "$24.99",
-    amazonId: "B06XKZX9VB",
+    amazonId: "B0711Y9XTF",
     image: "/api/placeholder/300/200",
     category: "cat"
   }
@@ -147,7 +147,7 @@ const Shop = () => {
                           Memory foam technology provides joint support for senior dogs and large breeds
                         </p>
                         <AmazonProductLink
-                          productId="B08JCMQZXL"
+                          productId="B01NCKR5TE"
                           productName="Shop Premium Dog Beds"
                           variant="default"
                           size="lg"
@@ -175,7 +175,7 @@ const Shop = () => {
                           Quiet motor and ceramic blades for stress-free grooming at home
                         </p>
                         <AmazonProductLink
-                          productId="B07GCKQNPX"
+                          productId="B0002RJW4G"
                           productName="Shop Grooming Clippers"
                           variant="default"
                           size="lg"
@@ -262,8 +262,11 @@ interface ProductCardProps {
 const ProductCard = ({ product }: ProductCardProps) => {
   return (
     <Card className="overflow-hidden hover:shadow-lg transition-all duration-300 hover:scale-105">
-      <div className="aspect-square bg-muted/20 flex items-center justify-center">
-        <div className="text-6xl opacity-50">📦</div>
+      <div className="aspect-square bg-gradient-to-br from-primary/5 to-secondary/10 flex items-center justify-center border-b">
+        <div className="text-center">
+          <div className="text-6xl mb-2">🛍️</div>
+          <div className="text-xs text-muted-foreground">Premium Pet Product</div>
+        </div>
       </div>
       <CardHeader>
         <CardTitle className="text-lg">{product.name}</CardTitle>

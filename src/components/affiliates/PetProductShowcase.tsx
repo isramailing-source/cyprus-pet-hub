@@ -16,31 +16,31 @@ export function PetProductShowcase({
   const petProducts = [
     {
       id: "1",
-      name: "Premium Dog Food Bowl",
+      name: "YETI Boomer 8 Dog Bowl",
       description: "Stainless steel, non-slip base, perfect for daily feeding",
       category: "dogs",
-      amazonId: "B08GKQX5ZZ"
+      amazonId: "B074Q7P389"
     },
     {
       id: "2", 
-      name: "Interactive Cat Toy",
+      name: "SmartyKat Hot Pursuit Cat Toy",
       description: "Motion-activated, hours of entertainment for indoor cats",
       category: "cats",
-      amazonId: "B08HLKQX5Z"
+      amazonId: "B06XKZX9VB"
     },
     {
       id: "3",
-      name: "Bird Cage Cleaning Kit",
+      name: "Prevue Pet Products Cage Kit",
       description: "Complete set for maintaining a clean, healthy bird environment",
       category: "birds", 
-      amazonId: "B08MLKQX5A"
+      amazonId: "B00176F5L0"
     },
     {
       id: "4",
-      name: "Pet Grooming Kit",
+      name: "Wahl Professional Animal Clipper Kit",
       description: "Professional-grade tools for home grooming",
       category: "all",
-      amazonId: "B08PLKQX5B"
+      amazonId: "B0002RJW4G"
     }
   ];
   
@@ -59,11 +59,12 @@ export function PetProductShowcase({
           {filteredProducts.map((product) => (
             <div key={product.id} className="border rounded-lg p-4 space-y-3">
               <a href={`https://www.amazon.com/dp/${product.amazonId}/?tag=cypruspets20-20`} target="_blank" rel="noopener noreferrer">
-                <img 
-                  src={`https://images.amazon.com/images/I/${product.amazonId}_SL500_.jpg`}
-                  alt={product.name}
-                  className="w-full h-48 object-contain rounded-lg mb-2 hover:opacity-80 transition-opacity"
-                />
+                <div className="w-full h-48 bg-gradient-to-br from-primary/5 to-secondary/5 rounded-lg mb-2 hover:opacity-80 transition-opacity flex items-center justify-center border-2 border-dashed border-primary/20">
+                  <div className="text-center">
+                    <div className="text-4xl mb-2">🛒</div>
+                    <div className="text-xs text-muted-foreground">Click to view on Amazon</div>
+                  </div>
+                </div>
               </a>
               <h4 className="font-semibold text-sm">{product.name}</h4>
               <p className="text-xs text-muted-foreground">{product.description}</p>
