@@ -1,15 +1,15 @@
-# CyprusPets - Cyprus Pet Marketplace
+# Cyprus Pets - Pet Care Community & Resources
 
-🐾 **A modern, responsive marketplace for pets, equipment, and services in Cyprus**
+🐾 **Cyprus's premier pet care resource hub and community for pet lovers**
 
 ## 🌟 Project Overview
 
-CyprusPets is a comprehensive pet marketplace designed specifically for Cyprus, where pet owners and enthusiasts can:
+Cyprus Pets is a comprehensive pet care resource and community platform designed specifically for Cyprus, where pet owners and enthusiasts can:
 
-- **Browse & Search**: Find pets, equipment, and services with advanced search functionality
-- **Post Listings**: Share pet advertisements and services
-- **Local Focus**: Connect with the Cyprus pet community
-- **Multi-Category**: Dogs, cats, birds, equipment, and more
+- **Expert Guides**: Access comprehensive pet care guides and resources
+- **Community Forum**: Connect with fellow pet owners and experts
+- **Local Focus**: Cyprus-specific pet care advice and community
+- **Multi-Pet Resources**: Dogs, cats, birds, and specialized care topics
 
 ## ✨ Features
 
@@ -72,7 +72,7 @@ src/
 1. **Clone the repository**
    ```bash
    git clone <YOUR_GIT_URL>
-   cd cypruspets
+   cd cyprus-pets
    ```
 
 2. **Install dependencies**

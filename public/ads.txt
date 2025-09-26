@@ -1,4 +1,4 @@
-# ads.txt file for CyprusPets
+# ads.txt file for Cyprus Pets
 # This file is required by Google AdSense for verification
 # Replace the publisher ID below with your actual AdSense publisher ID when you get approved
 
