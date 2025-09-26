@@ -5,3 +5,5 @@ export { default as AmazonProductLink } from './AmazonProductLink';
 export { default as AffiliateSidebar } from './AffiliateSidebar';
 export { default as AffiliateDisclosure } from './AffiliateDisclosure';
 export { default as PetProductShowcase } from './PetProductShowcase';
+export { default as DynamicAffiliateWidget } from './DynamicAffiliateWidget';
+export { default as FeaturedProductsSection } from './FeaturedProductsSection';

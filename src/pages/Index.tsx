@@ -7,6 +7,7 @@ import ForumHighlights from "@/components/ForumHighlights";
 import FeaturedDiscussions from "@/components/FeaturedDiscussions";
 import Footer from "@/components/Footer";
 import AmazonBanner from "@/components/affiliates/AmazonBanner";
+import FeaturedProductsSection from '@/components/affiliates/FeaturedProductsSection';
 import { Helmet } from "react-helmet-async";
 
 const Index = () => {
@@ -80,6 +81,13 @@ const Index = () => {
               </div>
             </div>
           </section>
+          
+          {/* Featured Products Section */}
+          <FeaturedProductsSection 
+            title="Recommended Products & Services for Cyprus Pet Owners"
+            limit={6}
+            className="mb-8"
+          />
           
           <PetResourcesHub />
           <FeaturedArticles />

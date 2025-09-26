@@ -8,7 +8,8 @@ import { ArrowLeft, Calendar, User, Eye, Search, Clock, BookOpen, Users, Award, 
 import { supabase } from '@/integrations/supabase/client';
 import AmazonBanner from '@/components/affiliates/AmazonBanner';
 import AmazonWidget from '@/components/affiliates/AmazonWidget';
-import AffiliateSidebar from '@/components/affiliates/AffiliateSidebar';
+import AffiliateSidebar from './affiliates/AffiliateSidebar';
+import DynamicAffiliateWidget from './affiliates/DynamicAffiliateWidget';
 import AffiliateDisclosure from '@/components/affiliates/AffiliateDisclosure';
 
 interface Article {
@@ -285,11 +286,13 @@ export const BlogSection = () => {
                       </div>
                     </Card>
                     
-                    {/* Insert Amazon Banner after every 3rd article */}
+                    {/* Insert dynamic affiliate widgets after every 3rd article */}
                     {(index + 1) % 3 === 0 && index < articles.length - 1 && (
                       <div className="my-8 animate-fade-in">
-                        <AmazonWidget 
-                          searchPhrase={index === 2 ? "pet grooming tools" : "pet health supplements"}
+                        <DynamicAffiliateWidget 
+                          category={index === 2 ? "grooming" : "health"}
+                          limit={3}
+                          showNetworkBadge={true}
                           className="max-w-md mx-auto shadow-medium"
                         />
                       </div>
@@ -320,7 +323,12 @@ export const BlogSection = () => {
 
             {/* Enhanced Affiliate Sidebar */}
             <div className="lg:col-span-1">
-              <div className="sticky top-4">
+              <div className="sticky top-4 space-y-6">
+                <DynamicAffiliateWidget 
+                  limit={4}
+                  showNetworkBadge={true}
+                  className="mb-6"
+                />
                 <AffiliateSidebar />
               </div>
             </div>
