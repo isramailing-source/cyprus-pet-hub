@@ -26,18 +26,24 @@ const Header = () => {
         <div className="flex items-center justify-between">
           {/* Logo */}
           <div className="flex items-center space-x-2">
-            <div className="w-8 h-8 bg-gradient-to-r from-primary to-secondary rounded-lg flex items-center justify-center">
-              <span className="text-white font-bold text-lg">🐾</span>
-            </div>
+            <img 
+              src="/cypruspets_logo.png" 
+              alt="Cyprus Pets Logo" 
+              className="w-8 h-8 rounded-lg" 
+            />
             <Link to="/" className="flex flex-col">
-              <h1 className="text-xl font-bold text-foreground">Cyprus Pets</h1>
-              <p className="text-xs text-muted-foreground">cyprus-pets.com</p>
+              <h1 className="text-xl font-bold text-foreground">
+                Cyprus Pets
+              </h1>
+              <p className="text-xs text-muted-foreground">
+                cyprus-pets.com
+              </p>
             </Link>
           </div>
-
+          
           {/* Navigation */}
           <nav className="hidden lg:flex items-center space-x-6">
-            <Link 
+            <Link
               to="/" 
               className={`hover:text-primary transition-colors ${
                 isActive('/') ? 'text-primary font-medium' : 'text-muted-foreground'
@@ -45,7 +51,7 @@ const Header = () => {
             >
               {t('home')}
             </Link>
-            <Link 
+            <Link
               to="/blog" 
               className={`hover:text-primary transition-colors ${
                 isActive('/blog') ? 'text-primary font-medium' : 'text-muted-foreground'
@@ -53,54 +59,41 @@ const Header = () => {
             >
               Blog
             </Link>
-            <Link 
+            <Link
               to="/shop" 
               className={`hover:text-primary transition-colors ${
                 isActive('/shop') || isActive('/deals') ? 'text-primary font-medium' : 'text-muted-foreground'
               }`}
             >
-              Shop
+              {t('shop')}
             </Link>
-            <Link 
+            <Link
               to="/forum" 
-              className={`hover:text-primary transition-colors relative ${
+              className={`hover:text-primary transition-colors ${
                 isActive('/forum') ? 'text-primary font-medium' : 'text-muted-foreground'
               }`}
             >
               {t('community')}
-              <span className="absolute -top-1 -right-1 bg-cyprus-coral text-white text-xs rounded-full w-2 h-2"></span>
             </Link>
-            {isAdmin && (
-              <>
-                <Link 
-                  to="/affiliate" 
-                  className={`hover:text-primary transition-colors ${
-                    isActive('/affiliate') ? 'text-primary font-medium' : 'text-muted-foreground'
-                  }`}
-                >
-                  <DollarSign className="w-4 h-4 inline mr-1" />
-                  Affiliate Hub
-                </Link>
-                <Link 
-                  to="/admin" 
-                  className={`hover:text-primary transition-colors ${
-                    isActive('/admin') ? 'text-primary font-medium' : 'text-muted-foreground'
-                  }`}
-                >
-                  {t('admin')}
-                </Link>
-              </>
-            )}
           </nav>
-
-          {/* Actions */}
-          <div className="flex items-center space-x-3">
+          
+          {/* Language Switcher */}
+          <div className="hidden md:flex items-center">
             <LanguageSwitcher />
-            <Button variant="outline" size="sm" asChild>
-              <Link to="/shop">
-                Shop Deals
-              </Link>
-            </Button>
+          </div>
+          
+          {/* Right side - Search and Auth */}
+          <div className="flex items-center space-x-4">
+            {/* Search */}
+            <div className="hidden md:flex relative">
+              <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-muted-foreground w-4 h-4" />
+              <Input 
+                type="search" 
+                placeholder="Search articles and discussions..."
+                className="pl-10 pr-4"
+              />
+            </div>
+            
             {user ? (
               <>
                 <Button size="sm" className="bg-gradient-to-r from-primary to-secondary hover:opacity-90" asChild>
@@ -146,12 +139,13 @@ const Header = () => {
             )}
           </div>
         </div>
-
+        
         {/* Mobile Search */}
         <div className="md:hidden mt-4">
           <div className="relative">
             <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-muted-foreground w-4 h-4" />
             <Input 
+              type="search" 
               placeholder="Search articles and discussions..."
               className="pl-10 pr-4"
             />
