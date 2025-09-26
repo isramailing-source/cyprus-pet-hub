@@ -10,6 +10,7 @@ import AmazonBanner from "@/components/affiliates/AmazonBanner";
 import FeaturedProductsSection from '@/components/affiliates/FeaturedProductsSection';
 import AffiliateNetworkBanner from '@/components/affiliates/AffiliateNetworkBanner';
 import EnhancedAffiliateSidebar from '@/components/affiliates/EnhancedAffiliateSidebar';
+import CanadaPetCareShowcase from '@/components/affiliates/CanadaPetCareShowcase';
 import EnhancedAdManager from '@/components/ads/EnhancedAdManager';
 import TestAffiliateSync from '@/components/TestAffiliateSync';
 import { Helmet } from "react-helmet-async";
@@ -64,29 +65,8 @@ const Index = () => {
             {/* Enhanced Ad Manager - Inline */}
             <EnhancedAdManager placement="inline" />
             
-            {/* Affiliate Link Section */}
-            <section className="py-6 bg-gradient-to-r from-blue-50 to-green-50 border-l-4 border-primary">
-              <div className="container mx-auto px-4">
-                <div className="bg-white rounded-lg shadow-sm p-6 max-w-4xl mx-auto">
-                  <div className="flex items-center justify-between flex-wrap gap-4">
-                    <div className="flex-1">
-                      <h3 className="text-xl font-semibold text-gray-800 mb-2">🌟 Recommended Pet Products & Services</h3>
-                      <p className="text-gray-600 mb-4">Discover premium pet care products and services recommended by our community experts.</p>
-                    </div>
-                    <div className="flex-shrink-0">
-                      <a 
-                        href="https://rzekl.com/g/1e8d114494475461c4ad16525dc3e8/" 
-                        target="_blank" 
-                        rel="nofollow sponsored"
-                        className="inline-block bg-primary text-white px-6 py-3 rounded-lg font-medium hover:bg-primary/90 transition-colors duration-200 shadow-md hover:shadow-lg"
-                      >
-                        🛍️ Shop Premium Pet Products
-                      </a>
-                    </div>
-                  </div>
-                </div>
-              </div>
-            </section>
+            {/* Canada Pet Care Products Showcase */}
+            <CanadaPetCareShowcase />
             
             {/* Featured Products Section */}
             <FeaturedProductsSection 
