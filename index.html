@@ -1,4 +1,4 @@
-<!doctype html>
+<!DOCTYPE html>
 <html lang="en">
   <head>
     <meta charset="UTF-8" />
@@ -7,23 +7,58 @@
     <!-- Google AdSense Site Verification -->
     <meta name="google-adsense-account" content="ca-pub-4659190065021043">
     
-    <title>CyprusPets - Cyprus Pet Marketplace | Buy & Sell Pets</title>
-    <meta name="description" content="Cyprus's trusted pet marketplace. Find dogs, cats, birds, and pet equipment. Connect with local pet lovers across Limassol, Nicosia, Paphos, and all of Cyprus." />
-    <meta name="author" content="CyprusPets" />
-    <meta name="keywords" content="Cyprus pets, pet marketplace, buy pets Cyprus, sell pets Cyprus, dogs Cyprus, cats Cyprus, pet equipment" />
-
-    <meta property="og:title" content="CyprusPets - Cyprus Pet Marketplace" />
-    <meta property="og:description" content="Find your perfect companion in Cyprus. Browse thousands of pets and connect with local pet lovers." />
-    <meta property="og:type" content="website" />
-    <meta property="og:image" content="https://lovable.dev/opengraph-image-p98pqg.png" />
-
-    <meta name="twitter:card" content="summary_large_image" />
-    <meta name="twitter:site" content="@cypruspets" />
-    <meta name="twitter:title" content="CyprusPets - Cyprus Pet Marketplace" />
-    <meta name="twitter:description" content="Find your perfect companion in Cyprus. Browse thousands of pets and connect with local pet lovers." />
-    <meta name="twitter:image" content="https://lovable.dev/opengraph-image-p98pqg.png" />
+    <!-- Dynamic title and description will be managed by React components -->
+    <title>Cyprus Pet Hub - Pet Community Forum & Blog | Pet Care Resources</title>
+    <meta name="description" content="Join Cyprus's leading pet community forum. Share experiences, get expert advice, and discover pet care resources. Connect with fellow pet lovers across Limassol, Nicosia, and Paphos." />
     
-     <!-- Google AdSense -->
+    <meta name="author" content="Cyprus Pet Hub" />
+    <meta name="keywords" content="Cyprus pets, pet forum, pet community, pet blog, pet care, dog care, cat care, pet advice, pet resources, Cyprus pet community" />
+    
+    <!-- Canonical URL -->
+    <link rel="canonical" href="https://cyprus-pet-hub.vercel.app/" />
+    
+    <!-- Open Graph meta tags -->
+    <meta property="og:title" content="Cyprus Pet Hub - Pet Community Forum & Blog" />
+    <meta property="og:description" content="Join Cyprus's most active pet community. Expert advice, forums, and resources for all pet lovers." />
+    <meta property="og:type" content="website" />
+    <meta property="og:url" content="https://cyprus-pet-hub.vercel.app/" />
+    <meta property="og:image" content="https://cyprus-pet-hub.vercel.app/og-image.jpg" />
+    <meta property="og:site_name" content="Cyprus Pet Hub" />
+    <meta property="og:locale" content="en_US" />
+    
+    <!-- Twitter meta tags -->
+    <meta name="twitter:card" content="summary_large_image" />
+    <meta name="twitter:site" content="@cypruspethub" />
+    <meta name="twitter:title" content="Cyprus Pet Hub - Pet Community Forum & Blog" />
+    <meta name="twitter:description" content="Join Cyprus's most active pet community. Expert advice, forums, and resources for all pet lovers." />
+    <meta name="twitter:image" content="https://cyprus-pet-hub.vercel.app/twitter-image.jpg" />
+    
+    <!-- JSON-LD Schema for Organization -->
+    <script type="application/ld+json">
+    {
+      "@context": "https://schema.org",
+      "@type": "Organization",
+      "name": "Cyprus Pet Hub",
+      "url": "https://cyprus-pet-hub.vercel.app",
+      "logo": "https://cyprus-pet-hub.vercel.app/logo.png",
+      "description": "Cyprus's premier pet community platform offering forums, expert advice, and comprehensive pet care resources.",
+      "address": {
+        "@type": "PostalAddress",
+        "addressCountry": "CY",
+        "addressRegion": "Cyprus"
+      },
+      "sameAs": [
+        "https://facebook.com/cypruspethub",
+        "https://instagram.com/cypruspethub",
+        "https://twitter.com/cypruspethub"
+      ]
+    }
+    </script>
+    
+    <!-- Favicon -->
+    <link rel="icon" type="image/svg+xml" href="/vite.svg" />
+    
+    <!-- Google AdSense -->
     <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-4659190065021043"
      crossorigin="anonymous"></script>
     
@@ -35,7 +70,6 @@
       });
     </script>
   </head>
-
   <body>
     <div id="root"></div>
     <script type="module" src="/src/main.tsx"></script>
