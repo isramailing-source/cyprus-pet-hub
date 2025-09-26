@@ -54,6 +54,14 @@ const Header = () => {
               Blog
             </Link>
             <Link 
+              to="/shop" 
+              className={`hover:text-primary transition-colors ${
+                isActive('/shop') || isActive('/deals') ? 'text-primary font-medium' : 'text-muted-foreground'
+              }`}
+            >
+              Shop
+            </Link>
+            <Link 
               to="/forum" 
               className={`hover:text-primary transition-colors relative ${
                 isActive('/forum') ? 'text-primary font-medium' : 'text-muted-foreground'
@@ -78,8 +86,8 @@ const Header = () => {
           <div className="flex items-center space-x-3">
             <LanguageSwitcher />
             <Button variant="outline" size="sm" asChild>
-              <Link to="/forum">
-                Join Discussions
+              <Link to="/shop">
+                Shop Deals
               </Link>
             </Button>
             {user ? (

@@ -2,6 +2,7 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/com
 import { Button } from "@/components/ui/button";
 import { ExternalLink, Heart, Stethoscope, GraduationCap, Home, Car, ShoppingBag, MapPin, Users } from "lucide-react";
 import AdBanner from "@/components/ads/AdBanner";
+import AmazonWidget from "@/components/affiliates/AmazonWidget";
 
 interface PetResource {
   title: string;
@@ -106,6 +107,62 @@ const PetResourcesHub = () => {
           <p className="text-lg text-muted-foreground max-w-2xl mx-auto">
             Carefully curated links to the best pet services, supplies, and information for Cyprus pet owners
           </p>
+        </div>
+
+        {/* Recommended Products Section */}
+        <div className="mb-16">
+          <h3 className="text-2xl font-bold text-center mb-8">Recommended Products</h3>
+          <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 max-w-4xl mx-auto">
+            {/* Dog Food Storage */}
+            <Card className="overflow-hidden">
+              <div className="bg-gradient-to-br from-orange-50 to-amber-100 p-6">
+                <CardHeader>
+                  <CardTitle className="text-xl flex items-center gap-2">
+                    🥫 Premium Food Storage
+                  </CardTitle>
+                  <CardDescription>
+                    Keep your pet's food fresh with airtight storage solutions
+                  </CardDescription>
+                </CardHeader>
+                <CardContent>
+                  <div className="space-y-4">
+                    <p className="text-sm text-muted-foreground">
+                      BPA-free, pest-proof containers with measuring cups and easy transport
+                    </p>
+                    <AmazonWidget 
+                      searchPhrase="dog food storage container"
+                      category="PetSupplies"
+                    />
+                  </div>
+                </CardContent>
+              </div>
+            </Card>
+
+            {/* Cat Puzzle Toys */}
+            <Card className="overflow-hidden">
+              <div className="bg-gradient-to-br from-purple-50 to-pink-100 p-6">
+                <CardHeader>
+                  <CardTitle className="text-xl flex items-center gap-2">
+                    🧩 Interactive Cat Toys
+                  </CardTitle>
+                  <CardDescription>
+                    Mental stimulation and puzzle feeders for indoor cats
+                  </CardDescription>
+                </CardHeader>
+                <CardContent>
+                  <div className="space-y-4">
+                    <p className="text-sm text-muted-foreground">
+                      Slow feeding puzzles that engage hunting instincts and prevent overeating
+                    </p>
+                    <AmazonWidget 
+                      searchPhrase="cat puzzle feeder toy"
+                      category="PetSupplies"
+                    />
+                  </div>
+                </CardContent>
+              </div>
+            </Card>
+          </div>
         </div>
         
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 mb-8">

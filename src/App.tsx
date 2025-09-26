@@ -8,6 +8,7 @@ import { AuthProvider } from "@/hooks/useAuth";
 import ErrorBoundary from "@/components/ErrorBoundary";
 import Index from "./pages/Index";
 import Blog from "./pages/Blog";
+import Shop from "./pages/Shop";
 import Forum from "./pages/Forum";
 import Admin from "./pages/Admin";
 import Auth from "./pages/Auth";
@@ -30,6 +31,8 @@ const App = () => {
                 <Routes>
                   <Route path="/" element={<Index />} />
                   <Route path="/blog" element={<Blog />} />
+                  <Route path="/shop" element={<Shop />} />
+                  <Route path="/deals" element={<Shop />} />
                   <Route path="/forum" element={<Forum />} />
                   <Route path="/auth" element={<Auth />} />
                   <Route path="/admin" element={<Admin />} />
