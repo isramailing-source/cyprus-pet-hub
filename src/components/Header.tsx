@@ -1,4 +1,4 @@
-import { Search, Plus, MapPin, User, LogOut, Settings } from "lucide-react";
+import { Search, Plus, MapPin, User, LogOut, Settings, DollarSign } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Link, useLocation } from "react-router-dom";
 import { Input } from "@/components/ui/input";
@@ -71,14 +71,25 @@ const Header = () => {
               <span className="absolute -top-1 -right-1 bg-cyprus-coral text-white text-xs rounded-full w-2 h-2"></span>
             </Link>
             {isAdmin && (
-              <Link 
-                to="/admin" 
-                className={`hover:text-primary transition-colors ${
-                  isActive('/admin') ? 'text-primary font-medium' : 'text-muted-foreground'
-                }`}
-              >
-                {t('admin')}
-              </Link>
+              <>
+                <Link 
+                  to="/affiliate" 
+                  className={`hover:text-primary transition-colors ${
+                    isActive('/affiliate') ? 'text-primary font-medium' : 'text-muted-foreground'
+                  }`}
+                >
+                  <DollarSign className="w-4 h-4 inline mr-1" />
+                  Affiliate Hub
+                </Link>
+                <Link 
+                  to="/admin" 
+                  className={`hover:text-primary transition-colors ${
+                    isActive('/admin') ? 'text-primary font-medium' : 'text-muted-foreground'
+                  }`}
+                >
+                  {t('admin')}
+                </Link>
+              </>
             )}
           </nav>
 
