@@ -34,7 +34,7 @@ export const BlogSection = () => {
   const [articles, setArticles] = useState<Article[]>([]);
   const [loading, setLoading] = useState(true);
   const [searchTerm, setSearchTerm] = useState("");
-  const [selectedCategory, setSelectedCategory] = useState("");
+  const [selectedCategory, setSelectedCategory] = useState("all");
   const [selectedArticle, setSelectedArticle] = useState<Article | null>(null);
 
   useEffect(() => {
@@ -53,7 +53,7 @@ export const BlogSection = () => {
         query = query.or(`title.ilike.%${searchTerm}%,content.ilike.%${searchTerm}%`);
       }
 
-      if (selectedCategory && selectedCategory !== "") {
+      if (selectedCategory && selectedCategory !== "all") {
         // For now, we'll match category based on title keywords since we don't have proper categories yet
         const categoryKeywords = {
           health: "health,care,winter",
@@ -235,7 +235,7 @@ export const BlogSection = () => {
                       <SelectValue placeholder="All Categories" />
                     </SelectTrigger>
                     <SelectContent>
-                      <SelectItem value="">All Categories</SelectItem>
+                      <SelectItem value="all">All Categories</SelectItem>
                       <SelectItem value="health">🏥 Health</SelectItem>
                       <SelectItem value="grooming">✂️ Grooming</SelectItem>
                       <SelectItem value="travel">✈️ Travel</SelectItem>
@@ -313,7 +313,7 @@ export const BlogSection = () => {
                     <p className="text-muted-foreground mb-6">
                       Try adjusting your search terms or browse all categories to discover our expert pet care content.
                     </p>
-                    <Button onClick={() => { setSearchTerm(''); setSelectedCategory(''); }} variant="outline" className="bg-background">
+                    <Button onClick={() => { setSearchTerm(''); setSelectedCategory('all'); }} variant="outline" className="bg-background">
                       Clear Filters
                     </Button>
                   </div>
