@@ -10,28 +10,8 @@ import greyPitbullCyprus from '@/assets/pets-grey-pitbull-cyprus.jpg';
 const PetImageGallery = () => {
   const petImages = [
     {
-      src: beachGoldenRetriever,
-      alt: "Golden Retriever playing on Cyprus beach",
-      category: "dogs"
-    },
-    {
-      src: gardenPersianCat,
-      alt: "Persian cat in Mediterranean garden",
-      category: "cats"
-    },
-    {
-      src: birdsColorfulParrot,
-      alt: "Colorful parrot in Cyprus countryside",
-      category: "birds"
-    },
-    {
-      src: fieldCuteRabbit,
-      alt: "Rabbit in Cyprus wildflower field",
-      category: "small-pets"
-    },
-    {
-      src: vineyardBorderCollie,
-      alt: "Border Collie running through vineyard",
+      src: greyPitbullCyprus,
+      alt: "Grey pitbull in Mediterranean Cyprus garden",
       category: "dogs"
     },
     {
@@ -40,8 +20,28 @@ const PetImageGallery = () => {
       category: "cats"
     },
     {
-      src: greyPitbullCyprus,
-      alt: "Grey pitbull in Mediterranean Cyprus garden",
+      src: fieldCuteRabbit,
+      alt: "Rabbit in Cyprus wildflower field",
+      category: "small-pets"
+    },
+    {
+      src: birdsColorfulParrot,
+      alt: "Colorful parrot in Cyprus countryside",
+      category: "birds"
+    },
+    {
+      src: vineyardBorderCollie,
+      alt: "Border Collie running through vineyard",
+      category: "dogs"
+    },
+    {
+      src: gardenPersianCat,
+      alt: "Persian cat in Mediterranean garden",
+      category: "cats"
+    },
+    {
+      src: beachGoldenRetriever,
+      alt: "Golden Retriever playing on Cyprus beach",
       category: "dogs"
     }
   ];

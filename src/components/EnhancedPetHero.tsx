@@ -5,20 +5,21 @@ import birdsColorfulParrot from '@/assets/pets-birds-colorful-parrot.jpg';
 import fieldCuteRabbit from '@/assets/pets-field-cute-rabbit.jpg';
 import vineyardBorderCollie from '@/assets/pets-vineyard-border-collie.jpg';
 import architectureMaineCoon from '@/assets/pets-architecture-maine-coon.jpg';
+import greyPitbullCyprus from '@/assets/pets-grey-pitbull-cyprus.jpg';
 
 const EnhancedPetHero = () => {
   const heroImages = [
     {
-      src: beachGoldenRetriever,
-      alt: "Golden Retriever playing on Cyprus beach",
-      title: "Beach Safety for Pets",
-      description: "Keeping your pets safe during Mediterranean summers"
+      src: greyPitbullCyprus,
+      alt: "Grey pitbull in Mediterranean Cyprus garden",
+      title: "Loyal Companions",
+      description: "Discover the perfect pet for your family"
     },
     {
-      src: gardenPersianCat,
-      alt: "Persian cat in Mediterranean garden", 
-      title: "Garden Paradise",
-      description: "Creating pet-friendly outdoor spaces"
+      src: architectureMaineCoon,
+      alt: "Maine Coon cat on ancient Cyprus architecture",
+      title: "Heritage & Pets",
+      description: "Where tradition meets modern pet care"
     },
     {
       src: birdsColorfulParrot,
@@ -31,6 +32,12 @@ const EnhancedPetHero = () => {
       alt: "Border Collie running through vineyard",
       title: "Active Pet Lifestyle", 
       description: "Exercise and adventure in Cyprus"
+    },
+    {
+      src: gardenPersianCat,
+      alt: "Persian cat in Mediterranean garden", 
+      title: "Garden Paradise",
+      description: "Creating pet-friendly outdoor spaces"
     }
   ];
 

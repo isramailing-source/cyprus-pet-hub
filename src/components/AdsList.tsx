@@ -19,6 +19,8 @@ import britishShorthairImage from "@/assets/british-shorthair-cyprus.jpg";
 import goldenRetrieverImage from "@/assets/golden-retriever-cyprus.jpg";
 import birdsImage from "@/assets/birds-cyprus.jpg";
 import heroPetsImage from "@/assets/hero-pets-cyprus.jpg";
+import greyPitbullImage from "@/assets/pets-grey-pitbull-cyprus.jpg";
+import vineyardBorderCollieImage from "@/assets/pets-vineyard-border-collie.jpg";
 
 interface Ad {
   id: string;
@@ -66,12 +68,15 @@ export const AdsList = () => {
   const [searchParams] = useSearchParams();
 
   // Helper function to get image source with comprehensive fallback handling
-  const getImageSrc = (images: string[] | null): string => {
+  const getImageSrc = (images: string[] | null, index: number = 0): string => {
     console.log('🖼️ AdsList - Processing images:', images);
     
     if (!images || images.length === 0) {
-      console.log('🖼️ AdsList - No images found, using default:', goldenRetrieverImage);
-      return goldenRetrieverImage; // Default fallback image
+      // Rotate through different default images based on index
+      const defaultImages = [greyPitbullImage, britishShorthairImage, birdsImage, vineyardBorderCollieImage, goldenRetrieverImage, heroPetsImage];
+      const defaultImage = defaultImages[index % defaultImages.length];
+      console.log('🖼️ AdsList - No images found, using default:', defaultImage);
+      return defaultImage;
     }
     
     const imagePath = images[0];
@@ -81,9 +86,9 @@ export const AdsList = () => {
     if (imagePath.includes('example.com')) {
       console.log('🖼️ AdsList - Found example.com URL, mapping to local asset');
       if (imagePath.includes('british') || imagePath.includes('cat')) return britishShorthairImage;
-      if (imagePath.includes('golden') || imagePath.includes('dog') || imagePath.includes('puppy')) return goldenRetrieverImage;
+      if (imagePath.includes('golden') || imagePath.includes('dog') || imagePath.includes('puppy')) return greyPitbullImage;
       if (imagePath.includes('bird') || imagePath.includes('canary') || imagePath.includes('parakeet')) return birdsImage;
-      return goldenRetrieverImage;
+      return greyPitbullImage;
     }
     
     // Handle working external URLs
@@ -113,7 +118,8 @@ export const AdsList = () => {
     if (imagePath.includes('hero-pets-cyprus.jpg')) return heroPetsImage;
     
     console.log('🖼️ AdsList - Using fallback image for:', imagePath);
-    return goldenRetrieverImage; // Final fallback
+    const defaultImages = [greyPitbullImage, britishShorthairImage, birdsImage, vineyardBorderCollieImage];
+    return defaultImages[Math.floor(Math.random() * defaultImages.length)];
   };
 
   useEffect(() => {
@@ -416,7 +422,7 @@ export const AdsList = () => {
           {/* Main content area */}
           <div className="lg:col-span-3">
             <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-              {ads.slice(0, 4).map((ad) => (
+              {ads.slice(0, 4).map((ad, index) => (
                 <Card key={ad.id} className="hover:shadow-lg transition-shadow">
                   <CardHeader>
                     <div className="flex justify-between items-start">
@@ -431,7 +437,7 @@ export const AdsList = () => {
                     {ad.images && ad.images.length > 0 && (
                       <div className="relative h-48 w-full overflow-hidden rounded-md">
                          <img 
-                           src={getImageSrc(ad.images)} 
+                           src={getImageSrc(ad.images, index)} 
                            alt={ad.title}
                           className="h-full w-full object-cover transition-transform hover:scale-105"
                           onError={(e) => {

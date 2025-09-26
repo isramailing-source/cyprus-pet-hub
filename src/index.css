@@ -11,13 +11,13 @@ All colors MUST be HSL.
 @layer base {
   :root {
     /* Modern pet-friendly color palette */
-    --background: 40 10% 97%;  /* Warm light base */
+    --background: 43 15% 94%;  /* Warmer pet-friendly base */
     --foreground: 25 15% 15%; /* Dark brown text */
 
-    --card: 0 0% 100%;
+    --card: 46 20% 97%;
     --card-foreground: 25 15% 15%;
 
-    --popover: 0 0% 100%;
+    --popover: 46 20% 97%;
     --popover-foreground: 25 15% 15%;
 
     /* Primary soft teal blues #4A90A4 */
