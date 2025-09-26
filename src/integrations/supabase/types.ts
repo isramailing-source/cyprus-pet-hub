@@ -91,6 +91,294 @@ export type Database = {
           },
         ]
       }
+      affiliate_content: {
+        Row: {
+          clicks: number | null
+          content: string
+          content_type: string
+          conversions: number | null
+          created_at: string
+          excerpt: string | null
+          featured_image: string | null
+          id: string
+          is_published: boolean | null
+          product_id: string
+          publish_at: string | null
+          revenue: number | null
+          seo_description: string | null
+          seo_title: string | null
+          slug: string
+          tags: string[] | null
+          title: string
+          updated_at: string
+          views: number | null
+        }
+        Insert: {
+          clicks?: number | null
+          content: string
+          content_type: string
+          conversions?: number | null
+          created_at?: string
+          excerpt?: string | null
+          featured_image?: string | null
+          id?: string
+          is_published?: boolean | null
+          product_id: string
+          publish_at?: string | null
+          revenue?: number | null
+          seo_description?: string | null
+          seo_title?: string | null
+          slug: string
+          tags?: string[] | null
+          title: string
+          updated_at?: string
+          views?: number | null
+        }
+        Update: {
+          clicks?: number | null
+          content?: string
+          content_type?: string
+          conversions?: number | null
+          created_at?: string
+          excerpt?: string | null
+          featured_image?: string | null
+          id?: string
+          is_published?: boolean | null
+          product_id?: string
+          publish_at?: string | null
+          revenue?: number | null
+          seo_description?: string | null
+          seo_title?: string | null
+          slug?: string
+          tags?: string[] | null
+          title?: string
+          updated_at?: string
+          views?: number | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "affiliate_content_product_id_fkey"
+            columns: ["product_id"]
+            isOneToOne: false
+            referencedRelation: "affiliate_products"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      affiliate_content_templates: {
+        Row: {
+          content_type: string
+          created_at: string
+          id: string
+          is_active: boolean | null
+          name: string
+          seo_description_template: string | null
+          seo_title_template: string | null
+          target_categories: string[] | null
+          template_content: string
+          updated_at: string
+        }
+        Insert: {
+          content_type: string
+          created_at?: string
+          id?: string
+          is_active?: boolean | null
+          name: string
+          seo_description_template?: string | null
+          seo_title_template?: string | null
+          target_categories?: string[] | null
+          template_content: string
+          updated_at?: string
+        }
+        Update: {
+          content_type?: string
+          created_at?: string
+          id?: string
+          is_active?: boolean | null
+          name?: string
+          seo_description_template?: string | null
+          seo_title_template?: string | null
+          target_categories?: string[] | null
+          template_content?: string
+          updated_at?: string
+        }
+        Relationships: []
+      }
+      affiliate_networks: {
+        Row: {
+          affiliate_id: string | null
+          api_endpoint: string | null
+          api_key_secret_name: string | null
+          commission_rate: number | null
+          created_at: string
+          id: string
+          is_active: boolean | null
+          name: string
+          settings: Json | null
+          update_frequency_hours: number | null
+          updated_at: string
+        }
+        Insert: {
+          affiliate_id?: string | null
+          api_endpoint?: string | null
+          api_key_secret_name?: string | null
+          commission_rate?: number | null
+          created_at?: string
+          id?: string
+          is_active?: boolean | null
+          name: string
+          settings?: Json | null
+          update_frequency_hours?: number | null
+          updated_at?: string
+        }
+        Update: {
+          affiliate_id?: string | null
+          api_endpoint?: string | null
+          api_key_secret_name?: string | null
+          commission_rate?: number | null
+          created_at?: string
+          id?: string
+          is_active?: boolean | null
+          name?: string
+          settings?: Json | null
+          update_frequency_hours?: number | null
+          updated_at?: string
+        }
+        Relationships: []
+      }
+      affiliate_price_history: {
+        Row: {
+          availability_status: string | null
+          id: string
+          original_price: number | null
+          price: number
+          product_id: string
+          recorded_at: string
+        }
+        Insert: {
+          availability_status?: string | null
+          id?: string
+          original_price?: number | null
+          price: number
+          product_id: string
+          recorded_at?: string
+        }
+        Update: {
+          availability_status?: string | null
+          id?: string
+          original_price?: number | null
+          price?: number
+          product_id?: string
+          recorded_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "affiliate_price_history_product_id_fkey"
+            columns: ["product_id"]
+            isOneToOne: false
+            referencedRelation: "affiliate_products"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      affiliate_products: {
+        Row: {
+          additional_images: string[] | null
+          affiliate_link: string
+          availability_status: string | null
+          brand: string | null
+          category: string | null
+          created_at: string
+          currency: string | null
+          description: string | null
+          external_product_id: string
+          id: string
+          image_url: string | null
+          is_active: boolean | null
+          is_featured: boolean | null
+          last_price_check: string | null
+          metadata: Json | null
+          network_id: string
+          original_price: number | null
+          price: number | null
+          rating: number | null
+          review_count: number | null
+          seo_description: string | null
+          seo_title: string | null
+          short_description: string | null
+          subcategory: string | null
+          tags: string[] | null
+          title: string
+          updated_at: string
+        }
+        Insert: {
+          additional_images?: string[] | null
+          affiliate_link: string
+          availability_status?: string | null
+          brand?: string | null
+          category?: string | null
+          created_at?: string
+          currency?: string | null
+          description?: string | null
+          external_product_id: string
+          id?: string
+          image_url?: string | null
+          is_active?: boolean | null
+          is_featured?: boolean | null
+          last_price_check?: string | null
+          metadata?: Json | null
+          network_id: string
+          original_price?: number | null
+          price?: number | null
+          rating?: number | null
+          review_count?: number | null
+          seo_description?: string | null
+          seo_title?: string | null
+          short_description?: string | null
+          subcategory?: string | null
+          tags?: string[] | null
+          title: string
+          updated_at?: string
+        }
+        Update: {
+          additional_images?: string[] | null
+          affiliate_link?: string
+          availability_status?: string | null
+          brand?: string | null
+          category?: string | null
+          created_at?: string
+          currency?: string | null
+          description?: string | null
+          external_product_id?: string
+          id?: string
+          image_url?: string | null
+          is_active?: boolean | null
+          is_featured?: boolean | null
+          last_price_check?: string | null
+          metadata?: Json | null
+          network_id?: string
+          original_price?: number | null
+          price?: number | null
+          rating?: number | null
+          review_count?: number | null
+          seo_description?: string | null
+          seo_title?: string | null
+          short_description?: string | null
+          subcategory?: string | null
+          tags?: string[] | null
+          title?: string
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "affiliate_products_network_id_fkey"
+            columns: ["network_id"]
+            isOneToOne: false
+            referencedRelation: "affiliate_networks"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       article_tags: {
         Row: {
           article_id: string

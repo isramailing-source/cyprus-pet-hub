@@ -90,12 +90,47 @@ serve(async (req) => {
       console.log('Article generation not due yet. Last run:', new Date(lastArticleTime))
     }
 
+    // Run affiliate content sync every 12 hours
+    const lastAffiliateTime = await getLastTaskTime(supabase, 'affiliate_sync')
+    const twelveHoursAgo = Date.now() - (12 * 60 * 60 * 1000)
+    
+    if (!lastAffiliateTime || lastAffiliateTime < twelveHoursAgo) {
+      console.log('Running affiliate content sync task...')
+      try {
+        const affiliateResponse = await fetch(`${supabaseFunctionUrl}/affiliate-content-manager`, {
+          method: 'POST',
+          headers: { 
+            'Authorization': authHeader || `Bearer ${Deno.env.get('SUPABASE_ANON_KEY')}`,
+            'Content-Type': 'application/json'
+          },
+          body: JSON.stringify({ action: 'full_sync' })
+        })
+        
+        const affiliateResult = await affiliateResponse.text()
+        console.log('Affiliate sync result:', affiliateResult)
+        
+        await setLastTaskTime(supabase, 'affiliate_sync', Date.now(), 'success', { 
+          message: 'Automated affiliate content sync completed',
+          response: affiliateResult 
+        })
+      } catch (affiliateError) {
+        console.error('Affiliate sync failed:', affiliateError)
+        const errorMessage = affiliateError instanceof Error ? affiliateError.message : 'Unknown affiliate sync error'
+        await setLastTaskTime(supabase, 'affiliate_sync', Date.now(), 'error', { 
+          error: errorMessage 
+        })
+      }
+    } else {
+      console.log('Affiliate sync not due yet. Last run:', new Date(lastAffiliateTime))
+    }
+
     return new Response(
       JSON.stringify({ 
         success: true, 
         message: 'Scheduled tasks checked and executed if needed',
         lastScrape: lastScrapeTime ? new Date(lastScrapeTime).toISOString() : null,
-        lastArticle: lastArticleTime ? new Date(lastArticleTime).toISOString() : null
+        lastArticle: lastArticleTime ? new Date(lastArticleTime).toISOString() : null,
+        lastAffiliate: lastAffiliateTime ? new Date(lastAffiliateTime).toISOString() : null
       }),
       { 
         headers: { ...corsHeaders, 'Content-Type': 'application/json' },

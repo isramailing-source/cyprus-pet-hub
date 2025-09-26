@@ -1,6 +1,6 @@
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-import { AffiliateDisclosure } from './AffiliateDisclosure';
-import { AmazonProductLink } from './AmazonProductLink';
+import AffiliateDisclosure from './AffiliateDisclosure';
+import AmazonProductLink from './AmazonProductLink';
 
 interface PetProductShowcaseProps {
   title?: string;
