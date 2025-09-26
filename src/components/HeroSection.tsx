@@ -1,10 +1,11 @@
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Search, MapPin, Heart } from "lucide-react";
-import heroImage from "@/assets/hero-cyprus-pets-bg.jpg";
+import heroImage from "/friendly-nature-background.png";
 
 const HeroSection = () => {
   console.log('HeroSection component rendering');
+  
   return (
     <section className="relative min-h-[70vh] flex items-center justify-center overflow-hidden">
       {/* Background Image */}
@@ -16,7 +17,7 @@ const HeroSection = () => {
         />
         <div className="absolute inset-0 bg-gradient-to-r from-primary/70 to-secondary/50"></div>
       </div>
-
+      
       {/* Content */}
       <div className="relative z-10 text-center px-4 py-16">
         <div className="max-w-4xl mx-auto">
@@ -27,7 +28,7 @@ const HeroSection = () => {
           <p className="text-xl md:text-2xl text-white/90 mb-8 leading-relaxed">
             Comprehensive maintenance guides, detailed care instructions, and professional tips for Cyprus pet owners
           </p>
-
+          
           {/* Search Bar */}
           <div className="max-w-2xl mx-auto mb-8">
             <div className="flex flex-col sm:flex-row gap-3 p-2 bg-white/10 backdrop-blur-md rounded-2xl border border-white/20">
@@ -44,7 +45,7 @@ const HeroSection = () => {
               </Button>
             </div>
           </div>
-
+          
           {/* Stats */}
           <div className="flex flex-wrap justify-center gap-8 text-white">
             <div className="text-center">
