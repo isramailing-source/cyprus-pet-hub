@@ -441,14 +441,21 @@ async function syncAdmitadProducts(network: any) {
     // First, get access token
     console.log('Getting Admitad access token...');
     
+    // Add timeout to prevent hanging
+    const controller = new AbortController();
+    const timeoutId = setTimeout(() => controller.abort(), 15000);
+    
     const tokenResponse = await fetch('https://api.admitad.com/token/', {
       method: 'POST',
       headers: {
         'Authorization': `Basic ${base64Header}`,
         'Content-Type': 'application/x-www-form-urlencoded',
       },
-      body: 'grant_type=client_credentials&scope=advcampaigns+websites+coupons'
+      body: 'grant_type=client_credentials&scope=advcampaigns+websites+coupons',
+      signal: controller.signal
     });
+    
+    clearTimeout(timeoutId);
 
     if (!tokenResponse.ok) {
       throw new Error(`Failed to get Admitad token: ${tokenResponse.status} ${tokenResponse.statusText}`);
@@ -811,14 +818,21 @@ async function syncAliExpressProducts(network: any) {
           console.log('Request params (without signature):', { ...params, sign: '[HIDDEN]' });
 
           try {
+            // Add 30-second timeout to prevent hanging
+            const controller = new AbortController();
+            const timeoutId = setTimeout(() => controller.abort(), 30000);
+            
             const response = await fetch(endpoint, {
               method: 'POST',
               headers: {
                 'Content-Type': 'application/x-www-form-urlencoded;charset=utf-8',
                 'User-Agent': 'Mozilla/5.0 (compatible; CyprusPetsBot/1.0)',
               },
-              body: new URLSearchParams(params).toString()
+              body: new URLSearchParams(params).toString(),
+              signal: controller.signal
             });
+            
+            clearTimeout(timeoutId);
 
             console.log(`Response status: ${response.status} ${response.statusText}`);
             
@@ -967,26 +981,24 @@ async function searchAliExpressProductsDirect(keywords: string, options: any = {
   }
 }
 
-// Correct AliExpress signature generation based on working examples
+// Fixed AliExpress signature generation based on official API documentation
 function generateAliExpressSignatureCorrect(params: Record<string, string>, secret: string): string {
   // Remove sign parameter if it exists
   const cleanParams = { ...params };
   delete cleanParams.sign;
   
-  // Sort parameters alphabetically
+  // Sort parameters alphabetically by key
   const sortedKeys = Object.keys(cleanParams).sort();
   
-  // Create parameter string by concatenating key+value pairs
-  const paramString = sortedKeys.reduce((acc, key) => {
-    return acc + key + cleanParams[key];
-  }, '');
+  // Create parameter string in format: key1value1key2value2...
+  const paramString = sortedKeys.map(key => `${key}${cleanParams[key]}`).join('');
   
-  // Create signature string: SECRET + paramString + SECRET
+  // Create signature string: SECRET + paramString + SECRET  
   const signString = secret + paramString + secret;
   
-  console.log('AliExpress signature generation (corrected):', {
+  console.log('AliExpress signature generation (fixed):', {
     sortedKeys,
-    paramStringLength: paramString.length,
+    paramString: paramString.substring(0, 100) + '...',
     signStringLength: signString.length
   });
   

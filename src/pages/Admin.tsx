@@ -16,7 +16,7 @@ import TestAmazonIntegration from "@/components/TestAmazonIntegration";
 import AliExpressTestButton from "@/components/AliExpressTestButton";
 import { AdSenseTestComponent } from "@/components/ads";
 import ComprehensiveSystemTest from "@/components/ComprehensiveSystemTest";
-import TestAffiliateAutomation from "@/components/TestAffiliateAutomation";
+import EnhancedTestAffiliateAutomation from "@/components/EnhancedTestAffiliateAutomation";
 import ImageFallbackTest from "@/components/ImageFallbackTest";
 import NetworkConnectivityTest from "@/components/NetworkConnectivityTest";
 import AffiliateLinksManager from "@/components/admin/AffiliateLinksManager";
@@ -164,7 +164,7 @@ const Admin = () => {
                 </TabsList>
 
                 <TabsContent value="automation" className="mt-4">
-                  <TestAffiliateAutomation />
+                  <EnhancedTestAffiliateAutomation />
                 </TabsContent>
 
                 <TabsContent value="system-test" className="mt-4">
