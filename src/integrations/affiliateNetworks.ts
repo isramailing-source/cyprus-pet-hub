@@ -84,16 +84,16 @@ export const rakutenConfig: RakutenConfig = {
 export const aliExpressConfig: AliExpressConfig = {
   trackingId: 'Cyrus-pets',
   baseUrl: 'https://www.aliexpress.com',
-  apiKey: process.env.VITE_ALIEXPRESS_API_KEY,
-  apiSecret: process.env.VITE_ALIEXPRESS_API_SECRET,
-  appKey: process.env.VITE_ALIEXPRESS_APP_KEY
+  apiKey: import.meta.env.VITE_ALIEXPRESS_API_KEY,
+  apiSecret: import.meta.env.VITE_ALIEXPRESS_API_SECRET,
+  appKey: import.meta.env.VITE_ALIEXPRESS_APP_KEY
 };
 
 // Admitad Configuration
 export const admitadConfig: AdmitadConfig = {
   websiteId: 'cyprus-pets',
   apiUrl: 'https://api.admitad.com/advcampaigns/',
-  secretKey: process.env.VITE_ADMITAD_SECRET_KEY // Store securely in environment variables
+  secretKey: import.meta.env.VITE_ADMITAD_SECRET_KEY // Store securely in environment variables
 };
 
 // Main affiliate networks configuration
