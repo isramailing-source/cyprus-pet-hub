@@ -164,38 +164,37 @@ export const searchAliExpressProducts = async (
   pageSize: number = 20
 ): Promise<AliExpressSearchResponse | null> => {
   try {
-    // API calls are handled via Supabase Edge Functions for security
-    console.log('AliExpress search via edge function...');
-
-    // Create API request parameters
-    const params = new URLSearchParams({
-      method: 'aliexpress.affiliate.product.query',
-      app_key: aliExpressConfig.appKey,
-      sign_method: 'md5',
-      timestamp: Date.now().toString(),
-      format: 'json',
-      v: '2.0',
-      keywords,
-      page_no: pageNo.toString(),
-      page_size: pageSize.toString(),
-      ...(category && { category_ids: category }),
-      ...(minPrice && { min_sale_price: minPrice.toString() }),
-      ...(maxPrice && { max_sale_price: maxPrice.toString() }),
-      ...(sort && { sort: sort }),
-      tracking_id: aliExpressConfig.trackingId,
-      fields: 'product_id,product_title,product_main_image_url,app_sale_price,app_sale_price_currency,original_price,discount,evaluate_rate,volume,product_detail_url,commission_rate'
+    const { supabase } = await import('@/integrations/supabase/client');
+    
+    console.log('Searching AliExpress products via edge function...', keywords);
+    
+    // Call the affiliate content manager edge function to search AliExpress products
+    const { data, error } = await supabase.functions.invoke('affiliate-content-manager', {
+      body: { 
+        action: 'search_products',
+        keywords,
+        options: {
+          pageNo,
+          pageSize,
+          category,
+          minPrice,
+          maxPrice,
+          sort
+        }
+      }
     });
 
-    // In a real implementation, you would need to sign the request
-    // For now, we'll use a proxy endpoint or mock data
-    const response = await fetch(`/api/aliexpress/search?${params}`);
-    
-    if (!response.ok) {
-      throw new Error(`API request failed: ${response.statusText}`);
+    if (error) {
+      console.error('Error calling AliExpress search edge function:', error);
+      return null;
     }
 
-    const data = await response.json();
-    return data.aliexpress_affiliate_product_query_response?.resp_result?.result || null;
+    if (data?.error) {
+      console.error('AliExpress search error:', data.error);
+      return null;
+    }
+
+    return { products: data?.products || [], current_page_no: pageNo, current_record_count: data?.products?.length || 0, total_record_count: data?.products?.length || 0 } as AliExpressSearchResponse;
   } catch (error) {
     console.error('Error searching AliExpress products:', error);
     return null;

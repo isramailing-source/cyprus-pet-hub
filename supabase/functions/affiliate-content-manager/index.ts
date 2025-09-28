@@ -22,24 +22,41 @@ serve(async (req) => {
   try {
     console.log('Affiliate Content Manager started');
     
-    const { action, ...params } = await req.json().catch(() => ({ action: 'full_sync' }));
+    const body = await req.json().catch(() => ({ action: 'full_sync' }));
+    const { action, keywords, options, ...params } = body;
     console.log('Affiliate Content Manager - Action:', action);
+    
+    let result;
     
     switch (action) {
       case 'sync_products':
-        return await syncAffiliateProducts();
+        result = await syncAffiliateProducts();
+        break;
+      case 'search_products':
+        result = await searchAliExpressProductsDirect(keywords, options);
+        break;
       case 'generate_content':
-        return await generateAffiliateContent();
+        result = await generateAffiliateContent();
+        break;
       case 'update_prices':
-        return await updateProductPrices();
+        result = await updateProductPrices();
+        break;
       case 'publish_scheduled':
-        return await publishScheduledContent();
+        result = await publishScheduledContent();
+        break;
       case 'add_network':
-        return await addNetwork(params);
+        result = await addNetwork(params);
+        break;
       case 'full_sync':
       default:
-        return await runFullSync();
+        result = await runFullSync();
+        break;
     }
+    
+    return new Response(
+      JSON.stringify(result),
+      { headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
+    );
   } catch (error) {
     console.error('Error in affiliate content manager:', error);
     const errorMessage = error instanceof Error ? error.message : 'Unknown error occurred';
@@ -334,27 +351,22 @@ async function syncAliExpressProducts(network: any) {
       console.log(`Fetching ${category} products from AliExpress...`);
       
       // Prepare API request parameters
-      const timestamp = Math.floor(Date.now() / 1000);
+      const timestamp = Date.now().toString();
       const method = 'aliexpress.affiliate.product.query';
       
       const params: Record<string, string> = {
         app_key: appKey,
         method: method,
-        timestamp: timestamp.toString(),
+        timestamp: timestamp,
         sign_method: 'md5',
         format: 'json',
         v: '2.0',
         keywords: category,
-        category_ids: '', // Can be set based on AliExpress category mapping
         page_no: '1',
         page_size: Math.min(maxProducts, 50).toString(),
-        platform_product_type: 'ALL',
-        ship_to_country: 'CY', // Cyprus
-        sort: 'SALE_PRICE_ASC',
-        target_currency: 'EUR',
-        target_language: 'EN',
+        sort: 'VOLUME_DESC',
         tracking_id: network.affiliate_id || 'Cyrus-pets',
-        fields: 'commission_rate,sale_price,discount,evaluate_rate,first_level_category_id,first_level_category_name,lastest_volume,hot_product_commission_rate,original_price,product_detail_url,product_id,product_main_image_url,product_small_image_urls,product_title,product_video_url,promotion_link,relevant_market_commission_rate,sale_price,second_level_category_id,second_level_category_name,shop_id,shop_url,target_app_sale_price,target_app_sale_price_currency,target_original_price,target_original_price_currency,target_sale_price,target_sale_price_currency'
+        fields: 'product_id,product_title,product_main_image_url,app_sale_price,app_sale_price_currency,original_price,discount,evaluate_rate,volume,product_detail_url,commission_rate'
       };
 
       // Generate signature
@@ -409,25 +421,122 @@ async function syncAliExpressProducts(network: any) {
   return totalSynced;
 }
 
+// Direct search function for AliExpress products (used by frontend)
+async function searchAliExpressProductsDirect(keywords: string, options: any = {}) {
+  console.log('Searching AliExpress products directly...', keywords);
+  
+  const appKey = Deno.env.get('ALIEXPRESS_APP_KEY');
+  const appSecret = Deno.env.get('ALIEXPRESS_SECRET');
+  
+  if (!appKey || !appSecret) {
+    console.error('AliExpress API credentials not configured');
+    return { error: 'API credentials not configured' };
+  }
+
+  const { pageNo = 1, pageSize = 20, category, minPrice, maxPrice, sort } = options;
+
+  try {
+    // Get AliExpress network configuration
+    const { data: networks } = await supabase
+      .from('affiliate_networks')
+      .select('*')
+      .eq('name', 'AliExpress')
+      .single();
+
+    if (!networks) {
+      return { error: 'AliExpress network not configured' };
+    }
+
+    // Prepare API request parameters
+    const timestamp = Date.now().toString();
+    const method = 'aliexpress.affiliate.product.query';
+    
+    const params: Record<string, string> = {
+      app_key: appKey,
+      method: method,
+      timestamp: timestamp,
+      sign_method: 'md5',
+      format: 'json',
+      v: '2.0',
+      keywords: keywords,
+      page_no: pageNo.toString(),
+      page_size: pageSize.toString(),
+      sort: sort || 'VOLUME_DESC',
+      tracking_id: networks.affiliate_id || 'Cyrus-pets',
+      fields: 'product_id,product_title,product_main_image_url,app_sale_price,app_sale_price_currency,original_price,discount,evaluate_rate,volume,product_detail_url,commission_rate'
+    };
+
+    if (category) params.category_ids = category;
+    if (minPrice) params.min_sale_price = minPrice.toString();
+    if (maxPrice) params.max_sale_price = maxPrice.toString();
+
+    // Generate signature
+    const signature = await generateAliExpressSignature(params, appSecret, method);
+    params.sign = signature;
+
+    // Make API request
+    const queryString = new URLSearchParams(params).toString();
+    const apiUrl = `${networks.api_endpoint}?${queryString}`;
+
+    console.log('Making AliExpress API request for search...');
+    const response = await fetch(apiUrl, {
+      method: 'GET',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+    });
+
+    if (!response.ok) {
+      console.error(`AliExpress API error: ${response.status} ${response.statusText}`);
+      return { error: `API request failed: ${response.statusText}` };
+    }
+
+    const data = await response.json();
+    console.log('AliExpress search API response received');
+
+    if (data.aliexpress_affiliate_product_query_response?.resp_result?.result?.products) {
+      const products = data.aliexpress_affiliate_product_query_response.resp_result.result.products.product || [];
+      return { products };
+    } else if (data.error_response) {
+      console.error('AliExpress API error response:', data.error_response);
+      return { error: `AliExpress API error: ${data.error_response.msg}` };
+    } else {
+      console.log('No products found in AliExpress response');
+      return { products: [] };
+    }
+  } catch (error) {
+    console.error('Error in AliExpress search:', error);
+    return { error: error instanceof Error ? error.message : 'Unknown error' };
+  }
+}
+
 async function generateAliExpressSignature(params: Record<string, string>, secret: string, method: string): Promise<string> {
   // Remove sign parameter if it exists
   const cleanParams = { ...params };
   delete cleanParams.sign;
   
-  // Sort parameters and create query string format
+  // Sort parameters alphabetically and create signature string
   const sortedKeys = Object.keys(cleanParams).sort();
-  const sortedParams = sortedKeys.map(key => `${key}${cleanParams[key]}`).join('');
+  let signString = secret;
   
-  // Create signature string according to AliExpress API documentation
-  const signString = `${secret}${method}${sortedParams}${secret}`;
+  // Add method first
+  signString += method;
+  
+  // Add sorted parameters in key-value format
+  for (const key of sortedKeys) {
+    signString += key + cleanParams[key];
+  }
+  
+  // Add secret at the end
+  signString += secret;
   
   console.log('AliExpress signature generation:', {
     method,
-    sortedKeys: sortedKeys.slice(0, 5), // Log first 5 keys for debugging
+    sortedKeys,
     signStringLength: signString.length
   });
   
-  // Generate MD5 hash
+  // Generate MD5 hash and convert to uppercase
   return md5(signString).toUpperCase();
 }
 
