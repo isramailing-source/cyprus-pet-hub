@@ -8,6 +8,8 @@ import { ShoppingBag, Settings, Star, TrendingUp, Network, BarChart3 } from 'luc
 import AffiliateProductGrid from '@/components/AffiliateProductGrid';
 import AffiliateManager from '@/components/AffiliateManager';
 import { AffiliateNetworkShowcase, DealsCarousel, NetworkComparisonTable } from '@/components/affiliates';
+import EnhancedAffiliateNetworkShowcase from '@/components/affiliates/EnhancedAffiliateNetworkShowcase';
+import AffiliateLinksTestComponent from '@/components/AffiliateLinksTestComponent';
 import { useAuth } from '@/hooks/useAuth';
 
 export default function Affiliate() {
@@ -83,7 +85,7 @@ export default function Affiliate() {
               <TabsContent value="showcase">
                 <div className="space-y-12">
                   <DealsCarousel />
-                  <AffiliateNetworkShowcase />
+                  <EnhancedAffiliateNetworkShowcase />
                 </div>
               </TabsContent>
 
@@ -100,6 +102,7 @@ export default function Affiliate() {
               </TabsContent>
 
               <TabsContent value="management">
+                <AffiliateLinksTestComponent />
                 <AffiliateManager />
               </TabsContent>
             </Tabs>
@@ -109,7 +112,7 @@ export default function Affiliate() {
           {(!user || userRole !== 'admin') && (
             <div className="space-y-12">
               <DealsCarousel />
-              <AffiliateNetworkShowcase />
+          <EnhancedAffiliateNetworkShowcase />
               <NetworkComparisonTable />
               <ProductShowcase 
                 categories={categories}

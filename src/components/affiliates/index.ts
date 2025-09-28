@@ -12,5 +12,6 @@ export { default as EnhancedAffiliateSidebar } from './EnhancedAffiliateSidebar'
 
 // Enhanced Affiliate Components
 export { default as AffiliateNetworkShowcase } from './AffiliateNetworkShowcase';
+export { default as EnhancedAffiliateNetworkShowcase } from './EnhancedAffiliateNetworkShowcase';
 export { default as DealsCarousel } from './DealsCarousel';
 export { default as NetworkComparisonTable } from './NetworkComparisonTable';

@@ -91,6 +91,60 @@ export type Database = {
           },
         ]
       }
+      affiliate_clicks: {
+        Row: {
+          click_time: string | null
+          conversion_value: number | null
+          created_at: string | null
+          id: string
+          ip_address: string | null
+          network_id: string | null
+          product_id: string | null
+          referrer: string | null
+          user_agent: string | null
+          user_id: string | null
+        }
+        Insert: {
+          click_time?: string | null
+          conversion_value?: number | null
+          created_at?: string | null
+          id?: string
+          ip_address?: string | null
+          network_id?: string | null
+          product_id?: string | null
+          referrer?: string | null
+          user_agent?: string | null
+          user_id?: string | null
+        }
+        Update: {
+          click_time?: string | null
+          conversion_value?: number | null
+          created_at?: string | null
+          id?: string
+          ip_address?: string | null
+          network_id?: string | null
+          product_id?: string | null
+          referrer?: string | null
+          user_agent?: string | null
+          user_id?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "affiliate_clicks_network_id_fkey"
+            columns: ["network_id"]
+            isOneToOne: false
+            referencedRelation: "affiliate_networks"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "affiliate_clicks_product_id_fkey"
+            columns: ["product_id"]
+            isOneToOne: false
+            referencedRelation: "affiliate_products"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       affiliate_content: {
         Row: {
           clicks: number | null

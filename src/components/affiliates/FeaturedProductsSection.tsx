@@ -51,11 +51,9 @@ const FeaturedProductsSection = ({
           rating,
           category,
           short_description,
-          network_id,
-          affiliate_networks!inner(name, is_active)
+          network:affiliate_networks!fk_affiliate_products_network_id(name)
         `)
         .eq('is_active', true)
-        .eq('affiliate_networks.is_active', true)
         .eq('is_featured', true)
         .order('created_at', { ascending: false })
         .limit(limit);
@@ -74,11 +72,9 @@ const FeaturedProductsSection = ({
             rating,
             category,
             short_description,
-            network_id,
-            affiliate_networks!inner(name, is_active)
+            network:affiliate_networks!fk_affiliate_products_network_id(name)
           `)
           .eq('is_active', true)
-          .eq('affiliate_networks.is_active', true)
           .order('created_at', { ascending: false })
           .limit(limit);
         
@@ -97,7 +93,7 @@ const FeaturedProductsSection = ({
         affiliate_link: product.affiliate_link,
         rating: product.rating || 0,
         category: product.category || '',
-        network_name: (product.affiliate_networks as any)?.name || 'Unknown',
+        network_name: (product.network as any)?.name || 'Unknown',
         short_description: product.short_description || ''
       })) || [];
 
