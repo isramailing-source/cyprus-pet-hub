@@ -11,6 +11,7 @@ import { useToast } from "@/components/ui/use-toast";
 import ArticleGenerator from "@/components/ArticleGenerator";
 import AffiliateManager from "@/components/AffiliateManager";
 import { TestPerplexityGenerator } from "@/components/TestPerplexityGenerator";
+import TestAliExpressIntegration from "@/components/TestAliExpressIntegration";
 // Import removed - CreateAdForm not needed for blog transformation
 import { supabase } from "@/integrations/supabase/client";
 
@@ -141,6 +142,7 @@ const Admin = () => {
                 <TabsList className="flex flex-wrap gap-2">
                   <TabsTrigger value="content">Content Moderation</TabsTrigger>
                   <TabsTrigger value="affiliate">Affiliate Management</TabsTrigger>
+                  <TabsTrigger value="aliexpress">AliExpress Test</TabsTrigger>
                   <TabsTrigger value="products">Bulk Product Import</TabsTrigger>
                   <TabsTrigger value="articles">Article Generation</TabsTrigger>
                   <TabsTrigger value="perplexity">Perplexity Test</TabsTrigger>
@@ -157,6 +159,10 @@ const Admin = () => {
 
                 <TabsContent value="affiliate" className="mt-4">
                   <AffiliateManager />
+                </TabsContent>
+
+                <TabsContent value="aliexpress" className="mt-4">
+                  <TestAliExpressIntegration />
                 </TabsContent>
 
                 <TabsContent value="products" className="mt-4">

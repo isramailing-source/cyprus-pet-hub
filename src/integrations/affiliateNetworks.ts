@@ -84,9 +84,10 @@ export const rakutenConfig: RakutenConfig = {
 export const aliExpressConfig: AliExpressConfig = {
   trackingId: 'Cyrus-pets',
   baseUrl: 'https://www.aliexpress.com',
-  apiKey: import.meta.env.VITE_ALIEXPRESS_API_KEY,
-  apiSecret: import.meta.env.VITE_ALIEXPRESS_API_SECRET,
-  appKey: import.meta.env.VITE_ALIEXPRESS_APP_KEY
+  // AliExpress API integration using real API credentials
+  apiKey: import.meta.env.VITE_ALIEXPRESS_API_KEY || undefined,
+  apiSecret: import.meta.env.VITE_ALIEXPRESS_API_SECRET || undefined,
+  appKey: import.meta.env.VITE_ALIEXPRESS_APP_KEY || undefined
 };
 
 // Admitad Configuration
@@ -249,7 +250,7 @@ export const convertAliExpressProduct = (product: AliExpressProduct) => {
   };
 };
 
-// Fetch and sync AliExpress products with database
+// Fetch and sync AliExpress products with database via edge function
 export const syncAliExpressProducts = async (
   keywords: string[] = ['pet supplies', 'dog toys', 'cat food', 'pet accessories'],
   maxProductsPerKeyword: number = 10
@@ -257,40 +258,37 @@ export const syncAliExpressProducts = async (
   const { supabase } = await import('@/integrations/supabase/client');
   
   try {
-    const allProducts = [];
+    console.log('Starting AliExpress product sync via edge function...');
     
-    for (const keyword of keywords) {
-      console.log(`Fetching AliExpress products for: ${keyword}`);
-      const searchResult = await searchAliExpressProducts(keyword, undefined, undefined, undefined, 'VOLUME_DESC', 1, maxProductsPerKeyword);
-      
-      if (searchResult && searchResult.products) {
-        const convertedProducts = searchResult.products.map(convertAliExpressProduct);
-        allProducts.push(...convertedProducts);
+    // Call the affiliate content manager edge function to sync AliExpress products
+    const { data, error } = await supabase.functions.invoke('affiliate-content-manager', {
+      body: { 
+        action: 'sync_products',
+        keywords,
+        maxProductsPerKeyword
       }
-      
-      // Add delay to respect rate limits
-      await new Promise(resolve => setTimeout(resolve, 1000));
+    });
+
+    if (error) {
+      console.error('Error syncing AliExpress products:', error);
+      return { 
+        success: false, 
+        error: error.message || 'Failed to sync AliExpress products' 
+      };
     }
-    
-    if (allProducts.length > 0) {
-      // Insert or update products in the database
-      const { error } = await supabase
-        .from('affiliate_products')
-        .upsert(allProducts, { onConflict: 'id' });
-        
-      if (error) {
-        console.error('Error syncing AliExpress products:', error);
-        return { success: false, error: error.message };
-      }
-      
-      console.log(`Successfully synced ${allProducts.length} AliExpress products`);
-      return { success: true, productsCount: allProducts.length };
-    }
-    
-    return { success: true, productsCount: 0 };
+
+    console.log('AliExpress sync completed:', data);
+    return { 
+      success: true, 
+      productsCount: data?.products_synced || 0 
+    };
+
   } catch (error) {
-    console.error('Error in syncAliExpressProducts:', error);
-    return { success: false, error: error.message };
+    console.error('AliExpress sync error:', error);
+    return { 
+      success: false, 
+      error: error instanceof Error ? error.message : 'Unknown error occurred' 
+    };
   }
 };
 
