@@ -446,10 +446,8 @@ async function searchAliExpressProductsDirect(keywords: string, options: any = {
       return { error: 'AliExpress network not configured' };
     }
 
-    // Create timestamp in correct format (Asia/Shanghai timezone)
-    const now = new Date();
-    const shanghaiTime = new Date(now.getTime() + (8 * 60 * 60 * 1000)); // UTC+8
-    const timestamp = shanghaiTime.toISOString().slice(0, 19).replace('T', ' ');
+    // Create timestamp in Unix timestamp format for AliExpress API
+    const timestamp = Math.floor(Date.now() / 1000).toString();
     
     const method = 'aliexpress.affiliate.product.query';
     
@@ -478,13 +476,17 @@ async function searchAliExpressProductsDirect(keywords: string, options: any = {
 
     console.log('Making AliExpress API request with correct format...');
     
-    // Use correct API endpoint with POST method
-    const response = await fetch('http://gw.api.taobao.com/router/rest', {
-      method: 'POST',
+    // Use HTTPS endpoint with GET method
+    const url = new URL('https://gw.api.taobao.com/router/rest');
+    Object.entries(params).forEach(([key, value]) => {
+      url.searchParams.append(key, value);
+    });
+    
+    const response = await fetch(url.toString(), {
+      method: 'GET',
       headers: {
-        'Content-Type': 'application/x-www-form-urlencoded;charset=utf-8',
+        'User-Agent': 'Mozilla/5.0 (compatible; AffiliateBot/1.0)',
       },
-      body: new URLSearchParams(params).toString()
     });
 
     if (!response.ok) {
