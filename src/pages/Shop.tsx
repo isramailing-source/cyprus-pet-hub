@@ -9,8 +9,9 @@ import { Search, ShoppingBag, Star, Waves, Sailboat, Sun, Mountain } from "lucid
 import AmazonWidget from "@/components/affiliates/AmazonWidget";
 import AffiliateProductGrid from "@/components/AffiliateProductGrid";
 import AffiliateDisclosure from "@/components/affiliates/AffiliateDisclosure";
-import { AffiliateSpaceManager } from "@/components/ads/AffiliateSpaceManager";
-import { AffiliateNetworkBanner } from "@/components/ads/AffiliateNetworkBanner";
+import { AffiliateSpaceManager } from '@/components/ads';
+import { AffiliateNetworkBanner } from '@/components/ads';
+import AmazonStorefront from '@/components/affiliates/AmazonStorefront';
 
 const Shop = () => {
   const [searchTerm, setSearchTerm] = useState("");
@@ -123,109 +124,114 @@ const Shop = () => {
               
               <h2 className="text-3xl font-bold text-center mb-12">Featured Products</h2>
               
-              {/* Enhanced Category Tabs */}
-              <Tabs 
-                className="mb-12" 
-                onValueChange={(value) => setActiveCategory(value)} 
-                value={activeCategory}
-              >
-                <TabsList className="grid w-full grid-cols-2 lg:grid-cols-6 mb-8">
-                  {categories.map((category) => (
-                    <TabsTrigger 
-                      key={category.id} 
-                      value={category.id}
-                      className="flex flex-col items-center p-4 data-[state=active]:bg-blue-50 data-[state=active]:text-blue-700"
-                    >
-                      <span className="font-semibold">{category.name}</span>
-                      <span className="text-xs text-muted-foreground mt-1">{category.description}</span>
-                    </TabsTrigger>
-                  ))}
-                </TabsList>
+          {/* Enhanced Category Tabs */}
+          <Tabs 
+            className="mb-12" 
+            onValueChange={(value) => setActiveCategory(value)} 
+            value={activeCategory}
+          >
+            <TabsList className="grid w-full grid-cols-2 lg:grid-cols-6 mb-8">
+              {categories.map((category) => (
+                <TabsTrigger 
+                  key={category.id} 
+                  value={category.id}
+                  className="flex flex-col items-center p-4 data-[state=active]:bg-blue-50 data-[state=active]:text-blue-700"
+                >
+                  <span className="font-semibold">{category.name}</span>
+                  <span className="text-xs text-muted-foreground mt-1">{category.description}</span>
+                </TabsTrigger>
+              ))}
+            </TabsList>
 
-                {categories.map((category) => (
-                  <TabsContent key={category.id} className="mt-8" value={category.id}>
-                    {/* Amazon Widget for specific categories */}
-                    {category.id !== 'all' && (
-                      <AmazonWidget 
-                        searchPhrase={category.id === 'dog' ? 'dog supplies' : 
-                                    category.id === 'cat' ? 'cat toys and supplies' :
-                                    category.id === 'bird' ? 'bird supplies' :
-                                    category.id === 'grooming' ? 'pet grooming supplies' :
-                                    category.id === 'accessories' ? 'pet accessories collars leashes' : 
-                                    'pet supplies'}
-                        category="PetSupplies"
-                        className="mb-8"
-                      />
-                    )}
-                    
-                    {/* Enhanced AffiliateProductGrid with improved layout */}
-                    <AffiliateProductGrid 
-                      category={category.id}
-                      limit={category.id === 'all' ? 16 : 12}
-                      showFeaturedOnly={false}
-                      searchTerm={searchTerm}
-                      className="mb-8"
-                    />
-                  </TabsContent>
-                ))}
-              </Tabs>
-              
-              {/* Additional affiliate promotion space */}
-              <div className="mt-8">
-                <AffiliateSpaceManager 
-                  spaceType="affiliate-only"
-                  placement="inline"
-                  currentPage="shop"
-                  className="justify-center"
+            {categories.map((category) => (
+              <TabsContent key={category.id} className="mt-8" value={category.id}>
+                {/* Amazon Widget for specific categories */}
+                {category.id !== 'all' && (
+                  <AmazonWidget 
+                    searchPhrase={category.id === 'dog' ? 'dog supplies' : 
+                                category.id === 'cat' ? 'cat toys and supplies' :
+                                category.id === 'bird' ? 'bird supplies' :
+                                category.id === 'grooming' ? 'pet grooming supplies' :
+                                category.id === 'accessories' ? 'pet accessories collars leashes' : 
+                                'pet supplies'}
+                    category="PetSupplies"
+                    className="mb-8"
+                  />
+                )}
+                
+                {/* Enhanced AffiliateProductGrid with improved layout */}
+                <AffiliateProductGrid 
+                  category={category.id}
+                  limit={category.id === 'all' ? 16 : 12}
+                  showFeaturedOnly={false}
+                  searchTerm={searchTerm}
+                  className="mb-8"
                 />
-              </div>
-            </div>
-          </section>
+              </TabsContent>
+            ))}
+          </Tabs>
+          
+          {/* Amazon Storefront */}
+          <div className="mb-8">
+            <AmazonStorefront showCategories={true} />
+          </div>
+          
+          {/* Additional affiliate promotion space */}
+          <div className="mt-8">
+            <AffiliateSpaceManager 
+              spaceType="affiliate-only"
+              placement="inline"
+              currentPage="shop"
+              className="justify-center"
+            />
+          </div>
+        </div>
+      </section>
 
-          {/* Cyprus Delivery Highlight Section */}
-          <section className="py-12 bg-gradient-to-r from-blue-50 to-cyan-50">
-            <div className="container mx-auto px-4">
-              <div className="text-center max-w-3xl mx-auto">
-                <h3 className="text-2xl font-bold text-gray-900 mb-4">
-                  🇨🇾 Delivering to Cyprus with Mediterranean Care
-                </h3>
-                <p className="text-lg text-gray-700 mb-6">
-                  We understand the unique needs of pet owners in Cyprus. Our curated selection focuses on products 
-                  that deliver reliably to the island, with special attention to climate-appropriate supplies.
-                </p>
-                <div className="grid md:grid-cols-3 gap-6 text-center">
-                  <div className="bg-white/60 rounded-lg p-4">
-                    <div className="text-2xl mb-2">🚚</div>
-                    <h4 className="font-semibold mb-1">Cyprus Shipping</h4>
-                    <p className="text-sm text-gray-600">Verified delivery options</p>
-                  </div>
-                  <div className="bg-white/60 rounded-lg p-4">
-                    <div className="text-2xl mb-2">🌡️</div>
-                    <h4 className="font-semibold mb-1">Climate Ready</h4>
-                    <p className="text-sm text-gray-600">Mediterranean climate tested</p>
-                  </div>
-                  <div className="bg-white/60 rounded-lg p-4">
-                    <div className="text-2xl mb-2">⭐</div>
-                    <h4 className="font-semibold mb-1">Local Approved</h4>
-                    <p className="text-sm text-gray-600">Cyprus pet owner recommended</p>
-                  </div>
-                </div>
+      {/* Cyprus Delivery Highlight Section */}
+      <section className="py-12 bg-gradient-to-r from-blue-50 to-cyan-50">
+        <div className="container mx-auto px-4">
+          <div className="text-center max-w-3xl mx-auto">
+            <h3 className="text-2xl font-bold text-gray-900 mb-4">
+              🇨🇾 Delivering to Cyprus with Mediterranean Care
+            </h3>
+            <p className="text-lg text-gray-700 mb-6">
+              We understand the unique needs of pet owners in Cyprus. Our curated selection focuses on products 
+              that deliver reliably to the island, with special attention to climate-appropriate supplies.
+            </p>
+            <div className="grid md:grid-cols-3 gap-6 text-center">
+              <div className="bg-white/60 rounded-lg p-4">
+                <div className="text-2xl mb-2">🚚</div>
+                <h4 className="font-semibold mb-1">Cyprus Shipping</h4>
+                <p className="text-sm text-gray-600">Verified delivery options</p>
+              </div>
+              <div className="bg-white/60 rounded-lg p-4">
+                <div className="text-2xl mb-2">🌡️</div>
+                <h4 className="font-semibold mb-1">Climate Ready</h4>
+                <p className="text-sm text-gray-600">Mediterranean climate tested</p>
+              </div>
+              <div className="bg-white/60 rounded-lg p-4">
+                <div className="text-2xl mb-2">⭐</div>
+                <h4 className="font-semibold mb-1">Local Approved</h4>
+                <p className="text-sm text-gray-600">Cyprus pet owner recommended</p>
               </div>
             </div>
-          </section>
-        </main>
-        
-        {/* Sidebar with affiliate links */}
-        <aside className="fixed right-4 top-1/2 transform -translate-y-1/2 w-64 z-40 hidden xl:block">
-          <AffiliateSpaceManager 
-            spaceType="mixed"
-            placement="sidebar"
-            currentPage="shop"
-            adSenseSlot="sidebar-shop"
-          />
-        </aside>
-        
-        <Footer />
+          </div>
+        </div>
+      </section>
+    </main>
+    
+    {/* Sidebar with affiliate links */}
+    <aside className="fixed right-4 top-1/2 transform -translate-y-1/2 w-64 z-40 hidden xl:block">
+      <AffiliateSpaceManager 
+        spaceType="mixed"
+        placement="sidebar"
+        currentPage="shop"
+        adSenseSlot="sidebar-shop"
+      />
+    </aside>
+    
+    <Footer />
       </div>
     </>
   );

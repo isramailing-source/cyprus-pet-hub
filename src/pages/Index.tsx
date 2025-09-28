@@ -12,6 +12,7 @@ import Footer from '@/components/Footer'
 // Affiliate and data integrations
 import { AffiliateNetworkBanner } from '@/components/ads/AffiliateNetworkBanner'
 import { AffiliateSpaceManager } from '@/components/ads/AffiliateSpaceManager'
+import AmazonStorefront from '@/components/affiliates/AmazonStorefront'
 import DealsCarousel from '@/components/affiliates/DealsCarousel'
 import { useAffiliateFeeds } from '@/integrations/affiliate/useAffiliateFeeds'
 
@@ -206,6 +207,15 @@ const Index = () => {
           <DealsCarousel />
           <div className="mt-6">
             <AffiliateSpaceManager spaceType="affiliate-only" placement="inline" currentPage="home" />
+          </div>
+          
+          {/* Amazon Storefront */}
+          <div className="mt-8">
+            <AmazonStorefront 
+              title="Pet Essentials on Amazon"
+              showCategories={false}
+              className="max-w-md mx-auto"
+            />
           </div>
         </div>
       </section>

@@ -130,6 +130,26 @@ export const generateAmazonLink = (productId: string, tag: string = amazonConfig
   return `${amazonConfig.baseUrl}/dp/${productId}?tag=${tag}`;
 };
 
+// Generate Amazon storefront link using Shop ID
+export const generateAmazonStorefrontLink = (shopId?: string): string => {
+  const storeId = shopId || 'cypruspets';
+  const affiliateTag = amazonConfig.tag;
+  return `https://www.amazon.com/shop/${storeId}?tag=${affiliateTag}`;
+};
+
+// Generate Amazon category link
+export const generateAmazonCategoryLink = (category: string, shopId?: string): string => {
+  const storeId = shopId || 'cypruspets';
+  const affiliateTag = amazonConfig.tag;
+  
+  if (storeId) {
+    return `https://www.amazon.com/shop/${storeId}?tag=${affiliateTag}&category=${category}`;
+  }
+  
+  // Fallback to category search
+  return `https://www.amazon.com/s?k=${encodeURIComponent(category)}&tag=${affiliateTag}`;
+};
+
 export const generateAliExpressLink = (productUrl: string, trackingId: string = aliExpressConfig.trackingId): string => {
   const separator = productUrl.includes('?') ? '&' : '?';
   return `${productUrl}${separator}aff_trace_key=${trackingId}`;
