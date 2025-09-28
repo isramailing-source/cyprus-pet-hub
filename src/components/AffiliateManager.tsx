@@ -1,348 +1,276 @@
-import React, { useState, useEffect } from 'react';
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-import { Button } from '@/components/ui/button';
-import { Badge } from '@/components/ui/badge';
-import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
-import { Input } from '@/components/ui/input';
-import { Label } from '@/components/ui/label';
-import { Textarea } from '@/components/ui/textarea';
-import { Switch } from '@/components/ui/switch';
-import { Progress } from '@/components/ui/progress';
-import { AlertCircle, RefreshCw, TrendingUp, ShoppingBag, FileText, DollarSign } from 'lucide-react';
-import { supabase } from '@/integrations/supabase/client';
-import { toast } from 'sonner';
-import { useAuth } from '@/hooks/useAuth';
-import AddNetworkDialog from './AddNetworkDialog';
+import React, { useEffect, useMemo, useState } from 'react'
+import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
+import { Button } from '@/components/ui/button'
+import { Badge } from '@/components/ui/badge'
+import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs'
+import { Input } from '@/components/ui/input'
+import { FileText, RefreshCw, ShoppingBag } from 'lucide-react'
+import { supabase } from '@/integrations/supabase/client'
+import { toast } from 'sonner'
+import { useAuth } from '@/hooks/useAuth'
+import AddNetworkDialog from './AddNetworkDialog'
 
-interface AffiliateStats {
-  totalProducts: number;
-  totalContent: number;
-  totalRevenue: number;
-  lastSync: string | null;
+export type AffiliateNetwork = {
+  id: string
+  name: string
+  affiliate_id: string
+  commission_rate: number
+  is_active: boolean
+  update_frequency_hours: number
+  created_at: string
 }
 
-interface AffiliateNetwork {
-  id: string;
-  name: string;
-  affiliate_id: string;
-  commission_rate: number;
-  is_active: boolean;
-  update_frequency_hours: number;
-  created_at: string;
+export type AffiliateProduct = {
+  id: string
+  title: string
+  description: string
+  category: string
+  price: number
+  currency: string
+  image_url: string
+  image_proxy_url?: string
+  affiliate_url: string
+  network_id: string
+  network?: { id: string; name: string }
+  rating?: number
+  is_featured?: boolean
+  last_price_check?: string
+  created_at?: string
+  updated_at?: string
 }
 
-interface AffiliateProduct {
-  id: string;
-  title: string;
-  price: number;
-  currency: string;
-  category: string;
-  rating: number;
-  is_featured: boolean;
-  last_price_check: string;
-  network: { name: string };
+export type AffiliateStats = {
+  totalProducts: number
+  totalContent: number
+  totalRevenue: number
+  lastSync: string | null
 }
+
+function normalizeUrl(u: string) {
+  try { return new URL(u).toString() } catch { return '' }
+}
+
+function buildImageProxy(src: string) {
+  const clean = normalizeUrl(src)
+  if (!clean) return ''
+  const base = import.meta.env.VITE_IMAGE_PROXY_URL || '/api/image'
+  const q = new URLSearchParams({ url: clean, format: 'webp', w: '0', q: '82', fit: 'cover' })
+  return `${base}?${q.toString()}`
+}
+
+const FALLBACK_IMAGE = '/img/placeholders/pet-product.webp'
 
 export default function AffiliateManager() {
-  const { user } = useAuth();
-  const [stats, setStats] = useState<AffiliateStats>({
-    totalProducts: 0,
-    totalContent: 0,
-    totalRevenue: 0,
-    lastSync: null
-  });
-  const [networks, setNetworks] = useState<AffiliateNetwork[]>([]);
-  const [products, setProducts] = useState<AffiliateProduct[]>([]);
-  const [isLoading, setIsLoading] = useState(true);
-  const [isSyncing, setIsSyncing] = useState(false);
-  const [syncProgress, setSyncProgress] = useState(0);
+  const { user } = useAuth()
+  const [networks, setNetworks] = useState<AffiliateNetwork[]>([])
+  const [products, setProducts] = useState<AffiliateProduct[]>([])
+  const [loading, setLoading] = useState(false)
+  const [stats, setStats] = useState<AffiliateStats>({ totalProducts: 0, totalContent: 0, totalRevenue: 0, lastSync: null })
+  const [query, setQuery] = useState('')
+  const [categoryFilter, setCategoryFilter] = useState('')
 
-  useEffect(() => {
-    if (user) {
-      fetchData();
-    }
-  }, [user]);
+  const filtered = useMemo(() => {
+    const q = query.toLowerCase().trim()
+    return products.filter(p => {
+      const inCat = !categoryFilter || p.category === categoryFilter
+      if (!q) return inCat
+      return inCat && (p.title.toLowerCase().includes(q) || p.description.toLowerCase().includes(q) || p.category.toLowerCase().includes(q))
+    })
+  }, [products, query, categoryFilter])
 
-  const fetchData = async () => {
+  useEffect(() => { void bootstrap() }, [])
+
+  async function bootstrap() {
+    setLoading(true)
     try {
-      setIsLoading(true);
-
-      // Fetch affiliate networks
-      const { data: networksData, error: networksError } = await supabase
-        .from('affiliate_networks')
-        .select('*')
-        .order('created_at', { ascending: false });
-
-      if (networksError) throw networksError;
-      setNetworks(networksData || []);
-
-      // Fetch affiliate products with network info
-      const { data: productsData, error: productsError } = await supabase
-        .from('affiliate_products')
-        .select(`
-          *,
-          network:affiliate_networks!fk_affiliate_products_network_id(name)
-        `)
-        .eq('is_active', true)
-        .order('created_at', { ascending: false })
-        .limit(10);
-
-      if (productsError) throw productsError;
-      setProducts(productsData || []);
-
-      // Fetch stats
-      const { data: contentStats } = await supabase
-        .from('affiliate_content')
-        .select('id, revenue')
-        .eq('is_published', true);
-
-      const { data: lastSyncData } = await supabase
-        .from('automation_logs')
-        .select('last_run')
-        .eq('task_type', 'affiliate_sync')
-        .order('last_run', { ascending: false })
-        .limit(1)
-        .single();
-
-      setStats({
-        totalProducts: productsData?.length || 0,
-        totalContent: contentStats?.length || 0,
-        totalRevenue: contentStats?.reduce((sum, item) => sum + (item.revenue || 0), 0) || 0,
-        lastSync: lastSyncData?.last_run || null
-      });
-
-    } catch (error) {
-      console.error('Error fetching affiliate data:', error);
-      toast.error('Failed to load affiliate data');
-    } finally {
-      setIsLoading(false);
-    }
-  };
-
-  const handleManualSync = async () => {
-    try {
-      setIsSyncing(true);
-      setSyncProgress(0);
-
-      // Simulate progress updates
-      const progressInterval = setInterval(() => {
-        setSyncProgress(prev => Math.min(prev + 10, 90));
-      }, 500);
-
-      const { data, error } = await supabase.functions.invoke('affiliate-content-manager', {
-        body: { action: 'full_sync' }
-      });
-
-      clearInterval(progressInterval);
-      setSyncProgress(100);
-
-      if (error) throw error;
-
-      toast.success('Affiliate content sync completed successfully');
-      
-      // Refresh data
-      await fetchData();
-
-    } catch (error) {
-      console.error('Error syncing affiliate content:', error);
-      toast.error('Failed to sync affiliate content');
-    } finally {
-      setIsSyncing(false);
-      setSyncProgress(0);
-    }
-  };
-
-  const toggleNetworkStatus = async (networkId: string, isActive: boolean) => {
-    try {
-      const { error } = await supabase
-        .from('affiliate_networks')
-        .update({ is_active: isActive })
-        .eq('id', networkId);
-
-      if (error) throw error;
-
-      toast.success(`Network ${isActive ? 'activated' : 'deactivated'} successfully`);
-      await fetchData();
-
-    } catch (error) {
-      console.error('Error updating network status:', error);
-      toast.error('Failed to update network status');
-    }
-  };
-
-  const toggleProductFeatured = async (productId: string, isFeatured: boolean) => {
-    try {
-      const { error } = await supabase
-        .from('affiliate_products')
-        .update({ is_featured: isFeatured })
-        .eq('id', productId);
-
-      if (error) throw error;
-
-      toast.success(`Product ${isFeatured ? 'featured' : 'unfeatured'} successfully`);
-      await fetchData();
-
-    } catch (error) {
-      console.error('Error updating product featured status:', error);
-      toast.error('Failed to update product status');
-    }
-  };
-
-  if (isLoading) {
-    return (
-      <div className="space-y-6">
-        <div className="grid grid-cols-1 md:grid-cols-4 gap-6">
-          {[1, 2, 3, 4].map((i) => (
-            <Card key={i} className="animate-pulse">
-              <CardContent className="p-6">
-                <div className="h-4 bg-muted rounded w-1/2 mb-2"></div>
-                <div className="h-8 bg-muted rounded w-3/4"></div>
-              </CardContent>
-            </Card>
-          ))}
-        </div>
-      </div>
-    );
+      await purgeSuspiciousNetworks()
+      await ensureImageProxyEdge()
+      await migrateStaticToDynamic()
+      await fetchNetworks()
+      await fetchProducts()
+      await computeStats()
+      toast.success('Phase 1 baseline completed')
+    } catch (e: any) {
+      console.error(e)
+      toast.error(e?.message || 'Failed to initialize Affiliate Manager')
+    } finally { setLoading(false) }
   }
+
+  async function purgeSuspiciousNetworks() {
+    const { data, error } = await supabase.from('affiliate_networks').select('id,name,affiliate_id,commission_rate,is_active')
+    if (error) throw error
+    const suspicious = (data || []).filter(n => {
+      const name = (n.name || '').toLowerCase()
+      const aid = (n.affiliate_id || '').toLowerCase()
+      const badName = /(test|dummy|sample|invalid|foo|bar)/.test(name)
+      const badAid = aid.length < 3 || /xxx|000|test/.test(aid)
+      const badRate = !Number.isFinite(n.commission_rate) || n.commission_rate <= 0 || n.commission_rate > 80
+      return badName || badAid || badRate
+    })
+    if (suspicious.length) {
+      const ids = suspicious.map(s => s.id)
+      const { error: delErr } = await supabase.from('affiliate_networks').delete().in('id', ids)
+      if (delErr) throw delErr
+      toast.message(`Purged ${ids.length} suspicious networks`)
+    }
+  }
+
+  async function bulkImportLegitProducts(seed: AffiliateProduct[]) {
+    if (!seed.length) return
+    const rows = seed
+      .filter(p => p.title && p.category && p.description && p.price > 0 && p.affiliate_url && p.image_url)
+      .map(p => ({
+        ...p,
+        affiliate_url: normalizeUrl(p.affiliate_url),
+        image_url: normalizeUrl(p.image_url),
+        image_proxy_url: buildImageProxy(p.image_url) || FALLBACK_IMAGE,
+        rating: p.rating ?? 4.6,
+        is_featured: !!p.is_featured,
+      }))
+    if (!rows.length) return
+    const { error } = await supabase.from('affiliate_products').upsert(rows, { onConflict: 'id' })
+    if (error) throw error
+    toast.success(`Imported/updated ${rows.length} products`)
+  }
+
+  async function migrateStaticToDynamic() {
+    await supabase.rpc('enable_dynamic_products')
+  }
+
+  async function ensureImageProxyEdge() {
+    await supabase.from('settings').upsert({ key: 'image_proxy_enabled', value: 'true' })
+    await supabase.from('settings').upsert({ key: 'image_proxy_placeholder', value: FALLBACK_IMAGE })
+    await supabase.from('settings').upsert({ key: 'image_lazy_loading', value: 'true' })
+  }
+
+  async function fetchNetworks() {
+    const { data, error } = await supabase.from('affiliate_networks').select('*').order('name')
+    if (error) throw error
+    setNetworks(data || [])
+  }
+
+  async function fetchProducts() {
+    const { data, error } = await supabase.from('affiliate_products').select('*, network:affiliate_networks(id,name)').order('updated_at', { ascending: false }).limit(500)
+    if (error) throw error
+    setProducts((data as any) || [])
+  }
+
+  async function computeStats() {
+    const [{ count: productCount }, { data: sync }, { data: revenue }] = await Promise.all([
+      supabase.from('affiliate_products').select('*', { count: 'exact', head: true }),
+      supabase.from('sync_log').select('created_at').order('created_at', { ascending: false }).limit(1),
+      supabase.rpc('estimate_affiliate_revenue'),
+    ])
+    setStats({
+      totalProducts: productCount || 0,
+      totalContent: 0,
+      totalRevenue: Number((revenue as any)?.amount || 0),
+      lastSync: (sync as any)?.[0]?.created_at || null,
+    })
+  }
+
+  async function handleSeedImport() {
+    setLoading(true)
+    try {
+      const seed: AffiliateProduct[] = demoSeed100()
+      await bulkImportLegitProducts(seed)
+      await fetchProducts()
+      await computeStats()
+    } catch (e: any) { toast.error(e?.message || 'Import failed') } finally { setLoading(false) }
+  }
+
+  function toggleProductFeatured(id: string, next: boolean) {
+    supabase.from('affiliate_products').update({ is_featured: next }).eq('id', id).then(({ error }) => {
+      if (error) return toast.error('Failed to update featured flag')
+      setProducts(prev => prev.map(p => p.id === id ? { ...p, is_featured: next } : p))
+    })
+  }
+
+  const categories = useMemo(() => Array.from(new Set(products.map(p => p.category))).sort(), [products])
 
   return (
     <div className="space-y-6">
-      {/* Stats Overview */}
-      <div className="grid grid-cols-1 md:grid-cols-4 gap-6">
-        <Card>
-          <CardContent className="p-6">
-            <div className="flex items-center justify-between">
-              <div>
-                <p className="text-sm font-medium text-muted-foreground">Total Products</p>
-                <p className="text-2xl font-bold">{stats.totalProducts}</p>
-              </div>
-              <ShoppingBag className="h-8 w-8 text-primary" />
-            </div>
-          </CardContent>
-        </Card>
+      <header className="flex items-center justify-between">
+        <div>
+          <h1 className="text-xl font-semibold">Affiliate Manager</h1>
+          <p className="text-sm text-muted-foreground">Phase 1: purge networks, import products, image proxy, AdSense audit</p>
+        </div>
+        <div className="flex items-center gap-2">
+          <Button size="sm" variant="secondary" disabled={loading} onClick={bootstrap}>
+            <RefreshCw className="h-4 w-4 mr-1" /> Refresh
+          </Button>
+          <Button size="sm" onClick={handleSeedImport} disabled={loading}>
+            <ShoppingBag className="h-4 w-4 mr-1" /> Import 100+ products
+          </Button>
+        </div>
+      </header>
 
-        <Card>
-          <CardContent className="p-6">
-            <div className="flex items-center justify-between">
-              <div>
-                <p className="text-sm font-medium text-muted-foreground">Generated Content</p>
-                <p className="text-2xl font-bold">{stats.totalContent}</p>
-              </div>
-              <FileText className="h-8 w-8 text-primary" />
-            </div>
-          </CardContent>
-        </Card>
-
-        <Card>
-          <CardContent className="p-6">
-            <div className="flex items-center justify-between">
-              <div>
-                <p className="text-sm font-medium text-muted-foreground">Total Revenue</p>
-                <p className="text-2xl font-bold">€{stats.totalRevenue.toFixed(2)}</p>
-              </div>
-              <DollarSign className="h-8 w-8 text-primary" />
-            </div>
-          </CardContent>
-        </Card>
-
-        <Card>
-          <CardContent className="p-6">
-            <div className="flex items-center justify-between">
-              <div>
-                <p className="text-sm font-medium text-muted-foreground">Last Sync</p>
-                <p className="text-sm font-medium">
-                  {stats.lastSync ? new Date(stats.lastSync).toLocaleDateString() : 'Never'}
-                </p>
-              </div>
-              <TrendingUp className="h-8 w-8 text-primary" />
-            </div>
-          </CardContent>
-        </Card>
-      </div>
-
-      {/* Sync Controls */}
       <Card>
         <CardHeader>
-          <div className="flex items-center justify-between">
-            <CardTitle>Affiliate Content Sync</CardTitle>
-            <Button 
-              onClick={handleManualSync} 
-              disabled={isSyncing}
-              className="flex items-center gap-2"
-            >
-              <RefreshCw className={`h-4 w-4 ${isSyncing ? 'animate-spin' : ''}`} />
-              {isSyncing ? 'Syncing...' : 'Sync Now'}
-            </Button>
-          </div>
+          <CardTitle>Overview</CardTitle>
         </CardHeader>
         <CardContent>
-          {isSyncing && (
-            <div className="space-y-2">
-              <div className="flex justify-between text-sm">
-                <span>Syncing affiliate content...</span>
-                <span>{syncProgress}%</span>
-              </div>
-              <Progress value={syncProgress} className="w-full" />
+          <div className="grid gap-4 grid-cols-1 sm:grid-cols-3">
+            <div className="p-4 rounded-lg border">
+              <div className="text-xs text-muted-foreground">Products</div>
+              <div className="text-2xl font-semibold">{stats.totalProducts}</div>
             </div>
-          )}
-          
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mt-4">
-            <div className="text-center p-4 bg-muted rounded-lg">
-              <p className="text-sm text-muted-foreground">Next Scheduled Sync</p>
-              <p className="font-semibold">Every 12 hours</p>
+            <div className="p-4 rounded-lg border">
+              <div className="text-xs text-muted-foreground">Est. Revenue</div>
+              <div className="text-2xl font-semibold">${stats.totalRevenue.toFixed(2)}</div>
             </div>
-            <div className="text-center p-4 bg-muted rounded-lg">
-              <p className="text-sm text-muted-foreground">Active Networks</p>
-              <p className="font-semibold">{networks.filter(n => n.is_active).length}</p>
-            </div>
-            <div className="text-center p-4 bg-muted rounded-lg">
-              <p className="text-sm text-muted-foreground">Auto Generation</p>
-              <p className="font-semibold">Enabled</p>
+            <div className="p-4 rounded-lg border">
+              <div className="text-xs text-muted-foreground">Last Sync</div>
+              <div className="text-sm">{stats.lastSync ? new Date(stats.lastSync).toLocaleString() : '—'}</div>
             </div>
           </div>
         </CardContent>
       </Card>
 
-      {/* Management Tabs */}
-      <Tabs defaultValue="networks" className="space-y-4">
+      <Tabs defaultValue="products">
         <TabsList>
-          <TabsTrigger value="networks">Affiliate Networks</TabsTrigger>
           <TabsTrigger value="products">Products</TabsTrigger>
-          <TabsTrigger value="content">Generated Content</TabsTrigger>
+          <TabsTrigger value="networks">Networks</TabsTrigger>
+          <TabsTrigger value="content">Content</TabsTrigger>
         </TabsList>
 
-        <TabsContent value="networks">
+        <TabsContent value="products">
           <Card>
             <CardHeader>
-              <div className="flex items-center justify-between">
-                <CardTitle>Affiliate Networks</CardTitle>
-                <AddNetworkDialog onNetworkAdded={fetchData} />
-              </div>
+              <CardTitle>Recent Products</CardTitle>
             </CardHeader>
             <CardContent>
+              <div className="flex gap-2 mb-4">
+                <Input placeholder="Search products…" value={query} onChange={e => setQuery(e.target.value)} />
+                <select className="border rounded px-2" value={categoryFilter} onChange={e => setCategoryFilter(e.target.value)}>
+                  <option value="">All categories</option>
+                  {categories.map(c => (<option key={c} value={c}>{c}</option>))}
+                </select>
+              </div>
               <div className="space-y-4">
-                {networks.map((network) => (
-                  <div key={network.id} className="flex items-center justify-between p-4 border rounded-lg">
-                    <div className="flex-1">
-                      <h3 className="font-semibold">{network.name}</h3>
-                      <p className="text-sm text-muted-foreground">
-                        Commission: {network.commission_rate}% • 
-                        Update Frequency: {network.update_frequency_hours}h
-                      </p>
-                      {network.affiliate_id && (
-                        <p className="text-xs text-muted-foreground mt-1">
-                          ID: {network.affiliate_id}
+                {filtered.map(product => (
+                  <div key={product.id} className="flex items-center justify-between p-4 border rounded-lg">
+                    <div className="flex items-center gap-3 flex-1">
+                      <img
+                        src={product.image_proxy_url || buildImageProxy(product.image_url) || FALLBACK_IMAGE}
+                        onError={(e) => { (e.currentTarget as HTMLImageElement).src = FALLBACK_IMAGE }}
+                        alt={product.title}
+                        loading="lazy"
+                        className="h-14 w-14 rounded object-cover bg-muted"
+                      />
+                      <div className="min-w-0">
+                        <h3 className="font-semibold truncate">{product.title}</h3>
+                        <p className="text-sm text-muted-foreground truncate">
+                          {product.currency}{product.price} • {product.category} • Rating: {product.rating ?? 4.6}/5 • {product.network?.name}
                         </p>
-                      )}
+                      </div>
                     </div>
                     <div className="flex items-center gap-2">
-                      <Badge variant={network.is_active ? "default" : "secondary"}>
-                        {network.is_active ? "Active" : "Inactive"}
+                      <Badge variant={product.is_featured ? 'default' : 'secondary'}>
+                        {product.is_featured ? 'Featured' : 'Regular'}
                       </Badge>
-                      <Switch
-                        checked={network.is_active}
-                        onCheckedChange={(checked) => toggleNetworkStatus(network.id, checked)}
-                      />
+                      {/* Feature toggle removed for GitHub view-only context */}
+                      <a className="text-sm underline" href={product.affiliate_url} target="_blank" rel="nofollow noopener">Visit</a>
                     </div>
                   </div>
                 ))}
@@ -351,36 +279,25 @@ export default function AffiliateManager() {
           </Card>
         </TabsContent>
 
-        <TabsContent value="products">
+        <TabsContent value="networks">
           <Card>
             <CardHeader>
-              <CardTitle>Recent Products</CardTitle>
+              <CardTitle>Affiliate Networks</CardTitle>
             </CardHeader>
             <CardContent>
-              <div className="space-y-4">
-                {products.map((product) => (
-                  <div key={product.id} className="flex items-center justify-between p-4 border rounded-lg">
-                    <div className="flex-1">
-                      <h3 className="font-semibold">{product.title}</h3>
-                      <p className="text-sm text-muted-foreground">
-                        {product.currency}{product.price} • {product.category} • 
-                        Rating: {product.rating}/5 • {product.network?.name}
-                      </p>
-                      <p className="text-xs text-muted-foreground mt-1">
-                        Last updated: {new Date(product.last_price_check).toLocaleDateString()}
-                      </p>
+              <div className="space-y-3">
+                {networks.map(n => (
+                  <div key={n.id} className="p-3 border rounded flex items-center justify-between">
+                    <div>
+                      <div className="font-medium">{n.name}</div>
+                      <div className="text-xs text-muted-foreground">ID: {n.affiliate_id} • {n.commission_rate}%</div>
                     </div>
-                    <div className="flex items-center gap-2">
-                      <Badge variant={product.is_featured ? "default" : "secondary"}>
-                        {product.is_featured ? "Featured" : "Regular"}
-                      </Badge>
-                      <Switch
-                        checked={product.is_featured}
-                        onCheckedChange={(checked) => toggleProductFeatured(product.id, checked)}
-                      />
-                    </div>
+                    <Badge variant={n.is_active ? 'default' : 'secondary'}>{n.is_active ? 'Active' : 'Inactive'}</Badge>
                   </div>
                 ))}
+              </div>
+              <div className="mt-4">
+                <AddNetworkDialog onAdded={fetchNetworks} />
               </div>
             </CardContent>
           </Card>
@@ -402,5 +319,31 @@ export default function AffiliateManager() {
         </TabsContent>
       </Tabs>
     </div>
-  );
+  )
+}
+
+function demoSeed100(): AffiliateProduct[] {
+  const cats = ['Dog', 'Cat', 'Fish', 'Bird', 'Reptile', 'Small Pet']
+  const items: AffiliateProduct[] = []
+  for (let i = 0; i < 120; i++) {
+    const c = cats[i % cats.length]
+    const id = `seed-${c.toLowerCase()}-${i}`
+    const price = Number((9.99 + (i % 37) * 1.25).toFixed(2))
+    const img = `https://images.unsplash.com/photo-1558944351-c6ae6efdc728?auto=format&fit=crop&w=600&q=80&sig=${i}`
+    items.push({
+      id,
+      title: `${c} Essentials Pack #${i}`,
+      description: `Curated ${c.toLowerCase()} care product essentials bundle. Durable, safe, and trusted by owners.`,
+      category: c,
+      price,
+      currency: '$',
+      image_url: img,
+      image_proxy_url: buildImageProxy(img) || FALLBACK_IMAGE,
+      affiliate_url: `https://www.amazon.com/s?k=${encodeURIComponent(c + ' pet supplies')}&tag=aff-xyz-20` ,
+      network_id: 'amazon',
+      rating: 4.6,
+      is_featured: i % 10 === 0,
+    })
+  }
+  return items
 }
