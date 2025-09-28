@@ -191,10 +191,9 @@ function Index() {
           <div className="py-8 bg-muted/50">
             <div className="container mx-auto px-4">
               <AffiliateNetworkBanner 
-                networkName="Pet Network Banner 1"
-                description="Premium pet products affiliate network"
-                buttonText="Shop Now →"
-                badgeText="Affiliate Network"
+                placementType="banner"
+                currentPage="homepage"
+                maxLinks={3}
               />
             </div>
           </div>
@@ -247,7 +246,9 @@ function Index() {
           <div className="py-8">
             <div className="container mx-auto px-4">
               <AffiliateSpaceManager 
-                adSlot="homepage-banner"
+                spaceType="mixed"
+                placement="banner"
+                adSenseSlot="homepage-banner"
                 className="w-full max-w-4xl mx-auto"
               />
             </div>
