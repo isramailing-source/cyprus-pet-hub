@@ -1,4 +1,4 @@
-import { Heart, MapPin, Phone, Mail } from "lucide-react";
+import { Heart, MapPin, Phone, Mail, Shield } from "lucide-react";
 
 const Footer = () => {
   return (
@@ -38,20 +38,20 @@ const Footer = () => {
               </div>
               <div className="flex items-center space-x-2">
                 <Phone className="w-4 h-4" />
-                <a href="tel:+35796336767" className="opacity-80 hover:opacity-100 transition-opacity">
+                <a className="opacity-80 hover:opacity-100 transition-opacity" href="tel:+35796336767">
                   +357 96 336767
                 </a>
               </div>
               <div className="flex items-center space-x-2">
                 <Mail className="w-4 h-4" />
-                <a href="mailto:info@cyprus-pets.com" className="opacity-80 hover:opacity-100 transition-opacity">
+                <a className="opacity-80 hover:opacity-100 transition-opacity" href="mailto:info@cyprus-pets.com">
                   info@cyprus-pets.com
                 </a>
               </div>
             </div>
           </div>
           
-          {/* Affiliate Banner */}
+          {/* Affiliate Partners */}
           <div>
             <h4 className="font-semibold mb-4">Our Partners</h4>
             <div className="bg-white/10 rounded-lg p-4 text-center">
@@ -72,14 +72,23 @@ const Footer = () => {
             </p>
           </div>
           
-          <div className="text-center space-y-2">
+          <div className="text-center space-y-4">
             <p className="text-xs opacity-60">
               © 2024 Cyprus Pets. All rights reserved.
             </p>
             
-            <div className="bg-orange-100/10 rounded-lg p-3 max-w-4xl mx-auto">
-              <p className="text-xs opacity-75 leading-relaxed">
-                <strong>Affiliate Disclosure:</strong> Cyprus Pets is a participant in the Amazon Services LLC Associates Program and other affiliate programs. We may earn commissions from qualifying purchases made through our links. This helps us maintain our free pet care resources for the Cyprus community. All recommendations are based on our genuine experience and research.
+            {/* Enhanced FTC-Compliant Affiliate Disclosure */}
+            <div className="bg-orange-100/10 border border-orange-200/20 rounded-lg p-4 max-w-4xl mx-auto">
+              <div className="flex items-center justify-center mb-2">
+                <Shield className="w-4 h-4 mr-2 text-orange-300" />
+                <h5 className="font-semibold text-sm text-orange-200">Affiliate Disclosure</h5>
+              </div>
+              <p className="text-xs opacity-85 leading-relaxed text-left">
+                <strong>Important Notice:</strong> Cyprus Pets participates in affiliate marketing programs including Amazon Associates, Chewy Affiliate Program, PetSmart Affiliate Program, and other pet-related affiliate networks. When you click on product links and make a purchase, we may earn a commission at no additional cost to you. These commissions help us maintain our free resources and continue providing valuable pet care information to the Cyprus community.
+                <br /><br />
+                <strong>Our Promise:</strong> All product recommendations are based on thorough research, genuine experience, and what we believe will benefit pet owners in Cyprus. We only recommend products we would use for our own pets. Commission earnings never influence our honest reviews and recommendations.
+                <br /><br />
+                <strong>Compliance:</strong> This website complies with FTC guidelines regarding affiliate marketing disclosures. For questions about our affiliate relationships, contact us at info@cyprus-pets.com.
               </p>
             </div>
           </div>
