@@ -5,6 +5,14 @@ import { Button } from '@/components/ui/button';
 import { Star, ExternalLink, TrendingUp, ShoppingCart, Truck, Shield, Eye } from 'lucide-react';
 import { supabase } from '@/integrations/supabase/client';
 import AffiliateDisclosure from './affiliates/AffiliateDisclosure';
+// Import dynamic affiliate link functions from affiliateNetworks.ts
+import { 
+  generateAmazonLink, 
+  generateAliExpressLink,
+  getNetworkById,
+  amazonConfig,
+  aliExpressConfig
+} from '@/integrations/affiliateNetworks';
 
 interface Product {
   id: string;
@@ -20,6 +28,10 @@ interface Product {
   brand: string;
   affiliate_link: string;
   network: { name: string };
+  // Add fields to support dynamic link generation
+  amazon_asin?: string;
+  aliexpress_product_url?: string;
+  network_id: string;
 }
 
 interface AffiliateProductGridProps {
@@ -66,7 +78,6 @@ export default function AffiliateProductGrid({
       }
 
       const { data, error } = await query;
-
       if (error) throw error;
       setProducts(data || []);
     } catch (error) {
@@ -74,6 +85,33 @@ export default function AffiliateProductGrid({
     } finally {
       setIsLoading(false);
     }
+  };
+
+  // Generate dynamic affiliate link based on network configuration
+  const generateDynamicAffiliateLink = (product: Product): string => {
+    const network = getNetworkById(product.network_id);
+    
+    if (!network || !network.enabled) {
+      return product.affiliate_link; // Fallback to stored link
+    }
+
+    switch (network.id) {
+      case 'amazon':
+        if (product.amazon_asin) {
+          return generateAmazonLink(product.amazon_asin) || product.affiliate_link;
+        }
+        break;
+      case 'aliexpress':
+        if (product.aliexpress_product_url) {
+          return generateAliExpressLink(product.aliexpress_product_url) || product.affiliate_link;
+        }
+        break;
+      default:
+        // For other networks, use stored affiliate_link
+        return product.affiliate_link;
+    }
+    
+    return product.affiliate_link;
   };
 
   const calculateDiscount = (originalPrice: number | null, currentPrice: number) => {
@@ -102,7 +140,12 @@ export default function AffiliateProductGrid({
           {hasHalfStar && (
             <div className="relative">
               <Star className="w-4 h-4 text-gray-300" />
-              <Star className="w-4 h-4 fill-yellow-400 text-yellow-400 absolute top-0 left-0" style={{ clipPath: 'inset(0 50% 0 0)' }} />
+              <Star 
+                className="w-4 h-4 fill-yellow-400 text-yellow-400 absolute top-0 left-0" 
+                style={{
+                  clipPath: 'inset(0 50% 0 0)'
+                }} 
+              />
             </div>
           )}
           {[...Array(emptyStars)].map((_, i) => (
@@ -116,9 +159,10 @@ export default function AffiliateProductGrid({
     );
   };
 
-  const handleProductClick = (affiliateLink: string, productId: string) => {
+  const handleProductClick = (product: Product) => {
+    const dynamicLink = generateDynamicAffiliateLink(product);
     // Track click analytics here if needed
-    window.open(affiliateLink, '_blank', 'noopener,noreferrer');
+    window.open(dynamicLink, '_blank', 'noopener,noreferrer');
   };
 
   if (isLoading) {
@@ -144,18 +188,19 @@ export default function AffiliateProductGrid({
         {products.map((product) => {
           const discount = calculateDiscount(product.original_price, product.price);
           const isPrime = product.network.name.toLowerCase().includes('amazon');
+          const dynamicLink = generateDynamicAffiliateLink(product);
           
           return (
-            <Card 
+            <Card
               key={product.id}
               className="group cursor-pointer transition-all duration-300 hover:shadow-lg hover:shadow-blue-100 hover:-translate-y-1 border border-gray-200 hover:border-blue-300 bg-white"
               onMouseEnter={() => setHoveredProduct(product.id)}
               onMouseLeave={() => setHoveredProduct(null)}
-              onClick={() => handleProductClick(product.affiliate_link, product.id)}
+              onClick={() => handleProductClick(product)}
             >
               {/* Image Container with Badges */}
               <div className="relative aspect-square overflow-hidden rounded-t-lg bg-white">
-                <img 
+                <img
                   src={product.image_url} 
                   alt={product.title}
                   className="w-full h-full object-contain group-hover:scale-105 transition-transform duration-300 p-4"
@@ -228,17 +273,17 @@ export default function AffiliateProductGrid({
                   {/* Shipping info */}
                   <div className="flex items-center gap-1 text-xs text-green-600">
                     <Truck className="w-3 h-3" />
-                    <span>Ships to Cyprus</span>
+                    Ships to Cyprus
                   </div>
                 </div>
 
                 {/* Action Buttons */}
                 <div className="space-y-2 pt-2">
-                  <Button 
+                  <Button
                     className="w-full bg-yellow-400 hover:bg-yellow-500 text-black font-semibold py-2 px-4 rounded-md transition-colors duration-200"
                     onClick={(e) => {
                       e.stopPropagation();
-                      handleProductClick(product.affiliate_link, product.id);
+                      handleProductClick(product);
                     }}
                   >
                     <ShoppingCart className="w-4 h-4 mr-2" />
@@ -247,7 +292,7 @@ export default function AffiliateProductGrid({
                   
                   <div className="text-center">
                     <span className="text-xs text-gray-500">
-                      Amazon Partner • Secure Checkout
+                      {product.network.name} Partner • Secure Checkout
                     </span>
                   </div>
                 </div>
@@ -259,7 +304,7 @@ export default function AffiliateProductGrid({
                   </Badge>
                   <div className="flex items-center gap-1 text-xs text-gray-500">
                     <TrendingUp className="w-3 h-3" />
-                    <span>Trending</span>
+                    Trending
                   </div>
                 </div>
               </CardContent>
@@ -278,15 +323,15 @@ export default function AffiliateProductGrid({
         <div className="flex items-center justify-center gap-8 text-sm text-blue-700">
           <div className="flex items-center gap-2">
             <Shield className="w-4 h-4" />
-            <span>Secure Shopping</span>
+            Secure Shopping
           </div>
           <div className="flex items-center gap-2">
             <Truck className="w-4 h-4" />
-            <span>Fast Cyprus Delivery</span>
+            Fast Cyprus Delivery
           </div>
           <div className="flex items-center gap-2">
             <Star className="w-4 h-4 fill-current" />
-            <span>Verified Reviews</span>
+            Verified Reviews
           </div>
         </div>
       </div>
