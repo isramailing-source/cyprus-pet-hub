@@ -229,4 +229,79 @@
   .spinner {
     @apply inline-block w-4 h-4 border-2 border-current border-t-transparent rounded-full animate-spin;
   }
+
+  /* AdSense Container Styles */
+  .adsense-container {
+    @apply w-full overflow-hidden;
+    contain: layout style;
+  }
+
+  .adsense-ad {
+    @apply block w-full;
+  }
+
+  .adsense-banner {
+    @apply w-full;
+    min-height: 90px;
+    max-height: 280px;
+  }
+
+  .adsense-sidebar {
+    @apply w-full;
+    min-width: 160px;
+    max-width: 300px;
+    min-height: 250px;
+    max-height: 600px;
+  }
+
+  .adsense-square {
+    @apply w-full;
+    min-width: 250px;
+    max-width: 350px;
+    min-height: 250px;
+    max-height: 350px;
+    aspect-ratio: 1;
+  }
+
+  .adsense-infeed {
+    @apply w-full;
+    min-height: 150px;
+    max-height: 400px;
+  }
+
+  .adsense-placeholder {
+    @apply flex items-center justify-center text-center;
+    background: linear-gradient(135deg, hsl(var(--muted)), hsl(var(--muted) / 0.8));
+  }
+
+  /* AdSense Loading States */
+  .adsense-loading {
+    @apply relative overflow-hidden;
+  }
+
+  .adsense-loading::before {
+    content: '';
+    @apply absolute inset-0 bg-gradient-to-r from-transparent via-white/20 to-transparent;
+    animation: shimmer 2s infinite;
+  }
+
+  @keyframes shimmer {
+    0% { transform: translateX(-100%); }
+    100% { transform: translateX(100%); }
+  }
+
+  /* Responsive AdSense containers */
+  @media (max-width: 768px) {
+    .adsense-banner {
+      min-height: 50px;
+      max-height: 100px;
+    }
+    
+    .adsense-sidebar {
+      min-width: 100%;
+      max-width: 100%;
+      min-height: 90px;
+      max-height: 250px;
+    }
+  }
 }

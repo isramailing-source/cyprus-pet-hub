@@ -8,9 +8,11 @@ interface AdInFeedProps {
 const AdInFeed = ({ slot, className = '' }: AdInFeedProps) => {
   const { renderAd } = useAdSense({
     slot,
-    format: 'fluid',
+    format: 'autorelaxed',
     layoutKey: '-gw+3+1f-3t+ap',
-    className: `my-8 ${className}`
+    className: `adsense-infeed my-8 ${className}`,
+    minHeight: 150,
+    maxHeight: 400
   });
 
   return renderAd();

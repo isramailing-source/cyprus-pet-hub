@@ -3,6 +3,7 @@ export { default as AdBanner } from './AdBanner';
 export { default as AdInFeed } from './AdInFeed'; 
 export { default as AdSidebar } from './AdSidebar';
 export { default as AdSenseAdUnit } from './AdSenseAdUnit';
+export { default as AdSenseTestComponent } from './AdSenseTestComponent';
 
 // Affiliate link components
 export { default as DirectAffiliateLink } from './DirectAffiliateLink';

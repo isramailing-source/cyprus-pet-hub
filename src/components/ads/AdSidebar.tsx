@@ -10,7 +10,11 @@ const AdSidebar = ({ slot, className = '' }: AdSidebarProps) => {
     slot,
     format: 'vertical',
     responsive: true,
-    className: `sticky top-4 ${className}`
+    className: `adsense-sidebar sticky top-4 ${className}`,
+    minWidth: 160,
+    maxWidth: 300,
+    minHeight: 250,
+    maxHeight: 600
   });
 
   return renderAd();

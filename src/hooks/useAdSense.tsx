@@ -1,7 +1,7 @@
 import { useEffect, useRef, useCallback } from 'react';
 
-// AdSense configuration
-const ADSENSE_CLIENT_ID = 'ca-pub-4659190065021043';
+// AdSense configuration - now uses environment variable
+const ADSENSE_CLIENT_ID = import.meta.env.VITE_GOOGLE_ADSENSE_PUBLISHER_ID || 'ca-pub-4659190065021043';
 const SCRIPT_URL = `https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=${ADSENSE_CLIENT_ID}`;
 
 // Global declarations for AdSense
@@ -13,10 +13,14 @@ declare global {
 
 interface UseAdSenseOptions {
   slot: string;
-  format?: 'auto' | 'rectangle' | 'vertical' | 'horizontal' | 'fluid';
+  format?: 'auto' | 'rectangle' | 'vertical' | 'horizontal' | 'fluid' | 'autorelaxed';
   layoutKey?: string;
   responsive?: boolean;
   className?: string;
+  minWidth?: number;
+  maxWidth?: number;
+  minHeight?: number;
+  maxHeight?: number;
 }
 
 // Singleton to track script loading and prevent duplicates
@@ -114,7 +118,7 @@ const adSenseManager = AdSenseManager.getInstance();
 
 export const useAdSense = (options: UseAdSenseOptions) => {
   const adRef = useRef<HTMLDivElement>(null);
-  const { slot, format = 'auto', layoutKey, responsive = true, className } = options;
+  const { slot, format = 'auto', layoutKey, responsive = true, className, minWidth, maxWidth, minHeight, maxHeight } = options;
   
   // Create unique ad ID for tracking
   const adId = `${slot}-${format}-${Date.now()}`;
@@ -154,7 +158,7 @@ export const useAdSense = (options: UseAdSenseOptions) => {
       return (
         <div 
           ref={adRef} 
-          className={`ad-container p-4 border-2 border-dashed rounded-lg bg-gradient-to-br from-blue-50 to-blue-100 border-blue-300 ${className || ''}`}
+          className={`adsense-placeholder p-4 border-2 border-dashed rounded-lg bg-gradient-to-br from-blue-50 to-blue-100 border-blue-300 ${className || ''}`}
           style={{ minHeight: '150px' }}
         >
           <div className="flex flex-col items-center justify-center h-full text-center space-y-2">
@@ -166,16 +170,34 @@ export const useAdSense = (options: UseAdSenseOptions) => {
       );
     }
 
+    // Create container style with proper dimensions for AdSense auto-sizing
+    const containerStyle: React.CSSProperties = {
+      display: 'block',
+      minWidth: minWidth || (format === 'vertical' ? '160px' : '300px'),
+      maxWidth: maxWidth || '100%',
+      minHeight: minHeight || (format === 'horizontal' ? '90px' : '250px'),
+      maxHeight: maxHeight || '600px',
+      width: '100%',
+      height: format === 'autorelaxed' ? 'auto' : undefined
+    };
+
     return (
-      <div ref={adRef} className={`ad-container ${className || ''}`}>
+      <div ref={adRef} className={`adsense-container ${className || ''}`} style={containerStyle}>
         <ins
-          className="adsbygoogle"
-          style={{ display: 'block' }}
+          className="adsbygoogle adsense-ad"
+          style={{ 
+            display: 'block',
+            width: '100%',
+            height: format === 'autorelaxed' ? 'auto' : '100%'
+          }}
           data-ad-client={ADSENSE_CLIENT_ID}
           data-ad-slot={slot}
-          data-ad-format={format === 'fluid' ? 'fluid' : format}
+          data-ad-format={format === 'autorelaxed' ? 'autorelaxed' : (format === 'fluid' ? 'fluid' : format)}
           data-ad-layout-key={layoutKey}
           data-full-width-responsive={responsive.toString()}
+          data-matched-content-ui-type={format === 'autorelaxed' ? 'image_stacked' : undefined}
+          data-matched-content-columns-num={format === 'autorelaxed' ? '1,2' : undefined}
+          data-matched-content-rows-num={format === 'autorelaxed' ? '2,4' : undefined}
         />
       </div>
     );

@@ -12,7 +12,11 @@ const AdBanner = ({ slot, format = 'auto', responsive = true, className = '' }: 
     slot,
     format,
     responsive,
-    className
+    className: `adsense-banner ${className}`,
+    minWidth: 300,
+    maxWidth: 970,
+    minHeight: 90,
+    maxHeight: 280
   });
 
   return renderAd();
