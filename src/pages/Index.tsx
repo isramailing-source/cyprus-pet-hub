@@ -13,8 +13,8 @@ import Footer from '@/components/Footer'
 import { AffiliateNetworkBanner } from '@/components/ads/AffiliateNetworkBanner'
 import { AffiliateSpaceManager } from '@/components/ads/AffiliateSpaceManager'
 import AmazonStorefront from '@/components/affiliates/AmazonStorefront'
-import DealsCarousel from '@/components/affiliates/DealsCarousel'
-import { useAffiliateFeeds } from '@/integrations/affiliate/useAffiliateFeeds'
+import RealDealsCarousel from '@/components/affiliates/RealDealsCarousel'
+import RealAmazonShowcase from '@/components/affiliates/RealAmazonShowcase'
 
 // Styles for animated gradient header
 const AnimatedHeader = () => (
@@ -131,13 +131,6 @@ const FeatureTiles = () => (
 )
 
 const Index = () => {
-  // Pull real affiliate product data
-  const { bestSellers, seasonalPicks, loading, errors } = useAffiliateFeeds({
-    sources: ['amazon', 'aliexpress', 'rakuten', 'admitad'],
-    country: 'CY',
-    currency: 'EUR',
-    limit: 12,
-  })
 
   const metaImage = useMemo(
     () => 'https://images.unsplash.com/photo-1517849845537-4d257902454a?q=80&w=1600&auto=format&fit=crop',
@@ -204,17 +197,17 @@ const Index = () => {
               <Link to="/shop">View all</Link>
             </Button>
           </div>
-          <DealsCarousel />
+          <RealDealsCarousel />
           <div className="mt-6">
             <AffiliateSpaceManager spaceType="affiliate-only" placement="inline" currentPage="home" />
           </div>
           
-          {/* Amazon Storefront */}
+          {/* Real Amazon Products */}
           <div className="mt-8">
-            <AmazonStorefront 
+            <RealAmazonShowcase 
               title="Pet Essentials on Amazon"
-              showCategories={false}
-              className="max-w-md mx-auto"
+              maxProducts={4}
+              className="max-w-4xl mx-auto"
             />
           </div>
         </div>
@@ -229,7 +222,7 @@ const Index = () => {
               <p className="text-muted-foreground">Curated for Cyprus climate and seasons</p>
             </div>
           </div>
-          <DealsCarousel />
+          <RealDealsCarousel />
         </div>
       </section>
       
