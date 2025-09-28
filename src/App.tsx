@@ -14,9 +14,9 @@ import Admin from "./pages/Admin";
 import Auth from "./pages/Auth";
 import NotFound from "./pages/NotFound";
 import Affiliate from "./pages/Affiliate";
+import Search from "./pages/Search";
 
 const queryClient = new QueryClient();
-
 const App = () => {
   console.log('App component rendering - Phase 7: Full Application Restored');
   
@@ -38,6 +38,7 @@ const App = () => {
                   <Route path="/auth" element={<Auth />} />
                   <Route path="/admin" element={<Admin />} />
                   <Route path="/affiliate" element={<Affiliate />} />
+                  <Route path="/search" element={<Search />} />
                   <Route path="*" element={<NotFound />} />
                 </Routes>
               </BrowserRouter>
@@ -48,5 +49,4 @@ const App = () => {
     </ErrorBoundary>
   );
 };
-
 export default App;
