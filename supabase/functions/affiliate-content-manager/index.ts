@@ -350,15 +350,17 @@ async function syncAliExpressProducts(network: any) {
     try {
       console.log(`Fetching ${category} products from AliExpress...`);
       
-      // Prepare API request parameters
-      const timestamp = Date.now().toString();
+      // Create timestamp in correct format (Asia/Shanghai timezone)
+      const now = new Date();
+      const shanghaiTime = new Date(now.getTime() + (8 * 60 * 60 * 1000)); // UTC+8
+      const timestamp = shanghaiTime.toISOString().slice(0, 19).replace('T', ' ');
       const method = 'aliexpress.affiliate.product.query';
       
       const params: Record<string, string> = {
-        app_key: appKey,
         method: method,
-        timestamp: timestamp,
+        app_key: appKey,
         sign_method: 'md5',
+        timestamp: timestamp,
         format: 'json',
         v: '2.0',
         keywords: category,
@@ -369,20 +371,18 @@ async function syncAliExpressProducts(network: any) {
         fields: 'product_id,product_title,product_main_image_url,app_sale_price,app_sale_price_currency,original_price,discount,evaluate_rate,volume,product_detail_url,commission_rate'
       };
 
-      // Generate signature
-      const signature = await generateAliExpressSignature(params, appSecret, method);
+      // Generate signature using correct format
+      const signature = generateAliExpressSignatureCorrect(params, appSecret);
       params.sign = signature;
 
-      // Make API request
-      const queryString = new URLSearchParams(params).toString();
-      const apiUrl = `${network.api_endpoint}?${queryString}`;
-
+      // Use correct API endpoint with POST method
       console.log('Making AliExpress API request...');
-      const response = await fetch(apiUrl, {
-        method: 'GET',
+      const response = await fetch('http://gw.api.taobao.com/router/rest', {
+        method: 'POST',
         headers: {
-          'Content-Type': 'application/json',
+          'Content-Type': 'application/x-www-form-urlencoded;charset=utf-8',
         },
+        body: new URLSearchParams(params).toString()
       });
 
       if (!response.ok) {
@@ -421,7 +421,6 @@ async function syncAliExpressProducts(network: any) {
   return totalSynced;
 }
 
-// Direct search function for AliExpress products (used by frontend)
 async function searchAliExpressProductsDirect(keywords: string, options: any = {}) {
   console.log('Searching AliExpress products directly...', keywords);
   
@@ -447,15 +446,18 @@ async function searchAliExpressProductsDirect(keywords: string, options: any = {
       return { error: 'AliExpress network not configured' };
     }
 
-    // Prepare API request parameters
-    const timestamp = Date.now().toString();
+    // Create timestamp in correct format (Asia/Shanghai timezone)
+    const now = new Date();
+    const shanghaiTime = new Date(now.getTime() + (8 * 60 * 60 * 1000)); // UTC+8
+    const timestamp = shanghaiTime.toISOString().slice(0, 19).replace('T', ' ');
+    
     const method = 'aliexpress.affiliate.product.query';
     
     const params: Record<string, string> = {
-      app_key: appKey,
       method: method,
-      timestamp: timestamp,
+      app_key: appKey,
       sign_method: 'md5',
+      timestamp: timestamp,
       format: 'json',
       v: '2.0',
       keywords: keywords,
@@ -470,20 +472,19 @@ async function searchAliExpressProductsDirect(keywords: string, options: any = {
     if (minPrice) params.min_sale_price = minPrice.toString();
     if (maxPrice) params.max_sale_price = maxPrice.toString();
 
-    // Generate signature
-    const signature = await generateAliExpressSignature(params, appSecret, method);
+    // Generate signature using correct format
+    const signature = generateAliExpressSignatureCorrect(params, appSecret);
     params.sign = signature;
 
-    // Make API request
-    const queryString = new URLSearchParams(params).toString();
-    const apiUrl = `${networks.api_endpoint}?${queryString}`;
-
-    console.log('Making AliExpress API request for search...');
-    const response = await fetch(apiUrl, {
-      method: 'GET',
+    console.log('Making AliExpress API request with correct format...');
+    
+    // Use correct API endpoint with POST method
+    const response = await fetch('http://gw.api.taobao.com/router/rest', {
+      method: 'POST',
       headers: {
-        'Content-Type': 'application/json',
+        'Content-Type': 'application/x-www-form-urlencoded;charset=utf-8',
       },
+      body: new URLSearchParams(params).toString()
     });
 
     if (!response.ok) {
@@ -510,34 +511,36 @@ async function searchAliExpressProductsDirect(keywords: string, options: any = {
   }
 }
 
-async function generateAliExpressSignature(params: Record<string, string>, secret: string, method: string): Promise<string> {
+// Correct AliExpress signature generation based on working examples
+function generateAliExpressSignatureCorrect(params: Record<string, string>, secret: string): string {
   // Remove sign parameter if it exists
   const cleanParams = { ...params };
   delete cleanParams.sign;
   
-  // Sort parameters alphabetically and create signature string
+  // Sort parameters alphabetically
   const sortedKeys = Object.keys(cleanParams).sort();
-  let signString = secret;
   
-  // Add method first
-  signString += method;
+  // Create parameter string by concatenating key+value pairs
+  const paramString = sortedKeys.reduce((acc, key) => {
+    return acc + key + cleanParams[key];
+  }, '');
   
-  // Add sorted parameters in key-value format
-  for (const key of sortedKeys) {
-    signString += key + cleanParams[key];
-  }
+  // Create signature string: SECRET + paramString + SECRET
+  const signString = secret + paramString + secret;
   
-  // Add secret at the end
-  signString += secret;
-  
-  console.log('AliExpress signature generation:', {
-    method,
+  console.log('AliExpress signature generation (corrected):', {
     sortedKeys,
+    paramStringLength: paramString.length,
     signStringLength: signString.length
   });
   
   // Generate MD5 hash and convert to uppercase
   return md5(signString).toUpperCase();
+}
+
+async function generateAliExpressSignature(params: Record<string, string>, secret: string, method: string): Promise<string> {
+  // Use the correct signature generation function
+  return generateAliExpressSignatureCorrect(params, secret);
 }
 
 // Simple MD5 implementation for AliExpress API signatures

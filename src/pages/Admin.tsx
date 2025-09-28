@@ -13,6 +13,7 @@ import AffiliateManager from "@/components/AffiliateManager";
 import { TestPerplexityGenerator } from "@/components/TestPerplexityGenerator";
 import TestAliExpressIntegration from "@/components/TestAliExpressIntegration";
 import TestAmazonIntegration from "@/components/TestAmazonIntegration";
+import AliExpressTestButton from "@/components/AliExpressTestButton";
 import { AdSenseTestComponent } from "@/components/ads";
 import ComprehensiveSystemTest from "@/components/ComprehensiveSystemTest";
 import ImageFallbackTest from "@/components/ImageFallbackTest";
@@ -190,7 +191,10 @@ const Admin = () => {
                 </TabsContent>
 
                 <TabsContent value="aliexpress" className="mt-4">
-                  <TestAliExpressIntegration />
+                  <div className="space-y-6">
+                    <TestAliExpressIntegration />
+                    <AliExpressTestButton />
+                  </div>
                 </TabsContent>
 
                 <TabsContent value="products" className="mt-4">
