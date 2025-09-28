@@ -1,213 +1,203 @@
-import React from 'react';
-import { Helmet } from 'react-helmet-async';
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-import { Button } from '@/components/ui/button';
-import { Badge } from '@/components/ui/badge';
-import { Link } from 'react-router-dom';
-import { PenTool, Heart, Users, BookOpen, ShoppingBag, MessageSquare } from 'lucide-react';
-import Header from '@/components/Header';
-import Footer from '@/components/Footer';
-import HeroSection from '@/components/HeroSection';
-import FeaturedArticles from '@/components/FeaturedArticles';
-import AffiliateProductGrid from '@/components/AffiliateProductGrid';
-import { AffiliateNetworkBanner } from '@/components/ads/AffiliateNetworkBanner';
-import { AffiliateSpaceManager } from '@/components/ads/AffiliateSpaceManager';
+import React, { useMemo } from 'react'
+import { Helmet } from 'react-helmet-async'
+import { Link } from 'react-router-dom'
+import { ShoppingBag, BookOpen, MessageSquare, Sun, PawPrint, Leaf } from 'lucide-react'
+
+// UI
+import { Button } from '@/components/ui/button'
+import { Badge } from '@/components/ui/badge'
+import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
+
+// Layout
+import Header from '@/components/Header'
+import Footer from '@/components/Footer'
+
+// Affiliate and data integrations
+import { AffiliateNetworkBanner } from '@/components/ads/AffiliateNetworkBanner'
+import { AffiliateSpaceManager } from '@/components/ads/AffiliateSpaceManager'
+import AffiliateCarousel from '@/components/affiliate/AffiliateCarousel'
+import { useAffiliateFeeds } from '@/integrations/affiliate/useAffiliateFeeds'
+
+// Styles for animated gradient header
+const AnimatedHeader = () => (
+  <div className="relative overflow-hidden">
+    <div className="absolute inset-0 bg-gradient-to-r from-cyan-500/20 via-amber-400/20 to-rose-400/20 animate-[gradientShift_12s_ease_infinite]" />
+    <style>{`
+      @keyframes gradientShift {
+        0% { transform: translateX(-20%); }
+        50% { transform: translateX(20%); }
+        100% { transform: translateX(-20%); }
+      }
+    `}</style>
+    <div className="container mx-auto px-4 py-4 flex items-center justify-between">
+      <div className="flex items-center gap-2">
+        <PawPrint className="h-6 w-6 text-primary" />
+        <span className="font-semibold">Cyprus Pets</span>
+      </div>
+      <nav className="hidden sm:flex items-center gap-2">
+        <Button asChild variant="ghost" size="sm"><Link to="/shop"><ShoppingBag className="h-4 w-4 mr-1"/>Shop</Link></Button>
+        <Button asChild variant="ghost" size="sm"><Link to="/blog"><BookOpen className="h-4 w-4 mr-1"/>Articles</Link></Button>
+        <Button asChild variant="ghost" size="sm"><Link to="/forum"><MessageSquare className="h-4 w-4 mr-1"/>Forum</Link></Button>
+      </nav>
+    </div>
+  </div>
+)
+
+// Hero with generated scenic Cyprus pet graphic placeholder
+const Hero = () => (
+  <section className="relative isolate">
+    {/* AI-styled scenic graphic background (replace src with a real image later if desired) */}
+    <img
+      src="https://images.unsplash.com/photo-1517849845537-4d257902454a?q=80&w=1600&auto=format&fit=crop"
+      alt="Happy dog on Mediterranean coast in Cyprus"
+      className="absolute inset-0 h-full w-full object-cover opacity-90"
+      loading="eager"
+    />
+    <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-black/30 to-transparent" />
+    <div className="container relative mx-auto px-4 pt-24 pb-20 text-white">
+      <Badge className="bg-white/10 backdrop-blur border border-white/20">Made for Cyprus</Badge>
+      <h1 className="mt-4 text-4xl sm:text-5xl font-extrabold tracking-tight">
+        Everything your pet needs in Cyprus
+      </h1>
+      <p className="mt-3 max-w-2xl text-white/90">
+        Guides for the Mediterranean climate, local advice, and curated gear with Cyprus-friendly delivery.
+      </p>
+      <div className="mt-6 flex flex-wrap gap-3">
+        <Button asChild size="lg"><Link to="/shop"><ShoppingBag className="h-4 w-4 mr-2"/>Shop Best Sellers</Link></Button>
+        <Button asChild variant="secondary" size="lg"><Link to="/blog"><BookOpen className="h-4 w-4 mr-2"/>Read Articles</Link></Button>
+        <Button asChild variant="outline" size="lg" className="text-white border-white/40 hover:bg-white/10"><Link to="/forum"><MessageSquare className="h-4 w-4 mr-2"/>Join Forum</Link></Button>
+      </div>
+    </div>
+  </section>
+)
+
+const FeatureTiles = () => (
+  <section className="py-12 bg-muted/40">
+    <div className="container mx-auto px-4 grid grid-cols-1 sm:grid-cols-3 gap-6">
+      <Card>
+        <CardHeader>
+          <CardTitle className="flex items-center gap-2"><Sun className="h-5 w-5 text-primary"/>Mediterranean care</CardTitle>
+        </CardHeader>
+        <CardContent className="text-muted-foreground">Seasonal tips for heat, beaches, hiking, and island living.</CardContent>
+      </Card>
+      <Card>
+        <CardHeader>
+          <CardTitle className="flex items-center gap-2"><Leaf className="h-5 w-5 text-primary"/>Curated products</CardTitle>
+        </CardHeader>
+        <CardContent className="text-muted-foreground">Vetted picks from Amazon, AliExpress, Rakuten, Admitad partners.</CardContent>
+      </Card>
+      <Card>
+        <CardHeader>
+          <CardTitle className="flex items-center gap-2"><MessageSquare className="h-5 w-5 text-primary"/>Local community</CardTitle>
+        </CardHeader>
+        <CardContent className="text-muted-foreground">Ask questions and share experiences with Cyprus pet owners.</CardContent>
+      </Card>
+    </div>
+  </section>
+)
 
 const Index = () => {
+  // Pull real affiliate product data
+  const { bestSellers, seasonalPicks, loading, errors } = useAffiliateFeeds({
+    sources: ['amazon', 'aliexpress', 'rakuten', 'admitad'],
+    country: 'CY',
+    currency: 'EUR',
+    limit: 12,
+  })
+
+  const metaImage = useMemo(
+    () => 'https://images.unsplash.com/photo-1517849845537-4d257902454a?q=80&w=1600&auto=format&fit=crop',
+    []
+  )
+
   return (
     <>
       <Helmet>
-        <title>Cyprus Pets - Your Premier Pet Care Blog & Community</title>
-        <meta name="description" content="Discover expert pet care advice for Cyprus pet owners. Daily articles, Mediterranean climate tips, local vet services, and curated product recommendations." />
-        <meta name="keywords" content="Cyprus pets, pet care Cyprus, Mediterranean pet care, Cyprus veterinary, pet blog Cyprus" />
+        <title>Cyprus Pets – Pet Care, Shop, and Community</title>
+        <meta name="description" content="Expert pet care for Cyprus. Guides, community forum, and best-selling pet products with Cyprus-friendly delivery." />
+        <meta name="keywords" content="Cyprus pets, pet care Cyprus, pet shop Cyprus, Mediterranean pet tips" />
         <link rel="canonical" href="https://cypruspets.com/" />
-        
-        {/* Open Graph */}
-        <meta property="og:title" content="Cyprus Pets - Premier Pet Care Blog & Community" />
-        <meta property="og:description" content="Expert pet care advice for Cyprus pet owners. Daily articles, climate tips, and product recommendations." />
+        <meta property="og:title" content="Cyprus Pets – Pet Care, Shop, and Community" />
+        <meta property="og:description" content="Guides, community, and curated best sellers for Cyprus pet owners." />
         <meta property="og:type" content="website" />
         <meta property="og:url" content="https://cypruspets.com/" />
-        <meta property="og:image" content="https://cypruspets.com/hero-cyprus-pets-bg.jpg" />
-        
-        {/* Twitter Card */}
+        <meta property="og:image" content={metaImage} />
         <meta name="twitter:card" content="summary_large_image" />
-        <meta name="twitter:title" content="Cyprus Pets - Premier Pet Care Blog" />
-        <meta name="twitter:description" content="Expert pet care advice for Cyprus pet owners" />
-        
-        {/* Structured Data */}
-        <script type="application/ld+json">
-          {JSON.stringify({
-            "@context": "https://schema.org",
-            "@type": "Website",
-            "name": "Cyprus Pets",
-            "description": "Premier pet care blog and community for Cyprus pet owners",
-            "url": "https://cypruspets.com",
-            "publisher": {
-              "@type": "Organization",
-              "name": "Cyprus Pets Team"
-            }
-          })}
-        </script>
+        <meta name="twitter:title" content="Cyprus Pets – Pet Care, Shop, and Community" />
+        <meta name="twitter:description" content="Guides, forum, and curated pet products for Cyprus." />
+        <meta name="twitter:image" content={metaImage} />
+        <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify({
+          '@context': 'https://schema.org',
+          '@type': 'WebSite',
+          name: 'Cyprus Pets',
+          url: 'https://cypruspets.com',
+          potentialAction: {
+            '@type': 'SearchAction',
+            target: 'https://cypruspets.com/search?q={query}',
+            'query-input': 'required name=query',
+          },
+        }) }} />
       </Helmet>
 
-      <div className="min-h-screen bg-background">
-        <Header />
-        
-        <main>
-          {/* Hero Section */}
-          <HeroSection />
-          
-          {/* Features Overview */}
-          <section className="py-16 bg-muted/50">
-            <div className="container mx-auto px-4">
-              {/* Strategic affiliate placement after hero */}
-              <AffiliateNetworkBanner 
-                placementType="banner" 
-                currentPage="home"
-                className="mb-12"
-              />
-              
-              <div className="text-center mb-12">
-                <h2 className="text-3xl font-bold mb-4">Everything for Cyprus Pet Owners</h2>
-                <p className="text-lg text-muted-foreground max-w-2xl mx-auto">
-                  Daily AI-generated articles, curated products, and community discussions tailored for Mediterranean pet care
-                </p>
-              </div>
-              
-              <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-                <Card>
-                  <CardHeader>
-                    <CardTitle className="flex items-center gap-3">
-                      <PenTool className="w-6 h-6 text-primary" />
-                      Daily Expert Articles
-                    </CardTitle>
-                  </CardHeader>
-                  <CardContent>
-                    <p className="text-muted-foreground mb-4">
-                      AI-powered articles covering Cyprus-specific pet care, from summer heat protection to local vet services.
-                    </p>
-                    <Badge className="bg-primary/10 text-primary">3-4 New Articles Daily</Badge>
-                  </CardContent>
-                </Card>
+      {/* Animated gradient header with quick nav */}
+      <AnimatedHeader />
 
-                <Card>
-                  <CardHeader>
-                    <CardTitle className="flex items-center gap-3">
-                      <ShoppingBag className="w-6 h-6 text-primary" />
-                      Curated Products
-                    </CardTitle>
-                  </CardHeader>
-                  <CardContent>
-                    <p className="text-muted-foreground mb-4">
-                      Carefully selected pet products from Amazon, AliExpress, and premium suppliers with Cyprus delivery.
-                    </p>
-                    <Badge className="bg-secondary/10 text-secondary">200+ Products</Badge>
-                  </CardContent>
-                </Card>
+      {/* Hero with Cyprus pet image */}
+      <Hero />
 
-                <Card>
-                  <CardHeader>
-                    <CardTitle className="flex items-center gap-3">
-                      <MessageSquare className="w-6 h-6 text-primary" />
-                      Community Forum
-                    </CardTitle>
-                  </CardHeader>
-                  <CardContent>
-                    <p className="text-muted-foreground mb-4">
-                      Connect with local pet owners, share experiences, and get advice from the Cyprus pet community.
-                    </p>
-                    <Badge className="bg-accent/10 text-accent">Active Community</Badge>
-                  </CardContent>
-                </Card>
-              </div>
-            </div>
-          </section>
-
-          {/* Latest Articles Section */}
-          <section className="py-16">
-            <div className="container mx-auto px-4">
-              <div className="text-center mb-12">
-                <h2 className="text-3xl font-bold mb-4">Latest Pet Care Articles</h2>
-                <p className="text-lg text-muted-foreground">
-                  Fresh insights and practical tips for Mediterranean pet care
-                </p>
-              </div>
-              <FeaturedArticles />
-              <div className="text-center mt-8">
-                <Button asChild size="lg">
-                  <Link to="/blog">
-                    <BookOpen className="w-4 h-4 mr-2" />
-                    Read All Articles
-                  </Link>
-                </Button>
-              </div>
-            </div>
-          </section>
-
-          {/* Featured Products Section */}
-          <section className="py-16 bg-muted/50">
-            <div className="container mx-auto px-4">
-              <div className="text-center mb-12">
-                <h2 className="text-3xl font-bold mb-4">Featured Pet Products</h2>
-                <p className="text-lg text-muted-foreground">
-                  Quality products recommended by our experts
-                </p>
-              </div>
-              <AffiliateProductGrid category="" limit={6} />
-              
-              {/* Inline affiliate links */}
-              <div className="mt-8">
-                <AffiliateSpaceManager 
-                  spaceType="affiliate-only"
-                  placement="inline"
-                  currentPage="home"
-                  className="justify-center"
-                />
-              </div>
-              
-              <div className="text-center mt-8">
-                <Button asChild size="lg" variant="outline">
-                  <Link to="/shop">
-                    <ShoppingBag className="w-4 h-4 mr-2" />
-                    View All Products
-                  </Link>
-                </Button>
-              </div>
-            </div>
-          </section>
-
-          {/* Community CTA Section */}
-          <section className="py-16 bg-primary text-primary-foreground">
-            <div className="container mx-auto px-4 text-center">
-              <div className="max-w-3xl mx-auto">
-                <Users className="w-16 h-16 mx-auto mb-6" />
-                <h2 className="text-3xl font-bold mb-4">Join the Cyprus Pet Community</h2>
-                <p className="text-xl mb-8 opacity-90">
-                  Connect with fellow pet owners, share experiences, and get local advice from our growing community of Cyprus pet lovers.
-                </p>
-                <div className="flex flex-col sm:flex-row gap-4 justify-center">
-                  <Button asChild size="lg" variant="secondary">
-                    <Link to="/forum">
-                      <MessageSquare className="w-4 h-4 mr-2" />
-                      Join Forum
-                    </Link>
-                  </Button>
-                  <Button asChild size="lg" variant="outline" className="border-primary-foreground text-primary-foreground hover:bg-primary-foreground hover:text-primary">
-                    <Link to="/blog">
-                      <Heart className="w-4 h-4 mr-2" />
-                      Latest Tips
-                    </Link>
-                  </Button>
-                </div>
-              </div>
-            </div>
-          </section>
-        </main>
-
-        <Footer />
+      {/* Strategic affiliate banner under hero */}
+      <div className="container mx-auto px-4">
+        <AffiliateNetworkBanner placementType="banner" currentPage="home" className="my-8" />
       </div>
-    </>
-  );
-};
 
-export default Index;
+      {/* Feature tiles */}
+      <FeatureTiles />
+
+      {/* Best Sellers carousel */}
+      <section className="py-12">
+        <div className="container mx-auto px-4">
+          <div className="flex items-end justify-between mb-6">
+            <div>
+              <h2 className="text-2xl sm:text-3xl font-bold">Best Sellers</h2>
+              <p className="text-muted-foreground">Top-rated gear from our affiliate partners</p>
+            </div>
+            <Button asChild variant="outline" size="sm"><Link to="/shop">View all</Link></Button>
+          </div>
+          <AffiliateCarousel items={bestSellers} loading={loading} fallbackCount={8} />
+          <div className="mt-6">
+            <AffiliateSpaceManager spaceType="affiliate-only" placement="inline" currentPage="home" />
+          </div>
+        </div>
+      </section>
+
+      {/* Seasonal Picks carousel */}
+      <section className="py-12 bg-muted/40">
+        <div className="container mx-auto px-4">
+          <div className="flex items-end justify-between mb-6">
+            <div>
+              <h2 className="text-2xl sm:text-3xl font-bold">Seasonal Picks</h2>
+              <p className="text-muted-foreground">Curated for Cyprus climate and seasons</p>
+            </div>
+          </div>
+          <AffiliateCarousel items={seasonalPicks} loading={loading} fallbackCount={8} />
+        </div>
+      </section>
+
+      {/* Footer CTA */}
+      <section className="py-16 bg-primary text-primary-foreground">
+        <div className="container mx-auto px-4 text-center">
+          <h3 className="text-3xl font-bold">Join the Cyprus pet community</h3>
+          <p className="mt-2 opacity-90">Ask questions, share tips, and connect with local owners.</p>
+          <div className="mt-6 flex flex-wrap gap-3 justify-center">
+            <Button asChild size="lg" variant="secondary"><Link to="/forum"><MessageSquare className="h-4 w-4 mr-2"/>Join Forum</Link></Button>
+            <Button asChild size="lg" variant="outline" className="border-primary-foreground text-primary-foreground hover:bg-primary-foreground hover:text-primary"><Link to="/blog"><BookOpen className="h-4 w-4 mr-2"/>Read Articles</Link></Button>
+          </div>
+        </div>
+      </section>
+
+      <Footer />
+    </>
+  )
+}
+
+export default Index
