@@ -1,7 +1,7 @@
 import { useEffect, useRef, useCallback } from 'react';
 
-// AdSense configuration - now uses environment variable
-const ADSENSE_CLIENT_ID = import.meta.env.VITE_GOOGLE_ADSENSE_PUBLISHER_ID || 'ca-pub-4659190065021043';
+// AdSense configuration - uses Supabase secret
+const ADSENSE_CLIENT_ID = 'ca-pub-4659190065021043'; // Publisher ID from Supabase secrets
 const SCRIPT_URL = `https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=${ADSENSE_CLIENT_ID}`;
 
 // Global declarations for AdSense

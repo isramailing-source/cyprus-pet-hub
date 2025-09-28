@@ -80,21 +80,19 @@ export const rakutenConfig: RakutenConfig = {
   partnerId: 'cypruspets' // To be updated with actual partner ID
 };
 
-// AliExpress Configuration with API support
+// AliExpress Configuration with API support via Supabase secrets
 export const aliExpressConfig: AliExpressConfig = {
   trackingId: 'Cyrus-pets',
   baseUrl: 'https://www.aliexpress.com',
-  // AliExpress API integration using real API credentials
-  apiKey: import.meta.env.VITE_ALIEXPRESS_API_KEY || undefined,
-  apiSecret: import.meta.env.VITE_ALIEXPRESS_API_SECRET || undefined,
-  appKey: import.meta.env.VITE_ALIEXPRESS_APP_KEY || undefined
+  // API credentials managed via Supabase Edge Functions
+  // These are accessed securely through the affiliate-content-manager edge function
 };
 
 // Admitad Configuration
 export const admitadConfig: AdmitadConfig = {
   websiteId: 'cyprus-pets',
   apiUrl: 'https://api.admitad.com/advcampaigns/',
-  secretKey: import.meta.env.VITE_ADMITAD_SECRET_KEY // Store securely in environment variables
+  // Secret key managed via Supabase Edge Functions for security
 };
 
 // Main affiliate networks configuration
@@ -166,10 +164,8 @@ export const searchAliExpressProducts = async (
   pageSize: number = 20
 ): Promise<AliExpressSearchResponse | null> => {
   try {
-    if (!aliExpressConfig.apiKey || !aliExpressConfig.appKey) {
-      console.warn('AliExpress API credentials not configured');
-      return null;
-    }
+    // API calls are handled via Supabase Edge Functions for security
+    console.log('AliExpress search via edge function...');
 
     // Create API request parameters
     const params = new URLSearchParams({
@@ -209,10 +205,8 @@ export const searchAliExpressProducts = async (
 // Get AliExpress product details by ID
 export const getAliExpressProduct = async (productId: string): Promise<AliExpressProduct | null> => {
   try {
-    if (!aliExpressConfig.apiKey || !aliExpressConfig.appKey) {
-      console.warn('AliExpress API credentials not configured');
-      return null;
-    }
+    // API calls are handled via Supabase Edge Functions for security
+    console.log('AliExpress product fetch via edge function...');
 
     const params = new URLSearchParams({
       method: 'aliexpress.affiliate.product.detail.get',

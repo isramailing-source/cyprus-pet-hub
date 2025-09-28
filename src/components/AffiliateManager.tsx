@@ -53,9 +53,8 @@ function normalizeUrl(u: string) {
 function buildImageProxy(src: string) {
   const clean = normalizeUrl(src)
   if (!clean) return ''
-  const base = import.meta.env.VITE_IMAGE_PROXY_URL || '/api/image'
-  const q = new URLSearchParams({ url: clean, format: 'webp', w: '0', q: '82', fit: 'cover' })
-  return `${base}?${q.toString()}`
+  // Use a simple fallback approach for images since VITE_ variables aren't supported
+  return clean; // Return original URL for now - can be enhanced with Supabase storage later
 }
 
 const FALLBACK_IMAGE = '/img/placeholders/pet-product.webp'

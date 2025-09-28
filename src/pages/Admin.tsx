@@ -14,6 +14,9 @@ import { TestPerplexityGenerator } from "@/components/TestPerplexityGenerator";
 import TestAliExpressIntegration from "@/components/TestAliExpressIntegration";
 import TestAmazonIntegration from "@/components/TestAmazonIntegration";
 import { AdSenseTestComponent } from "@/components/ads";
+import ComprehensiveSystemTest from "@/components/ComprehensiveSystemTest";
+import ImageFallbackTest from "@/components/ImageFallbackTest";
+import NetworkConnectivityTest from "@/components/NetworkConnectivityTest";
 import AffiliateLinksManager from "@/components/admin/AffiliateLinksManager";
 // Import removed - CreateAdForm not needed for blog transformation
 import { supabase } from "@/integrations/supabase/client";
@@ -141,8 +144,9 @@ const Admin = () => {
               <CardTitle>Admin Dashboard</CardTitle>
             </CardHeader>
             <CardContent>
-              <Tabs defaultValue="content">
+              <Tabs defaultValue="system-test">
                 <TabsList className="flex flex-wrap gap-2">
+                  <TabsTrigger value="system-test">🔍 System Test</TabsTrigger>
                   <TabsTrigger value="content">Content Moderation</TabsTrigger>
                   <TabsTrigger value="affiliate">Affiliate Management</TabsTrigger>
                   <TabsTrigger value="affiliate-links">Affiliate Links</TabsTrigger>
@@ -152,7 +156,13 @@ const Admin = () => {
                   <TabsTrigger value="products">Bulk Product Import</TabsTrigger>
                   <TabsTrigger value="articles">Article Generation</TabsTrigger>
                   <TabsTrigger value="perplexity">Perplexity Test</TabsTrigger>
+                  <TabsTrigger value="images">Image Assets</TabsTrigger>
+                  <TabsTrigger value="network">Network Test</TabsTrigger>
                 </TabsList>
+
+                <TabsContent value="system-test" className="mt-4">
+                  <ComprehensiveSystemTest />
+                </TabsContent>
 
                 <TabsContent value="content" className="mt-4">
                   <p className="mb-2 text-sm text-muted-foreground">Approve or reject pending items.</p>
@@ -197,6 +207,14 @@ const Admin = () => {
 
                 <TabsContent value="perplexity" className="mt-4">
                   <TestPerplexityGenerator />
+                </TabsContent>
+
+                <TabsContent value="images" className="mt-4">
+                  <ImageFallbackTest />
+                </TabsContent>
+
+                <TabsContent value="network" className="mt-4">
+                  <NetworkConnectivityTest />
                 </TabsContent>
               </Tabs>
             </CardContent>
