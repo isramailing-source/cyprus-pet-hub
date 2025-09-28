@@ -2,9 +2,14 @@ import React, { useState, useEffect } from 'react';
 import { Card, CardContent } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
-import { Star, ExternalLink, TrendingUp, ShoppingCart, Truck, Shield, Eye } from 'lucide-react';
+import { Star, TrendingUp, ShoppingCart, Truck, Shield, Eye } from 'lucide-react';
 import { supabase } from '@/integrations/supabase/client';
 import AffiliateDisclosure from './AffiliateDisclosure';
+import {
+  generateAmazonLink,
+  generateAliExpressLink,
+  getNetworkById,
+} from '@/integrations/affiliateNetworks';
 
 interface Product {
   id: string;
@@ -20,6 +25,9 @@ interface Product {
   brand: string;
   affiliate_link: string;
   network: { name: string };
+  amazon_asin?: string;
+  aliexpress_product_url?: string;
+  network_id: string;
 }
 
 interface FeaturedProductsSectionProps {
@@ -57,10 +65,10 @@ export default function FeaturedProductsSection({
 
       // First try to get featured products
       const { data: featuredData, error: featuredError } = await query.eq('is_featured', true);
-      
+
       let data = featuredData;
       let error = featuredError;
-      
+
       // If no featured products found, fall back to any active products
       if (!error && (!data || data.length === 0)) {
         const fallback = await supabase
@@ -87,6 +95,20 @@ export default function FeaturedProductsSection({
     }
   };
 
+  const generateDynamicAffiliateLink = (product: Product): string => {
+    const network = getNetworkById(product.network_id);
+    if (!network || !network.enabled) return product.affiliate_link;
+
+    switch (network.id) {
+      case 'amazon':
+        return product.amazon_asin ? generateAmazonLink(product.amazon_asin) : product.affiliate_link;
+      case 'aliexpress':
+        return product.aliexpress_product_url ? generateAliExpressLink(product.aliexpress_product_url) : product.affiliate_link;
+      default:
+        return product.affiliate_link;
+    }
+  };
+
   const calculateDiscount = (originalPrice: number | null, currentPrice: number) => {
     if (!originalPrice || originalPrice <= currentPrice) return null;
     return Math.round(((originalPrice - currentPrice) / originalPrice) * 100);
@@ -108,18 +130,16 @@ export default function FeaturedProductsSection({
       <div className="flex items-center gap-1 text-sm">
         <div className="flex items-center">
           {[...Array(fullStars)].map((_, i) => (
-            <Star className="w-4 h-4 fill-yellow-400 text-yellow-400" key={`full-${i}`} />
+            <Star key={`full-${i}`} className="w-4 h-4 fill-yellow-400 text-yellow-400" />
           ))}
           {hasHalfStar && (
             <div className="relative">
               <Star className="w-4 h-4 text-gray-300" />
-              <Star className="w-4 h-4 fill-yellow-400 text-yellow-400 absolute top-0 left-0" style={{
-                clipPath: 'inset(0 50% 0 0)'
-              }} />
+              <Star className="w-4 h-4 fill-yellow-400 text-yellow-400 absolute top-0 left-0" style={{ clipPath: 'inset(0 50% 0 0)' }} />
             </div>
           )}
           {[...Array(emptyStars)].map((_, i) => (
-            <Star className="w-4 h-4 text-gray-300" key={`empty-${i}`} />
+            <Star key={`empty-${i}`} className="w-4 h-4 text-gray-300" />
           ))}
         </div>
         <span className="text-blue-600 hover:text-blue-800 cursor-pointer font-medium">
@@ -129,9 +149,9 @@ export default function FeaturedProductsSection({
     );
   };
 
-  const handleProductClick = (affiliateLink: string, productId: string) => {
-    // Track click analytics here if needed
-    window.open(affiliateLink, '_blank', 'noopener,noreferrer');
+  const handleProductClick = (product: Product) => {
+    const link = generateDynamicAffiliateLink(product);
+    window.open(link, '_blank', 'noopener,noreferrer');
   };
 
   if (isLoading) {
@@ -141,7 +161,7 @@ export default function FeaturedProductsSection({
           <h2 className="text-3xl font-bold text-center mb-12">{title}</h2>
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
             {[...Array(8)].map((_, i) => (
-              <Card className="animate-pulse" key={i}>
+              <Card key={i} className="animate-pulse">
                 <div className="aspect-square bg-gray-200 rounded-t-lg"></div>
                 <CardContent className="p-4">
                   <div className="h-4 bg-gray-200 rounded mb-2"></div>
@@ -168,24 +188,24 @@ export default function FeaturedProductsSection({
           {products.map((product) => {
             const discount = calculateDiscount(product.original_price, product.price);
             const isPrime = product.network.name.toLowerCase().includes('amazon');
-
+            const link = generateDynamicAffiliateLink(product);
             return (
               <Card
                 key={product.id}
                 className="group cursor-pointer transition-all duration-300 hover:shadow-lg hover:shadow-blue-100 hover:-translate-y-1 border border-gray-200 hover:border-blue-300 bg-white"
                 onMouseEnter={() => setHoveredProduct(product.id)}
                 onMouseLeave={() => setHoveredProduct(null)}
-                onClick={() => handleProductClick(product.affiliate_link, product.id)}
+                onClick={() => handleProductClick(product)}
               >
                 {/* Image Container with Badges */}
                 <div className="relative aspect-square overflow-hidden rounded-t-lg bg-white">
                   <img
-                    src={product.image_url} 
+                    src={product.image_url}
                     alt={product.title}
                     className="w-full h-full object-contain group-hover:scale-105 transition-transform duration-300 p-4"
                     loading="lazy"
                   />
-                  
+
                   {/* Top badges */}
                   <div className="absolute top-2 left-2 flex flex-col gap-1">
                     {discount && discount > 0 && (
@@ -203,7 +223,7 @@ export default function FeaturedProductsSection({
                   {/* Quick view overlay */}
                   {hoveredProduct === product.id && (
                     <div className="absolute inset-0 bg-black bg-opacity-30 flex items-center justify-center transition-opacity duration-300">
-                      <Button className="bg-white text-black hover:bg-gray-100 font-semibold" size="sm">
+                      <Button size="sm" className="bg-white text-black hover:bg-gray-100 font-semibold">
                         <Eye className="w-4 h-4 mr-2" />
                         Quick View
                       </Button>
@@ -225,17 +245,14 @@ export default function FeaturedProductsSection({
                   <div className="text-xs text-gray-500 font-medium uppercase tracking-wider">
                     {product.brand}
                   </div>
-
                   {/* Title */}
                   <h3 className="font-medium text-gray-900 line-clamp-2 text-sm leading-tight group-hover:text-blue-600 transition-colors">
                     {product.title}
                   </h3>
-
                   {/* Rating */}
                   <div className="flex items-center justify-between">
                     {renderStarRating(product.rating, product.review_count)}
                   </div>
-
                   {/* Price Section */}
                   <div className="space-y-1">
                     <div className="flex items-baseline gap-2">
@@ -248,37 +265,33 @@ export default function FeaturedProductsSection({
                         </span>
                       )}
                     </div>
-                    
                     {/* Shipping info */}
                     <div className="flex items-center gap-1 text-xs text-green-600">
                       <Truck className="w-3 h-3" />
                       Ships to Cyprus
                     </div>
                   </div>
-
                   {/* Action Buttons */}
                   <div className="space-y-2 pt-2">
                     <Button
                       className="w-full bg-yellow-400 hover:bg-yellow-500 text-black font-semibold py-2 px-4 rounded-md transition-colors duration-200"
                       onClick={(e) => {
                         e.stopPropagation();
-                        handleProductClick(product.affiliate_link, product.id);
+                        handleProductClick(product);
                       }}
                     >
                       <ShoppingCart className="w-4 h-4 mr-2" />
                       Shop Now
                     </Button>
-                    
                     <div className="text-center">
                       <span className="text-xs text-gray-500">
-                        Amazon Partner • Secure Checkout
+                        {product.network.name} Partner • Secure Checkout
                       </span>
                     </div>
                   </div>
-
                   {/* Network badge */}
                   <div className="flex items-center justify-between pt-2 border-t border-gray-100">
-                    <Badge className="text-xs text-gray-600" variant="outline">
+                    <Badge variant="outline" className="text-xs text-gray-600">
                       {product.network.name}
                     </Badge>
                     <div className="flex items-center gap-1 text-xs text-gray-500">
@@ -291,12 +304,10 @@ export default function FeaturedProductsSection({
             );
           })}
         </div>
-
         {/* Affiliate Disclosure */}
         <div className="mt-8">
           <AffiliateDisclosure />
         </div>
-
         {/* Additional trust signals */}
         <div className="mt-6 p-4 bg-blue-50 rounded-lg">
           <div className="flex items-center justify-center gap-8 text-sm text-blue-700">
