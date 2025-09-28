@@ -258,6 +258,51 @@ export type Database = {
         }
         Relationships: []
       }
+      affiliate_direct_links: {
+        Row: {
+          click_count: number | null
+          created_at: string | null
+          description: string | null
+          display_order: number | null
+          id: string
+          is_active: boolean | null
+          name: string
+          network_name: string | null
+          placement_type: string | null
+          target_pages: string[] | null
+          updated_at: string | null
+          url: string
+        }
+        Insert: {
+          click_count?: number | null
+          created_at?: string | null
+          description?: string | null
+          display_order?: number | null
+          id?: string
+          is_active?: boolean | null
+          name: string
+          network_name?: string | null
+          placement_type?: string | null
+          target_pages?: string[] | null
+          updated_at?: string | null
+          url: string
+        }
+        Update: {
+          click_count?: number | null
+          created_at?: string | null
+          description?: string | null
+          display_order?: number | null
+          id?: string
+          is_active?: boolean | null
+          name?: string
+          network_name?: string | null
+          placement_type?: string | null
+          target_pages?: string[] | null
+          updated_at?: string | null
+          url?: string
+        }
+        Relationships: []
+      }
       affiliate_networks: {
         Row: {
           affiliate_id: string | null

@@ -8,6 +8,8 @@ import { Search } from "lucide-react";
 import AmazonWidget from "@/components/affiliates/AmazonWidget";
 import AffiliateProductGrid from "@/components/AffiliateProductGrid";
 import AffiliateDisclosure from "@/components/affiliates/AffiliateDisclosure";
+import { AffiliateSpaceManager } from "@/components/ads/AffiliateSpaceManager";
+import { AffiliateNetworkBanner } from "@/components/ads/AffiliateNetworkBanner";
 
 const Shop = () => {
   const [searchTerm, setSearchTerm] = useState("");
@@ -65,6 +67,13 @@ const Shop = () => {
           {/* Product Sections */}
           <section className="py-16">
             <div className="container mx-auto px-4">
+              {/* Featured Affiliate Banner - Strategic placement */}
+              <AffiliateNetworkBanner 
+                placementType="banner" 
+                currentPage="shop"
+                className="mb-12"
+              />
+              
               <h2 className="text-3xl font-bold text-center mb-12">Featured Products</h2>
               
               {/* Category Tabs */}
@@ -130,9 +139,29 @@ const Shop = () => {
 
               {/* Affiliate Disclosure */}
               <AffiliateDisclosure className="mt-12" variant="full" />
+              
+              {/* Additional affiliate promotion space */}
+              <div className="mt-8">
+                <AffiliateSpaceManager 
+                  spaceType="affiliate-only"
+                  placement="inline"
+                  currentPage="shop"
+                  className="justify-center"
+                />
+              </div>
             </div>
           </section>
         </main>
+        
+        {/* Sidebar with affiliate links */}
+        <aside className="fixed right-4 top-1/2 transform -translate-y-1/2 w-64 z-40 hidden xl:block">
+          <AffiliateSpaceManager 
+            spaceType="mixed"
+            placement="sidebar"
+            currentPage="shop"
+            adSenseSlot="sidebar-shop"
+          />
+        </aside>
         
         <Footer />
       </div>

@@ -10,6 +10,8 @@ import Footer from '@/components/Footer';
 import HeroSection from '@/components/HeroSection';
 import FeaturedArticles from '@/components/FeaturedArticles';
 import AffiliateProductGrid from '@/components/AffiliateProductGrid';
+import { AffiliateNetworkBanner } from '@/components/ads/AffiliateNetworkBanner';
+import { AffiliateSpaceManager } from '@/components/ads/AffiliateSpaceManager';
 
 const Index = () => {
   return (
@@ -58,6 +60,13 @@ const Index = () => {
           {/* Features Overview */}
           <section className="py-16 bg-muted/50">
             <div className="container mx-auto px-4">
+              {/* Strategic affiliate placement after hero */}
+              <AffiliateNetworkBanner 
+                placementType="banner" 
+                currentPage="home"
+                className="mb-12"
+              />
+              
               <div className="text-center mb-12">
                 <h2 className="text-3xl font-bold mb-4">Everything for Cyprus Pet Owners</h2>
                 <p className="text-lg text-muted-foreground max-w-2xl mx-auto">
@@ -145,6 +154,17 @@ const Index = () => {
                 </p>
               </div>
               <AffiliateProductGrid category="" limit={6} />
+              
+              {/* Inline affiliate links */}
+              <div className="mt-8">
+                <AffiliateSpaceManager 
+                  spaceType="affiliate-only"
+                  placement="inline"
+                  currentPage="home"
+                  className="justify-center"
+                />
+              </div>
+              
               <div className="text-center mt-8">
                 <Button asChild size="lg" variant="outline">
                   <Link to="/shop">

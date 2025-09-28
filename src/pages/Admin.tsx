@@ -12,6 +12,7 @@ import ArticleGenerator from "@/components/ArticleGenerator";
 import AffiliateManager from "@/components/AffiliateManager";
 import { TestPerplexityGenerator } from "@/components/TestPerplexityGenerator";
 import TestAliExpressIntegration from "@/components/TestAliExpressIntegration";
+import AffiliateLinksManager from "@/components/admin/AffiliateLinksManager";
 // Import removed - CreateAdForm not needed for blog transformation
 import { supabase } from "@/integrations/supabase/client";
 
@@ -142,6 +143,7 @@ const Admin = () => {
                 <TabsList className="flex flex-wrap gap-2">
                   <TabsTrigger value="content">Content Moderation</TabsTrigger>
                   <TabsTrigger value="affiliate">Affiliate Management</TabsTrigger>
+                  <TabsTrigger value="affiliate-links">Affiliate Links</TabsTrigger>
                   <TabsTrigger value="aliexpress">AliExpress Test</TabsTrigger>
                   <TabsTrigger value="products">Bulk Product Import</TabsTrigger>
                   <TabsTrigger value="articles">Article Generation</TabsTrigger>
@@ -159,6 +161,10 @@ const Admin = () => {
 
                 <TabsContent value="affiliate" className="mt-4">
                   <AffiliateManager />
+                </TabsContent>
+
+                <TabsContent value="affiliate-links" className="mt-4">
+                  <AffiliateLinksManager />
                 </TabsContent>
 
                 <TabsContent value="aliexpress" className="mt-4">
