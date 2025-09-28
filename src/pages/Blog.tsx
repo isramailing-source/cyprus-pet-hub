@@ -5,7 +5,7 @@ import Footer from "@/components/Footer";
 import { Helmet } from "react-helmet-async";
 import { AffiliateNetworkBanner } from "@/components/ads/AffiliateNetworkBanner";
 import { AffiliateSpaceManager } from "@/components/ads/AffiliateSpaceManager";
-import { AdSenseInArticle } from "@/components/ads";
+import { AdSenseInArticle, AdSenseAutoRelaxed } from "@/components/ads";
 
 const Blog = () => {
   return (
@@ -44,6 +44,13 @@ const Blog = () => {
           </section>
           
           <FeaturedPetTips />
+          
+          {/* AdSense AutoRelaxed Ad */}
+          <section className="py-4">
+            <div className="container mx-auto px-4">
+              <AdSenseAutoRelaxed />
+            </div>
+          </section>
           
           {/* Additional affiliate space at bottom */}
           <section className="py-6">
