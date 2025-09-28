@@ -226,14 +226,8 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
       });
 
       if (error) {
-        // Handle specific CAPTCHA errors
-        if (error.message.includes('captcha')) {
-          toast({
-            title: "CAPTCHA Required",
-            description: "Please disable CAPTCHA in Supabase Auth settings or contact support. This feature is not implemented yet.",
-            variant: "destructive",
-          });
-        } else if (error.message.includes('already registered')) {
+        // Handle specific errors - REMOVED CAPTCHA BLOCKER
+        if (error.message.includes('already registered')) {
           toast({
             title: "Account Exists",
             description: "An account with this email already exists. Try signing in instead.",
@@ -248,8 +242,8 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
         }
       } else {
         toast({
-          title: "Check your email",
-          description: "We've sent you a confirmation link to complete your registration.",
+          title: "Success!",
+          description: "Account created successfully. You can now sign in.",
         });
       }
 
@@ -311,14 +305,8 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
       });
 
       if (error) {
-        // Handle specific errors
-        if (error.message.includes('captcha')) {
-          toast({
-            title: "CAPTCHA Required",
-            description: "Please disable CAPTCHA in Supabase Auth settings or contact support. This feature is not implemented yet.",
-            variant: "destructive",
-          });
-        } else if (error.message.includes('Invalid login credentials')) {
+        // Handle specific errors - REMOVED CAPTCHA BLOCKER
+        if (error.message.includes('Invalid login credentials')) {
           toast({
             title: "Sign in failed",
             description: "Invalid email or password. Please check your credentials and try again.",
