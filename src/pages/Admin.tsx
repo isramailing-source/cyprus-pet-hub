@@ -10,6 +10,7 @@ import { Label } from "@/components/ui/label";
 import { useToast } from "@/components/ui/use-toast";
 import ArticleGenerator from "@/components/ArticleGenerator";
 import AffiliateManager from "@/components/AffiliateManager";
+import { TestPerplexityGenerator } from "@/components/TestPerplexityGenerator";
 // Import removed - CreateAdForm not needed for blog transformation
 import { supabase } from "@/integrations/supabase/client";
 
@@ -142,6 +143,7 @@ const Admin = () => {
                   <TabsTrigger value="affiliate">Affiliate Management</TabsTrigger>
                   <TabsTrigger value="products">Bulk Product Import</TabsTrigger>
                   <TabsTrigger value="articles">Article Generation</TabsTrigger>
+                  <TabsTrigger value="perplexity">Perplexity Test</TabsTrigger>
                 </TabsList>
 
                 <TabsContent value="content" className="mt-4">
@@ -167,6 +169,10 @@ const Admin = () => {
 
                 <TabsContent value="articles" className="mt-4">
                   <ArticleGenerator />
+                </TabsContent>
+
+                <TabsContent value="perplexity" className="mt-4">
+                  <TestPerplexityGenerator />
                 </TabsContent>
               </Tabs>
             </CardContent>
