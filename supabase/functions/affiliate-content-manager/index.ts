@@ -377,7 +377,7 @@ async function syncAliExpressProducts(network: any) {
 
       // Use correct API endpoint with POST method
       console.log('Making AliExpress API request...');
-      const response = await fetch('http://gw.api.taobao.com/router/rest', {
+      const response = await fetch('https://api-sg.aliexpress.com/sync', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/x-www-form-urlencoded;charset=utf-8',
@@ -476,8 +476,8 @@ async function searchAliExpressProductsDirect(keywords: string, options: any = {
 
     console.log('Making AliExpress API request with correct format...');
     
-    // Use HTTPS endpoint with GET method
-    const url = new URL('https://gw.api.taobao.com/router/rest');
+    // Use Singapore endpoint with GET method
+    const url = new URL('https://api-sg.aliexpress.com/sync');
     Object.entries(params).forEach(([key, value]) => {
       url.searchParams.append(key, value);
     });
