@@ -5,6 +5,7 @@ import Footer from "@/components/Footer";
 import { Helmet } from "react-helmet-async";
 import { AffiliateNetworkBanner } from "@/components/ads/AffiliateNetworkBanner";
 import { AffiliateSpaceManager } from "@/components/ads/AffiliateSpaceManager";
+import { AdSenseInArticle } from "@/components/ads";
 
 const Blog = () => {
   return (
@@ -23,6 +24,13 @@ const Blog = () => {
         <Header />
         <main>
           <BlogSection />
+          
+          {/* AdSense In-Article Ad */}
+          <section className="py-4">
+            <div className="container mx-auto px-4">
+              <AdSenseInArticle />
+            </div>
+          </section>
           
           {/* Strategic affiliate placement in blog */}
           <section className="py-8 bg-muted/30">
