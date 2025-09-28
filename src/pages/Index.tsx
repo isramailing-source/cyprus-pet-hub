@@ -13,7 +13,7 @@ import Footer from '@/components/Footer'
 import { AffiliateNetworkBanner } from '@/components/ads/AffiliateNetworkBanner'
 import { AffiliateSpaceManager } from '@/components/ads/AffiliateSpaceManager'
 import DealsCarousel from '@/components/affiliates/DealsCarousel'
-// Removed problematic import: import { useAffiliateFeeds } from '@/integrations/affiliate/useAffiliateFeeds'
+import { useAffiliateFeeds } from '@/integrations/affiliate/useAffiliateFeeds'
 
 // Styles for animated gradient header
 const AnimatedHeader = () => (
@@ -130,12 +130,13 @@ const FeatureTiles = () => (
 )
 
 const Index = () => {
-  // Removed useAffiliateFeeds hook call that was causing the build error
-  // Providing fallback empty arrays and loading state
-  const bestSellers = []
-  const seasonalPicks = []
-  const loading = false
-  const errors = null
+  // Pull real affiliate product data
+  const { bestSellers, seasonalPicks, loading, errors } = useAffiliateFeeds({
+    sources: ['amazon', 'aliexpress', 'rakuten', 'admitad'],
+    country: 'CY',
+    currency: 'EUR',
+    limit: 12,
+  })
 
   const metaImage = useMemo(
     () => 'https://images.unsplash.com/photo-1517849845537-4d257902454a?q=80&w=1600&auto=format&fit=crop',
