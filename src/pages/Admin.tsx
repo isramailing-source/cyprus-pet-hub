@@ -16,6 +16,7 @@ import TestAmazonIntegration from "@/components/TestAmazonIntegration";
 import AliExpressTestButton from "@/components/AliExpressTestButton";
 import { AdSenseTestComponent } from "@/components/ads";
 import ComprehensiveSystemTest from "@/components/ComprehensiveSystemTest";
+import TestAffiliateAutomation from "@/components/TestAffiliateAutomation";
 import ImageFallbackTest from "@/components/ImageFallbackTest";
 import NetworkConnectivityTest from "@/components/NetworkConnectivityTest";
 import AffiliateLinksManager from "@/components/admin/AffiliateLinksManager";
@@ -145,8 +146,9 @@ const Admin = () => {
               <CardTitle>Admin Dashboard</CardTitle>
             </CardHeader>
             <CardContent>
-              <Tabs defaultValue="system-test">
+              <Tabs defaultValue="automation">
                 <TabsList className="flex flex-wrap gap-2">
+                  <TabsTrigger value="automation">🚀 Automation</TabsTrigger>
                   <TabsTrigger value="system-test">🔍 System Test</TabsTrigger>
                   <TabsTrigger value="content">Content Moderation</TabsTrigger>
                   <TabsTrigger value="affiliate">Affiliate Management</TabsTrigger>
@@ -160,6 +162,10 @@ const Admin = () => {
                   <TabsTrigger value="images">Image Assets</TabsTrigger>
                   <TabsTrigger value="network">Network Test</TabsTrigger>
                 </TabsList>
+
+                <TabsContent value="automation" className="mt-4">
+                  <TestAffiliateAutomation />
+                </TabsContent>
 
                 <TabsContent value="system-test" className="mt-4">
                   <ComprehensiveSystemTest />
