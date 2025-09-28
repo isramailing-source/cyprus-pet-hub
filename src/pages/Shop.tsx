@@ -225,14 +225,7 @@ const Shop = () => {
           />
         </aside>
         
-        <Footer>
-          {/* Collapsible Affiliate Disclosure in Footer */}
-          <AffiliateDisclosure 
-            variant="collapsible"
-            showInFooter={true}
-            className="border-t pt-8 mt-8"
-          />
-        </Footer>
+        <Footer />
       </div>
     </>
   );

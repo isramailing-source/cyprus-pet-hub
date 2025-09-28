@@ -203,7 +203,7 @@ const Index = () => {
               <Link to="/shop">View all</Link>
             </Button>
           </div>
-          <DealsCarousel items={bestSellers} loading={loading} fallbackCount={8} />
+          <DealsCarousel />
           <div className="mt-6">
             <AffiliateSpaceManager spaceType="affiliate-only" placement="inline" currentPage="home" />
           </div>
@@ -219,7 +219,7 @@ const Index = () => {
               <p className="text-muted-foreground">Curated for Cyprus climate and seasons</p>
             </div>
           </div>
-          <DealsCarousel items={seasonalPicks} loading={loading} fallbackCount={8} />
+          <DealsCarousel />
         </div>
       </section>
       
