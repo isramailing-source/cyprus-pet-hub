@@ -384,14 +384,16 @@ async function syncAliExpressProducts(network: any) {
       if (data.aliexpress_affiliate_product_query_response?.resp_result?.result?.products) {
         const products = data.aliexpress_affiliate_product_query_response.resp_result.result.products.product;
         
-        for (const product of products) {
-          try {
-            await processAliExpressProduct(product, network);
+      for (const product of products) {
+        try {
+          const processed = await processAliExpressProduct(product, network);
+          if (processed) {
             totalSynced++;
-          } catch (error) {
-            console.error('Error processing AliExpress product:', error);
           }
+        } catch (error) {
+          console.error('Error processing AliExpress product:', error);
         }
+      }
       } else if (data.error_response) {
         console.error('AliExpress API error response:', data.error_response);
       } else {
@@ -408,13 +410,24 @@ async function syncAliExpressProducts(network: any) {
 }
 
 async function generateAliExpressSignature(params: Record<string, string>, secret: string, method: string): Promise<string> {
-  // Sort parameters
-  const sortedParams = Object.keys(params).sort().map(key => `${key}${params[key]}`).join('');
+  // Remove sign parameter if it exists
+  const cleanParams = { ...params };
+  delete cleanParams.sign;
   
-  // Create signature string
-  const signString = secret + method + sortedParams + secret;
+  // Sort parameters and create query string format
+  const sortedKeys = Object.keys(cleanParams).sort();
+  const sortedParams = sortedKeys.map(key => `${key}${cleanParams[key]}`).join('');
   
-  // Generate MD5 hash using a simple MD5 implementation
+  // Create signature string according to AliExpress API documentation
+  const signString = `${secret}${method}${sortedParams}${secret}`;
+  
+  console.log('AliExpress signature generation:', {
+    method,
+    sortedKeys: sortedKeys.slice(0, 5), // Log first 5 keys for debugging
+    signStringLength: signString.length
+  });
+  
+  // Generate MD5 hash
   return md5(signString).toUpperCase();
 }
 
@@ -623,87 +636,55 @@ function md5(str: string): string {
   return (wordToHex(a) + wordToHex(b) + wordToHex(c) + wordToHex(d)).toLowerCase();
 }
 
-async function processAliExpressProduct(product: any, network: any) {
+async function processAliExpressProduct(product: any, network: any): Promise<boolean> {
   console.log(`Processing AliExpress product: ${product.product_title}`);
   
-  // Check if product already exists
-  const { data: existingProduct } = await supabase
-    .from('affiliate_products')
-    .select('id')
-    .eq('network_id', network.id)
-    .eq('external_product_id', product.product_id.toString())
-    .single();
+  try {
+    const affiliateLink = product.promotion_link || product.product_detail_url;
+    const productData = {
+      network_id: network.id,
+      external_product_id: product.product_id.toString(),
+      title: product.product_title,
+      description: `High-quality ${product.first_level_category_name} product from AliExpress. ${product.product_title}`,
+      short_description: product.product_title.substring(0, 150),
+      price: parseFloat(product.target_sale_price || product.sale_price || '0'),
+      original_price: product.target_original_price ? parseFloat(product.target_original_price) : null,
+      currency: product.target_sale_price_currency || 'EUR',
+      image_url: product.product_main_image_url,
+      additional_images: product.product_small_image_urls?.string || [],
+      category: 'pet supplies',
+      subcategory: product.first_level_category_name?.toLowerCase() || 'general',
+      brand: 'AliExpress',
+      affiliate_link: affiliateLink,
+      rating: product.evaluate_rate ? parseFloat(product.evaluate_rate) : null,
+      review_count: product.lastest_volume ? parseInt(product.lastest_volume) : 0,
+      is_featured: Math.random() > 0.7, // 30% chance of being featured
+      availability_status: 'in_stock',
+      seo_title: `${product.product_title} - Best Pet Supplies from AliExpress Cyprus`,
+      seo_description: `${product.product_title.substring(0, 120)}... Available in Cyprus with fast shipping. Price: €${parseFloat(product.target_sale_price || product.sale_price || '0')}`,
+      tags: ['pet supplies', 'aliexpress', 'cyprus', product.first_level_category_name?.toLowerCase() || 'general'],
+      last_price_check: new Date().toISOString()
+    };
 
-  const affiliateLink = product.promotion_link || product.product_detail_url;
-  const productData = {
-    title: product.product_title,
-    description: `High-quality ${product.first_level_category_name} product from AliExpress. ${product.product_title}`,
-    short_description: product.product_title.substring(0, 150),
-    price: parseFloat(product.target_sale_price || product.sale_price || '0'),
-    original_price: product.target_original_price ? parseFloat(product.target_original_price) : null,
-    currency: product.target_sale_price_currency || 'EUR',
-    image_url: product.product_main_image_url,
-    additional_images: product.product_small_image_urls?.string || [],
-    category: 'pet supplies',
-    subcategory: product.second_level_category_name?.toLowerCase() || 'general',
-    brand: 'AliExpress',
-    affiliate_link: affiliateLink,
-    rating: parseFloat(product.evaluate_rate || '0') / 20, // Convert to 5-star rating
-    review_count: parseInt(product.lastest_volume || '0'),
-    is_featured: Math.random() > 0.7, // 30% chance of being featured
-    availability_status: 'in_stock',
-    seo_title: `${product.product_title} - Best Pet Products Cyprus`,
-    seo_description: `${product.product_title} available in Cyprus. Price: €${product.target_sale_price || product.sale_price}. Fast shipping to Cyprus.`,
-    tags: ['aliexpress', 'cyprus', 'pets', 'pet supplies', product.first_level_category_name?.toLowerCase()].filter(Boolean),
-    metadata: {
-      commission_rate: product.commission_rate,
-      hot_product_commission_rate: product.hot_product_commission_rate,
-      product_video_url: product.product_video_url,
-      shop_id: product.shop_id,
-      shop_url: product.shop_url
-    }
-  };
-
-  if (existingProduct) {
-    // Update existing product
-    const { error: updateError } = await supabase
+    // Use upsert with the unique constraint
+    const { error: upsertError } = await supabase
       .from('affiliate_products')
-      .update({
-        ...productData,
-        last_price_check: new Date().toISOString(),
-        updated_at: new Date().toISOString()
-      })
-      .eq('id', existingProduct.id);
-
-    if (updateError) {
-      console.error('Error updating AliExpress product:', updateError);
-      throw updateError;
-    }
-  } else {
-    // Insert new product
-    const { error: insertError } = await supabase
-      .from('affiliate_products')
-      .insert({
-        network_id: network.id,
-        external_product_id: product.product_id.toString(),
-        ...productData
+      .upsert(productData, {
+        onConflict: 'network_id,external_product_id',
+        ignoreDuplicates: false
       });
 
-    if (insertError) {
-      console.error('Error inserting AliExpress product:', insertError);
-      throw insertError;
+    if (upsertError) {
+      console.error('Error upserting AliExpress product:', upsertError);
+      return false;
     }
-  }
 
-  // Add price history entry
-  await supabase
-    .from('affiliate_price_history')
-    .insert({
-      product_id: existingProduct?.id,
-      price: productData.price,
-      original_price: productData.original_price,
-      availability_status: 'in_stock'
-    });
+    console.log(`Successfully processed AliExpress product: ${product.product_title}`);
+    return true;
+  } catch (error) {
+    console.error('Error processing AliExpress product:', error);
+    return false;
+  }
 }
 
 async function syncAlibabaProducts(network: any) {
@@ -714,15 +695,13 @@ async function syncAlibabaProducts(network: any) {
 async function generateAffiliateContent() {
   console.log('Generating affiliate content...');
 
-  // Get products without content
+  // Get products without content - avoid the join issue by selecting separately
   const { data: products, error: productsError } = await supabase
     .from('affiliate_products')
-    .select(`
-      *,
-      affiliate_networks(name, affiliate_id)
-    `)
+    .select('*')
     .eq('is_active', true)
-    .limit(5); // Limit to prevent timeout
+    .is('seo_title', null)
+    .limit(5);
 
   if (productsError) {
     throw new Error(`Failed to fetch products: ${productsError.message}`);
