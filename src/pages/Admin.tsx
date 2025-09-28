@@ -10,7 +10,7 @@ import { Label } from "@/components/ui/label";
 import { useToast } from "@/components/ui/use-toast";
 import ArticleGenerator from "@/components/ArticleGenerator";
 import AffiliateManager from "@/components/AffiliateManager";
-import CreateAdForm from "@/components/CreateAdForm";
+// Import removed - CreateAdForm not needed for blog transformation
 import { supabase } from "@/integrations/supabase/client";
 
 // Simple role-guarded Admin Dashboard with content moderation and bulk product import
@@ -59,7 +59,18 @@ const Admin = () => {
         return;
       }
 
-      const { error } = await supabase.from("affiliate_products").insert(payload, { returning: "minimal" });
+      const transformedPayload = payload.map(p => ({
+        title: p.title,
+        price: p.price,
+        affiliate_link: p.url,
+        external_product_id: p.sku || `import-${Date.now()}-${Math.random()}`,
+        network_id: '00000000-0000-0000-0000-000000000001', // Default network
+        image_url: p.image_url,
+        brand: p.brand,
+        category: p.category
+      }));
+      
+      const { error } = await supabase.from("affiliate_products").insert(transformedPayload);
       if (error) throw error;
       toast({ title: "Import complete", description: `${payload.length} products imported.` });
       e.target.value = "";
@@ -69,16 +80,12 @@ const Admin = () => {
     }
   };
 
-  // Basic content moderation (posts/articles table assumed)
-  const approveContent = async (table: string, id: string) => {
-    const { error } = await supabase.from(table).update({ status: "approved" }).eq("id", id);
-    if (error) toast({ title: "Action failed", description: error.message, variant: "destructive" });
-    else toast({ title: "Content approved" });
+  // Basic content moderation - simplified to remove database calls
+  const approveContent = async () => {
+    toast({ title: "Content approved", description: "Example action - no database changes" });
   };
-  const rejectContent = async (table: string, id: string) => {
-    const { error } = await supabase.from(table).update({ status: "rejected" }).eq("id", id);
-    if (error) toast({ title: "Action failed", description: error.message, variant: "destructive" });
-    else toast({ title: "Content rejected" });
+  const rejectContent = async () => {
+    toast({ title: "Content rejected", description: "Example action - no database changes" });
   };
 
   if (loading) {
@@ -141,8 +148,8 @@ const Admin = () => {
                   <p className="mb-2 text-sm text-muted-foreground">Approve or reject pending items.</p>
                   {/* Example controls; real list should be separate component with data fetching */}
                   <div className="flex gap-2">
-                    <Button onClick={() => approveContent("posts", "example-id")}>Approve Example</Button>
-                    <Button variant="destructive" onClick={() => rejectContent("posts", "example-id")}>Reject Example</Button>
+                    <Button onClick={approveContent}>Approve Example Topic</Button>
+                    <Button variant="destructive" onClick={rejectContent}>Reject Example Topic</Button>
                   </div>
                 </TabsContent>
 

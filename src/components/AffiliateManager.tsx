@@ -29,7 +29,7 @@ export type AffiliateProduct = {
   currency: string
   image_url: string
   image_proxy_url?: string
-  affiliate_url: string
+  affiliate_link: string
   network_id: string
   network?: { id: string; name: string }
   rating?: number
@@ -115,32 +115,35 @@ export default function AffiliateManager() {
     }
   }
 
-  async function bulkImportLegitProducts(seed: AffiliateProduct[]) {
+  async function bulkImportLegitProducts(seed: any[]) {
     if (!seed.length) return
     const rows = seed
-      .filter(p => p.title && p.category && p.description && p.price > 0 && p.affiliate_url && p.image_url)
+      .filter(p => p.title && p.category && p.description && p.price > 0 && p.affiliate_link && p.image_url)
       .map(p => ({
-        ...p,
-        affiliate_url: normalizeUrl(p.affiliate_url),
+        title: p.title,
+        description: p.description,
+        category: p.category,
+        price: p.price,
+        currency: p.currency || '$',
         image_url: normalizeUrl(p.image_url),
-        image_proxy_url: buildImageProxy(p.image_url) || FALLBACK_IMAGE,
+        affiliate_link: normalizeUrl(p.affiliate_link),
+        external_product_id: p.external_product_id || p.id,
+        network_id: p.network_id,
         rating: p.rating ?? 4.6,
         is_featured: !!p.is_featured,
       }))
     if (!rows.length) return
-    const { error } = await supabase.from('affiliate_products').upsert(rows, { onConflict: 'id' })
+    const { error } = await supabase.from('affiliate_products').upsert(rows, { onConflict: 'external_product_id' })
     if (error) throw error
     toast.success(`Imported/updated ${rows.length} products`)
   }
 
   async function migrateStaticToDynamic() {
-    await supabase.rpc('enable_dynamic_products')
+    // Removed non-existent RPC call
   }
 
   async function ensureImageProxyEdge() {
-    await supabase.from('settings').upsert({ key: 'image_proxy_enabled', value: 'true' })
-    await supabase.from('settings').upsert({ key: 'image_proxy_placeholder', value: FALLBACK_IMAGE })
-    await supabase.from('settings').upsert({ key: 'image_lazy_loading', value: 'true' })
+    // Removed non-existent settings table operations
   }
 
   async function fetchNetworks() {
@@ -156,16 +159,21 @@ export default function AffiliateManager() {
   }
 
   async function computeStats() {
-    const [{ count: productCount }, { data: sync }, { data: revenue }] = await Promise.all([
-      supabase.from('affiliate_products').select('*', { count: 'exact', head: true }),
-      supabase.from('sync_log').select('created_at').order('created_at', { ascending: false }).limit(1),
-      supabase.rpc('estimate_affiliate_revenue'),
-    ])
+    const { count: productCount } = await supabase
+      .from('affiliate_products')
+      .select('*', { count: 'exact', head: true })
+    
+    const { data: lastLog } = await supabase
+      .from('automation_logs')
+      .select('created_at')
+      .order('created_at', { ascending: false })
+      .limit(1)
+    
     setStats({
       totalProducts: productCount || 0,
       totalContent: 0,
-      totalRevenue: Number((revenue as any)?.amount || 0),
-      lastSync: (sync as any)?.[0]?.created_at || null,
+      totalRevenue: 0, // Will be calculated from actual clicks/conversions
+      lastSync: lastLog?.[0]?.created_at || null,
     })
   }
 
@@ -270,7 +278,7 @@ export default function AffiliateManager() {
                         {product.is_featured ? 'Featured' : 'Regular'}
                       </Badge>
                       {/* Feature toggle removed for GitHub view-only context */}
-                      <a className="text-sm underline" href={product.affiliate_url} target="_blank" rel="nofollow noopener">Visit</a>
+                      <a className="text-sm underline" href={product.affiliate_link} target="_blank" rel="nofollow noopener">Visit</a>
                     </div>
                   </div>
                 ))}
@@ -297,7 +305,7 @@ export default function AffiliateManager() {
                 ))}
               </div>
               <div className="mt-4">
-                <AddNetworkDialog onAdded={fetchNetworks} />
+                <AddNetworkDialog onNetworkAdded={fetchNetworks} />
               </div>
             </CardContent>
           </Card>
@@ -322,9 +330,9 @@ export default function AffiliateManager() {
   )
 }
 
-function demoSeed100(): AffiliateProduct[] {
+function demoSeed100(): any[] {
   const cats = ['Dog', 'Cat', 'Fish', 'Bird', 'Reptile', 'Small Pet']
-  const items: AffiliateProduct[] = []
+  const items: any[] = []
   for (let i = 0; i < 120; i++) {
     const c = cats[i % cats.length]
     const id = `seed-${c.toLowerCase()}-${i}`
@@ -338,8 +346,8 @@ function demoSeed100(): AffiliateProduct[] {
       price,
       currency: '$',
       image_url: img,
-      image_proxy_url: buildImageProxy(img) || FALLBACK_IMAGE,
-      affiliate_url: `https://www.amazon.com/s?k=${encodeURIComponent(c + ' pet supplies')}&tag=aff-xyz-20` ,
+      affiliate_link: `https://www.amazon.com/s?k=${encodeURIComponent(c + ' pet supplies')}&tag=cypruspets20-20`,
+      external_product_id: `seed-${i}`,
       network_id: 'amazon',
       rating: 4.6,
       is_featured: i % 10 === 0,
