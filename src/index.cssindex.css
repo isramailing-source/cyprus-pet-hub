@@ -1,0 +1,212 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+/* Phase 2: Visual Design Overhaul */
+/* 1) Typography: Inter for body, Playfair Display for headings */
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=Playfair+Display:wght@400;500;600;700;800&display=swap');
+
+@layer base {
+  :root {
+    /* Color system (HSL only), accessibility-focused */
+    --background: 43 15% 94%;
+    --foreground: 25 15% 15%;
+
+    --card: 46 20% 97%;
+    --card-foreground: 25 15% 15%;
+
+    --popover: 46 20% 97%;
+    --popover-foreground: 25 15% 15%;
+
+    --primary: 193 35% 47%; /* teal */
+    --primary-foreground: 0 0% 100%;
+
+    --secondary: 27 82% 70%; /* coral/sand */
+    --secondary-foreground: 25 15% 15%;
+
+    --accent: 120 25% 66%; /* sage */
+    --accent-foreground: 25 15% 15%;
+
+    --muted: 35 20% 92%;
+    --muted-foreground: 25 15% 45%;
+
+    --destructive: 0 84.2% 60.2%;
+    --destructive-foreground: 210 40% 98%;
+
+    --border: 30 15% 85%;
+    --input: 30 15% 90%;
+    --ring: 193 35% 47%;
+
+    /* Brand tokens */
+    --cyprus-blue: 193 35% 47%;
+    --cyprus-coral: 27 82% 70%;
+    --cyprus-gold: 45 93% 47%;
+    --cyprus-sage: 120 25% 66%;
+    --cyprus-cream: 40 40% 94%;
+
+    /* Gradients */
+    --gradient-hero: linear-gradient(135deg, hsl(var(--cyprus-blue)), hsl(var(--cyprus-coral)) 60%);
+    --gradient-card: linear-gradient(180deg, hsl(var(--card)), hsl(40 30% 96%));
+    --gradient-primary: linear-gradient(135deg, hsl(var(--primary)), hsl(var(--cyprus-blue)));
+    --gradient-secondary: linear-gradient(135deg, hsl(var(--secondary)), hsl(var(--cyprus-gold)));
+
+    /* Shadows & radii */
+    --shadow-soft: 0 4px 12px -2px hsl(var(--cyprus-blue) / 0.12);
+    --shadow-medium: 0 8px 24px -6px hsl(var(--cyprus-blue) / 0.18);
+    --shadow-large: 0 24px 48px -12px hsl(var(--cyprus-blue) / 0.22);
+    --radius: 0.9rem;
+
+    /* Sidebar */
+    --sidebar-background: 40 15% 96%;
+    --sidebar-foreground: 25 15% 15%;
+    --sidebar-primary: 193 35% 47%;
+    --sidebar-primary-foreground: 0 0% 100%;
+    --sidebar-accent: 120 25% 66%;
+    --sidebar-accent-foreground: 25 15% 15%;
+    --sidebar-border: 30 15% 85%;
+    --sidebar-ring: 193 35% 47%;
+  }
+
+  .dark {
+    --background: 25 15% 8%;
+    --foreground: 40 40% 94%;
+
+    --card: 25 15% 10%;
+    --card-foreground: 40 40% 94%;
+
+    --popover: 25 15% 10%;
+    --popover-foreground: 40 40% 94%;
+
+    --primary: 193 45% 55%;
+    --primary-foreground: 25 15% 8%;
+
+    --secondary: 27 70% 60%;
+    --secondary-foreground: 25 15% 8%;
+
+    --muted: 25 15% 15%;
+    --muted-foreground: 40 15% 65%;
+
+    --accent: 120 30% 50%;
+    --accent-foreground: 40 40% 94%;
+
+    --destructive: 0 62.8% 50%;
+    --destructive-foreground: 40 40% 94%;
+
+    --border: 25 15% 20%;
+    --input: 25 15% 20%;
+    --ring: 193 45% 55%;
+
+    --cyprus-blue: 193 45% 55%;
+    --cyprus-coral: 27 70% 60%;
+    --cyprus-gold: 45 85% 55%;
+    --cyprus-sage: 120 30% 50%;
+    --cyprus-cream: 40 40% 94%;
+
+    --sidebar-background: 25 15% 6%;
+    --sidebar-foreground: 40 40% 94%;
+    --sidebar-primary: 193 45% 55%;
+    --sidebar-primary-foreground: 25 15% 6%;
+    --sidebar-accent: 120 30% 50%;
+    --sidebar-accent-foreground: 40 40% 94%;
+    --sidebar-border: 25 15% 20%;
+    --sidebar-ring: 193 45% 55%;
+  }
+
+  * { @apply border-border; }
+  html { scroll-behavior: smooth; }
+  body {
+    @apply bg-background text-foreground antialiased; 
+    font-family: 'Inter', ui-sans-serif, system-ui, -apple-system, Segoe UI, Roboto, Helvetica, Arial, 'Apple Color Emoji', 'Segoe UI Emoji';
+  }
+  h1, h2, h3, h4, h5, h6 { font-family: 'Playfair Display', ui-serif, Georgia, Cambria, 'Times New Roman', Times, serif; letter-spacing: -0.01em; }
+}
+
+/* 2) Glassmorphism cards and panels */
+@layer components {
+  .glass-card { 
+    background: linear-gradient(180deg, hsl(var(--card) / 0.6), hsl(var(--card) / 0.35));
+    backdrop-filter: blur(12px) saturate(120%);
+    -webkit-backdrop-filter: blur(12px) saturate(120%);
+    border: 1px solid hsl(var(--border) / 0.6);
+    box-shadow: var(--shadow-soft);
+    border-radius: var(--radius);
+  }
+  .glass-panel {
+    background: linear-gradient(180deg, hsl(var(--background) / 0.5), hsl(var(--background) / 0.2));
+    backdrop-filter: blur(18px) saturate(140%);
+    -webkit-backdrop-filter: blur(18px) saturate(140%);
+    border: 1px solid hsl(var(--border) / 0.5);
+    box-shadow: var(--shadow-medium);
+    border-radius: calc(var(--radius) + 4px);
+  }
+
+  /* 3) Animated responsive background patterns */
+  .bg-grid { 
+    background-image: radial-gradient(hsl(var(--foreground) / 0.06) 1px, transparent 1px);
+    background-size: 20px 20px;
+  }
+  .bg-grid-lg { background-size: 28px 28px; }
+  .bg-noise { background-image: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" width="140" height="140" viewBox="0 0 140 140"><filter id="n"><feTurbulence type="fractalNoise" baseFrequency="0.8" numOctaves="4" stitchTiles="stitch"/></filter><rect width="100%" height="100%" filter="url(%23n)" opacity="0.03"/></svg>'); }
+  .bg-aurora {
+    background: radial-gradient(60% 50% at 20% 10%, hsl(var(--cyprus-blue) / 0.25), transparent 60%),
+                radial-gradient(50% 45% at 80% 20%, hsl(var(--cyprus-coral) / 0.22), transparent 60%),
+                radial-gradient(70% 60% at 50% 80%, hsl(var(--cyprus-sage) / 0.18), transparent 60%);
+  }
+}
+
+/* 5) Micro-interactions */
+@layer utilities {
+  .shadow-soft { box-shadow: var(--shadow-soft); }
+  .shadow-medium { box-shadow: var(--shadow-medium); }
+  .shadow-large { box-shadow: var(--shadow-large); }
+
+  .hover-lift { transition: transform 220ms ease, box-shadow 220ms ease; }
+  .hover-lift:hover { transform: translateY(-2px); box-shadow: var(--shadow-medium); }
+  .press { transition: transform 120ms ease; }
+  .press:active { transform: translateY(1px) scale(0.995); }
+
+  .focus-ring { outline: none; box-shadow: 0 0 0 3px hsl(var(--ring) / 0.4); }
+
+  /* Loading skeletons */
+  .skeleton { position: relative; overflow: hidden; background: hsl(var(--muted)); }
+  .skeleton::after { content: ""; position: absolute; inset: 0; transform: translateX(-100%);
+    background: linear-gradient(90deg, transparent, hsl(0 0% 100% / 0.35), transparent);
+    animation: shimmer 1.4s infinite; }
+  @keyframes shimmer { 100% { transform: translateX(100%); } }
+
+  /* Progress bar */
+  .progress { height: 6px; background: hsl(var(--muted)); border-radius: 999px; overflow: hidden; }
+  .progress > .bar { height: 100%; background: var(--gradient-primary); width: 0; animation: load 1.2s ease forwards; }
+  @keyframes load { from { width: 0; } to { width: 100%; } }
+
+  /* Smooth theme transitions */
+  .theme-transition { transition: color 180ms ease, background-color 180ms ease, border-color 180ms ease, box-shadow 180ms ease, filter 180ms ease; }
+
+  /* 6) Parallax & scroll-trigger helpers */
+  .parallax { transform-style: preserve-3d; perspective: 1000px; }
+  .parallax-1 { transform: translateZ(-40px) scale(1.04); }
+  .parallax-2 { transform: translateZ(-20px) scale(1.02); }
+
+  /* Counters */
+  .counter { --v: 0; }
+  .counter[data-value] { --v: attr(data-value number); }
+  @keyframes count { from { content: '0'; } }
+
+  /* Sticky navigation + page transitions */
+  .sticky-nav { position: sticky; top: 0; z-index: 50; background: hsl(var(--background) / 0.75); backdrop-filter: blur(8px); border-bottom: 1px solid hsl(var(--border)); }
+  .fade-enter { opacity: 0; transform: translateY(6px); }
+  .fade-enter-active { opacity: 1; transform: translateY(0); transition: opacity .24s ease, transform .24s ease; }
+}
+
+/* 4) Theme toggle utility (class-based) */
+/* Toggle .dark on html element programmatically. Smooth transitions handled via .theme-transition */
+
+/* 7) Advanced image galleries (lightbox helpers) */
+@layer components {
+  .lightbox-backdrop { position: fixed; inset: 0; background: hsl(0 0% 0% / 0.7); backdrop-filter: blur(2px); display: grid; place-items: center; animation: fadeIn .22s ease; }
+  .lightbox-image { max-width: 90vw; max-height: 90vh; border-radius: var(--radius); box-shadow: var(--shadow-large); }
+  .fab { position: fixed; right: 1.25rem; bottom: 1.25rem; border-radius: 999px; padding: .875rem; background: var(--gradient-primary); color: white; box-shadow: var(--shadow-medium); }
+}
+
+/* Include affiliate styles last so they can leverage tokens */
+@import './styles/affiliate.css';
