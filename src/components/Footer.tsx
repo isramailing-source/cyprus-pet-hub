@@ -1,4 +1,5 @@
 import { Heart, MapPin, Phone, Mail, Shield } from "lucide-react";
+import { Link } from "react-router-dom";
 
 const Footer = () => {
   return (
@@ -10,10 +11,10 @@ const Footer = () => {
           <div>
             <h4 className="font-semibold mb-4">Quick Links</h4>
             <ul className="space-y-2 text-sm">
-              <li><a href="#" className="opacity-80 hover:opacity-100 transition-opacity">Pet Care Guides</a></li>
-              <li><a href="#" className="opacity-80 hover:opacity-100 transition-opacity">Community Forum</a></li>
-              <li><a href="#" className="opacity-80 hover:opacity-100 transition-opacity">Pet Resources</a></li>
-              <li><a href="#" className="opacity-80 hover:opacity-100 transition-opacity">Success Stories</a></li>
+              <li><Link to="/blog" className="opacity-80 hover:opacity-100 transition-opacity">Pet Care Guides</Link></li>
+              <li><Link to="/forum" className="opacity-80 hover:opacity-100 transition-opacity">Community Forum</Link></li>
+              <li><Link to="/shop" className="opacity-80 hover:opacity-100 transition-opacity">Pet Resources</Link></li>
+              <li><Link to="/blog" className="opacity-80 hover:opacity-100 transition-opacity">Success Stories</Link></li>
             </ul>
           </div>
           
@@ -21,10 +22,10 @@ const Footer = () => {
           <div>
             <h4 className="font-semibold mb-4">Pet Categories</h4>
             <ul className="space-y-2 text-sm">
-              <li><a href="#" className="opacity-80 hover:opacity-100 transition-opacity">Dogs</a></li>
-              <li><a href="#" className="opacity-80 hover:opacity-100 transition-opacity">Cats</a></li>
-              <li><a href="#" className="opacity-80 hover:opacity-100 transition-opacity">Birds</a></li>
-              <li><a href="#" className="opacity-80 hover:opacity-100 transition-opacity">Pet Equipment</a></li>
+              <li><Link to="/shop" className="opacity-80 hover:opacity-100 transition-opacity">Dogs</Link></li>
+              <li><Link to="/shop" className="opacity-80 hover:opacity-100 transition-opacity">Cats</Link></li>
+              <li><Link to="/shop" className="opacity-80 hover:opacity-100 transition-opacity">Birds</Link></li>
+              <li><Link to="/shop" className="opacity-80 hover:opacity-100 transition-opacity">Pet Equipment</Link></li>
             </ul>
           </div>
           
