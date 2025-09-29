@@ -120,6 +120,17 @@ export const affiliateNetworks: AffiliateNetwork[] = [
     id: 'admitad',
     enabled: true,
     config: admitadConfig
+  },
+  {
+    name: 'Zooplus DE',
+    id: 'zooplus_de',
+    enabled: true,
+    config: {
+      affiliateUrl: 'https://ad.admitad.com/g/ut3qm7csve475461c4adce6fe7ba63/',
+      baseUrl: 'https://www.zooplus.de',
+      scrapingEnabled: true,
+      targetProducts: 10
+    }
   }
 ];
 

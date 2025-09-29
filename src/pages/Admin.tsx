@@ -19,6 +19,7 @@ import { AdSenseTestComponent } from "@/components/ads";
 import ComprehensiveSystemTest from "@/components/ComprehensiveSystemTest";
 import EnhancedTestAffiliateAutomation from "@/components/EnhancedTestAffiliateAutomation";
 import ImageFallbackTest from "@/components/ImageFallbackTest";
+import TestZooplusSync from "@/components/TestZooplusSync";
 import NetworkConnectivityTest from "@/components/NetworkConnectivityTest";
 import AffiliateLinksManager from "@/components/admin/AffiliateLinksManager";
 // Import removed - CreateAdForm not needed for blog transformation
@@ -199,6 +200,7 @@ const Admin = () => {
 
                 <TabsContent value="aliexpress" className="mt-4">
                   <div className="space-y-6">
+                    <TestZooplusSync />
                     <RealProductSyncButton />
                     <TestAliExpressIntegration />
                     <AliExpressTestButton />
