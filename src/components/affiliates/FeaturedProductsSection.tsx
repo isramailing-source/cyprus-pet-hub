@@ -56,7 +56,7 @@ export default function FeaturedProductsSection({
         .from('affiliate_products')
         .select(`
           *,
-          network:affiliate_networks!fk_affiliate_products_network_id(name)
+          network:affiliate_networks(name)
         `)
         .eq('is_active', true)
         .eq('availability_status', 'in_stock')
@@ -75,7 +75,7 @@ export default function FeaturedProductsSection({
           .from('affiliate_products')
           .select(`
             *,
-            network:affiliate_networks!fk_affiliate_products_network_id(name)
+            network:affiliate_networks(name)
           `)
           .eq('is_active', true)
           .eq('availability_status', 'in_stock')

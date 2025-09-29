@@ -50,7 +50,7 @@ export default function AffiliateLinksTestComponent() {
         .select(`
           title,
           affiliate_link,
-          network:affiliate_networks!fk_affiliate_products_network_id(name)
+          network:affiliate_networks(name)
         `)
         .eq('is_active', true)
         .limit(5);
@@ -59,7 +59,7 @@ export default function AffiliateLinksTestComponent() {
         name: `Product: ${product.title?.substring(0, 30)}...`,
         url: product.affiliate_link,
         type: 'dynamic',
-        network: product.network?.name,
+        network: product.network?.[0]?.name,
         status: 'pending'
       })) || [];
 

@@ -71,6 +71,17 @@ class AdSenseManager {
       script.onload = () => {
         this.scriptLoaded = true;
         this.scriptLoading = false;
+        
+        // Initialize page-level ads once when script loads
+        try {
+          (window.adsbygoogle = window.adsbygoogle || []).push({
+            google_ad_client: ADSENSE_CLIENT_ID,
+            enable_page_level_ads: true
+          });
+        } catch (error) {
+          console.warn('AdSense page-level ads already initialized:', error);
+        }
+        
         this.callbacks.forEach(callback => callback());
         this.callbacks = [];
         resolve();

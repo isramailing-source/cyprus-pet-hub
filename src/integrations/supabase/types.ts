@@ -476,13 +476,6 @@ export type Database = {
             referencedRelation: "affiliate_networks"
             referencedColumns: ["id"]
           },
-          {
-            foreignKeyName: "fk_affiliate_products_network_id"
-            columns: ["network_id"]
-            isOneToOne: false
-            referencedRelation: "affiliate_networks"
-            referencedColumns: ["id"]
-          },
         ]
       }
       article_tags: {

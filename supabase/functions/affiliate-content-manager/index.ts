@@ -382,13 +382,22 @@ async function syncRakutenProducts(network: any) {
       });
 
       try {
+        // Add 15-second timeout to prevent hanging
+        const controller = new AbortController();
+        const timeoutId = setTimeout(() => controller.abort(), 15000);
+        
         const response = await fetch(`${apiUrl}?${params}`, {
           method: 'GET',
           headers: {
             'User-Agent': 'CyprusPets/1.0 (+https://cyprus-pets.com)',
             'Accept': 'application/json'
-          }
+          },
+          signal: controller.signal
         });
+        
+        clearTimeout(timeoutId);
+
+        clearTimeout(timeoutId);
 
         if (!response.ok) {
           console.error(`Rakuten API error: ${response.status} ${response.statusText}`);
@@ -466,13 +475,19 @@ async function syncAdmitadProducts(network: any) {
     
     console.log('Admitad access token obtained');
 
-    // Get campaigns (advertisers)
+    // Get campaigns (advertisers) with timeout
+    const campaignsController = new AbortController();
+    const campaignsTimeoutId = setTimeout(() => campaignsController.abort(), 15000);
+    
     const campaignsResponse = await fetch('https://api.admitad.com/advcampaigns/website/391095/', {
       headers: {
         'Authorization': `Bearer ${accessToken}`,
         'Accept': 'application/json'
-      }
+      },
+      signal: campaignsController.signal
     });
+    
+    clearTimeout(campaignsTimeoutId);
 
     if (!campaignsResponse.ok) {
       throw new Error(`Failed to get Admitad campaigns: ${campaignsResponse.status}`);
@@ -796,6 +811,7 @@ async function syncAliExpressProducts(network: any) {
           
           const method = 'aliexpress.affiliate.product.query';
           
+          // Fixed params object for AliExpress API
           const params: Record<string, string> = {
             method: method,
             app_key: appKey,
@@ -811,7 +827,7 @@ async function syncAliExpressProducts(network: any) {
             fields: 'product_id,product_title,product_main_image_url,app_sale_price,app_sale_price_currency,original_price,discount,evaluate_rate,volume,product_detail_url,commission_rate'
           };
 
-          // Generate signature
+          // Generate signature with fixed algorithm
           const signature = generateAliExpressSignatureCorrect(params, appSecret);
           params.sign = signature;
           
