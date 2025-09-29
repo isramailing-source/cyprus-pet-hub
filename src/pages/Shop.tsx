@@ -7,6 +7,7 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Search, ShoppingBag, Star, Waves } from "lucide-react";
 import AffiliateProductGrid from "@/components/AffiliateProductGrid";
 import AffiliateDisclosure from "@/components/affiliates/AffiliateDisclosure";
+import ErrorBoundary from "@/components/ErrorBoundary";
 
 const Shop = () => {
   const [searchTerm, setSearchTerm] = useState("");
@@ -112,13 +113,15 @@ const Shop = () => {
 
                 {categories.map((category) => (
                   <TabsContent key={category.id} className="mt-6" value={category.id}>
-                    <AffiliateProductGrid 
-                      category={category.id === 'all' ? undefined : category.id}
-                      limit={16}
-                      showFeaturedOnly={false}
-                      searchTerm={searchTerm}
-                      layout="grid"
-                    />
+                    <ErrorBoundary>
+                      <AffiliateProductGrid 
+                        category={category.id === 'all' ? undefined : category.id}
+                        limit={16}
+                        showFeaturedOnly={false}
+                        searchTerm={searchTerm}
+                        layout="grid"
+                      />
+                    </ErrorBoundary>
                   </TabsContent>
                 ))}
               </Tabs>

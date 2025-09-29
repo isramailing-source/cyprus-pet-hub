@@ -29,6 +29,7 @@ interface Product {
   // Add fields to support dynamic link generation
   amazon_asin?: string;
   aliexpress_product_url?: string;
+  external_product_id: string; // ASIN or product ID from external source
   network_id: string;
   ships_to_cyprus?: boolean | null;
 }
@@ -85,15 +86,19 @@ export default function AffiliateProductGrid({
       // De-duplicate products by title or ASIN/URL
       const seen = new Set<string>();
       const unique = (data || []).filter((p: Product) => {
-        const key = p.amazon_asin || p.aliexpress_product_url || p.title.trim().toLowerCase();
+        const key = p.external_product_id || p.amazon_asin || p.aliexpress_product_url || p.title.trim().toLowerCase();
         if (seen.has(key)) return false;
         seen.add(key);
         return true;
       }).slice(0, limit);
 
+      console.log(`Fetched ${unique.length} unique products for category: ${category || 'all'}`);
+      console.log('Sample product:', unique[0]); // Debug log
+
       setProducts(unique);
     } catch (error) {
       console.error('Error fetching products:', error);
+      console.error('Query parameters:', { category, limit, showFeaturedOnly });
     } finally {
       setIsLoading(false);
     }
@@ -118,8 +123,12 @@ export default function AffiliateProductGrid({
     }
     switch (network.id) {
       case 'amazon':
-        if (product.amazon_asin) {
-          return generateAmazonLink(product.amazon_asin) || product.affiliate_link;
+        // Use external_product_id which contains the ASIN for Amazon products
+        const asin = product.external_product_id || product.amazon_asin;
+        if (asin && asin !== 'placeholder') {
+          const dynamicLink = generateAmazonLink(asin);
+          console.log(`Generated Amazon link for ${asin}:`, dynamicLink);
+          return dynamicLink;
         }
         break;
       case 'aliexpress':
