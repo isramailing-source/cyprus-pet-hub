@@ -783,25 +783,23 @@ async function syncAliExpressProducts(network: any) {
     try {
       console.log(`Fetching ${category} products from AliExpress...`);
       
-      // Use correct AliExpress Business API endpoint
-      const apiPath = 'aliexpress.affiliate.product.query';
-      const baseUrl = 'https://api-sg.aliexpress.com/sync';
+      // Use correct AliExpress Affiliate API endpoint and method
+      const method = 'aliexpress.affiliate.product.query';
+      const baseUrl = 'https://gw.api.taobao.com/router/rest';
       
-      // Generate timestamp in Asia/Shanghai timezone, milliseconds since epoch
-      const now = new Date();
-      const shanghaiTime = new Date(now.getTime() + (8 * 60 * 60 * 1000)); // GMT+8
-      const timestamp = shanghaiTime.getTime().toString();
+      // Generate timestamp (seconds since epoch, not milliseconds)
+      const timestamp = Math.floor(Date.now() / 1000).toString();
       
-      console.log(`Using Shanghai timezone timestamp: ${timestamp}`);
+      console.log(`Using timestamp: ${timestamp}`);
       
-      // Business API parameters according to AliExpress docs
+      // Standard AliExpress API parameters with MD5 signature
       const params: Record<string, string> = {
+        method: method,
         app_key: appKey,
         timestamp: timestamp,
-        sign_method: 'sha256',
-        method: apiPath,
         format: 'json',
         v: '2.0',
+        sign_method: 'md5',
         keywords: category,
         page_no: '1',
         page_size: Math.min(maxProducts, 50).toString(),
@@ -810,31 +808,29 @@ async function syncAliExpressProducts(network: any) {
         fields: 'product_id,product_title,product_main_image_url,app_sale_price,app_sale_price_currency,original_price,discount,evaluate_rate,volume,product_detail_url,commission_rate'
       };
 
-      // Generate HMAC-SHA256 signature
-      const signature = await generateAliExpressSignatureHMAC(params, appSecret, apiPath);
+      // Generate MD5 signature
+      const signature = generateAliExpressMD5Signature(params, appSecret);
       params.sign = signature;
       
       console.log('Request params (without signature):', { ...params, sign: '[HIDDEN]' });
 
       try {
-        // Build query string for Business API format
-        const queryString = Object.keys(params)
-          .sort()
-          .map(key => `${encodeURIComponent(key)}=${encodeURIComponent(params[key])}`)
-          .join('&');
-        
-        const fullUrl = `${baseUrl}?method=${apiPath}&${queryString}`;
-        
-        // Add 30-second timeout to prevent hanging
+        // Make POST request to AliExpress API
         const controller = new AbortController();
         const timeoutId = setTimeout(() => controller.abort(), 30000);
         
-        const response = await fetch(fullUrl, {
-          method: 'GET',
+        const formData = new URLSearchParams();
+        Object.entries(params).forEach(([key, value]) => {
+          formData.append(key, value);
+        });
+        
+        const response = await fetch(baseUrl, {
+          method: 'POST',
           headers: {
+            'Content-Type': 'application/x-www-form-urlencoded',
             'User-Agent': 'Mozilla/5.0 (compatible; CyprusPetsBot/1.0)',
-            'Accept': 'application/json',
           },
+          body: formData,
           signal: controller.signal
         });
         
@@ -938,8 +934,8 @@ async function searchAliExpressProductsDirect(keywords: string, options: any = {
     if (minPrice) params.min_sale_price = minPrice.toString();
     if (maxPrice) params.max_sale_price = maxPrice.toString();
 
-    // Generate signature using HMAC-SHA256
-    const signature = await generateAliExpressSignatureHMAC(params, appSecret, method);
+    // Generate signature using MD5
+    const signature = generateAliExpressMD5Signature(params, appSecret);
     params.sign = signature;
 
     console.log('Making AliExpress API request with correct format...');
@@ -981,51 +977,34 @@ async function searchAliExpressProductsDirect(keywords: string, options: any = {
   }
 }
 
-// AliExpress HMAC-SHA256 signature generation according to official docs
-async function generateAliExpressSignatureHMAC(params: Record<string, string>, secret: string, apiPath: string): Promise<string> {
+// AliExpress MD5 signature generation according to official docs
+function generateAliExpressMD5Signature(params: Record<string, string>, secret: string): string {
   // Remove sign parameter if it exists
   const cleanParams = { ...params };
   delete cleanParams.sign;
   
-  // Sort parameters alphabetically by key (ASCII order)
+  // Sort parameters alphabetically by key
   const sortedKeys = Object.keys(cleanParams).sort();
   
   // Create parameter string in format: key1value1key2value2...
   const paramString = sortedKeys.map(key => `${key}${cleanParams[key]}`).join('');
   
-  // For Business APIs: prepend API path to parameter string before signing
-  const signString = apiPath + paramString;
+  // Add secret at beginning and end
+  const signString = secret + paramString + secret;
   
-  console.log('AliExpress HMAC-SHA256 signature generation:', {
-    apiPath,
+  console.log('AliExpress MD5 signature generation:', {
     sortedKeys,
     paramString: paramString.substring(0, 100) + '...',
     signStringLength: signString.length
   });
   
-  // Generate HMAC-SHA256 signature
-  const encoder = new TextEncoder();
-  const keyData = encoder.encode(secret);
-  const messageData = encoder.encode(signString);
-  
-  const cryptoKey = await crypto.subtle.importKey(
-    'raw',
-    keyData,
-    { name: 'HMAC', hash: 'SHA-256' },
-    false,
-    ['sign']
-  );
-  
-  const signature = await crypto.subtle.sign('HMAC', cryptoKey, messageData);
-  const hashArray = Array.from(new Uint8Array(signature));
-  const hashHex = hashArray.map(b => b.toString(16).padStart(2, '0')).join('');
-  
-  return hashHex.toUpperCase();
+  // Generate MD5 signature and return uppercase
+  return md5(signString).toUpperCase();
 }
 
 async function generateAliExpressSignature(params: Record<string, string>, secret: string, method: string): Promise<string> {
-  // Use the new HMAC-SHA256 signature generation function
-  return await generateAliExpressSignatureHMAC(params, secret, method);
+  // Use the new MD5 signature generation function
+  return generateAliExpressMD5Signature(params, secret);
 }
 
 // Simple MD5 implementation for AliExpress API signatures
