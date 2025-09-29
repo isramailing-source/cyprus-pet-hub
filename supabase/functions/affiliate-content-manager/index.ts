@@ -783,116 +783,100 @@ async function syncAliExpressProducts(network: any) {
     try {
       console.log(`Fetching ${category} products from AliExpress...`);
       
-      // Try multiple timestamp formats and endpoints
-      const endpoints = [
-        'https://api-sg.aliexpress.com/sync',
-        'https://gw.api.taobao.com/router/rest'
-      ];
+      // Use correct AliExpress Business API endpoint
+      const apiPath = 'aliexpress.affiliate.product.query';
+      const baseUrl = 'https://api-sg.aliexpress.com/sync';
       
-      const timestampFormats = [
-        () => new Date().toISOString().slice(0, 19).replace('T', ' '), // ISO format
-        () => Math.floor(Date.now() / 1000).toString(), // Unix timestamp
-        () => {
-          const now = new Date();
-          const shanghaiTime = new Date(now.getTime() + (8 * 60 * 60 * 1000));
-          return shanghaiTime.toISOString().slice(0, 19).replace('T', ' ');
-        } // Shanghai timezone
-      ];
+      // Generate timestamp in Asia/Shanghai timezone, milliseconds since epoch
+      const now = new Date();
+      const shanghaiTime = new Date(now.getTime() + (8 * 60 * 60 * 1000)); // GMT+8
+      const timestamp = shanghaiTime.getTime().toString();
+      
+      console.log(`Using Shanghai timezone timestamp: ${timestamp}`);
+      
+      // Business API parameters according to AliExpress docs
+      const params: Record<string, string> = {
+        app_key: appKey,
+        timestamp: timestamp,
+        sign_method: 'sha256',
+        method: apiPath,
+        format: 'json',
+        v: '2.0',
+        keywords: category,
+        page_no: '1',
+        page_size: Math.min(maxProducts, 50).toString(),
+        sort: 'VOLUME_DESC',
+        tracking_id: network.affiliate_id || 'Cyrus-pets',
+        fields: 'product_id,product_title,product_main_image_url,app_sale_price,app_sale_price_currency,original_price,discount,evaluate_rate,volume,product_detail_url,commission_rate'
+      };
 
-      let success = false;
+      // Generate HMAC-SHA256 signature
+      const signature = await generateAliExpressSignatureHMAC(params, appSecret, apiPath);
+      params.sign = signature;
       
-      for (let endpointIndex = 0; endpointIndex < endpoints.length && !success; endpointIndex++) {
-        const endpoint = endpoints[endpointIndex];
+      console.log('Request params (without signature):', { ...params, sign: '[HIDDEN]' });
+
+      try {
+        // Build query string for Business API format
+        const queryString = Object.keys(params)
+          .sort()
+          .map(key => `${encodeURIComponent(key)}=${encodeURIComponent(params[key])}`)
+          .join('&');
         
-        for (let formatIndex = 0; formatIndex < timestampFormats.length && !success; formatIndex++) {
-          const timestamp = timestampFormats[formatIndex]();
-          
-          console.log(`Trying endpoint ${endpoint} with timestamp format ${formatIndex + 1}: ${timestamp}`);
-          
-          const method = 'aliexpress.affiliate.product.query';
-          
-          // Fixed params object for AliExpress API
-          const params: Record<string, string> = {
-            method: method,
-            app_key: appKey,
-            sign_method: 'md5',
-            timestamp: timestamp,
-            format: 'json',
-            v: '2.0',
-            keywords: category,
-            page_no: '1',
-            page_size: Math.min(maxProducts, 50).toString(),
-            sort: 'VOLUME_DESC',
-            tracking_id: network.affiliate_id || 'Cyrus-pets',
-            fields: 'product_id,product_title,product_main_image_url,app_sale_price,app_sale_price_currency,original_price,discount,evaluate_rate,volume,product_detail_url,commission_rate'
-          };
+        const fullUrl = `${baseUrl}?method=${apiPath}&${queryString}`;
+        
+        // Add 30-second timeout to prevent hanging
+        const controller = new AbortController();
+        const timeoutId = setTimeout(() => controller.abort(), 30000);
+        
+        const response = await fetch(fullUrl, {
+          method: 'GET',
+          headers: {
+            'User-Agent': 'Mozilla/5.0 (compatible; CyprusPetsBot/1.0)',
+            'Accept': 'application/json',
+          },
+          signal: controller.signal
+        });
+        
+        clearTimeout(timeoutId);
 
-          // Generate signature with fixed algorithm
-          const signature = generateAliExpressSignatureCorrect(params, appSecret);
-          params.sign = signature;
-          
-          console.log('Request params (without signature):', { ...params, sign: '[HIDDEN]' });
-
-          try {
-            // Add 30-second timeout to prevent hanging
-            const controller = new AbortController();
-            const timeoutId = setTimeout(() => controller.abort(), 30000);
-            
-            const response = await fetch(endpoint, {
-              method: 'POST',
-              headers: {
-                'Content-Type': 'application/x-www-form-urlencoded;charset=utf-8',
-                'User-Agent': 'Mozilla/5.0 (compatible; CyprusPetsBot/1.0)',
-              },
-              body: new URLSearchParams(params).toString(),
-              signal: controller.signal
-            });
-            
-            clearTimeout(timeoutId);
-
-            console.log(`Response status: ${response.status} ${response.statusText}`);
-            
-            if (!response.ok) {
-              const errorText = await response.text();
-              console.error(`AliExpress API error (${endpoint}): ${response.status} - ${errorText}`);
-              continue; // Try next combination
-            }
-
-            const data = await response.json();
-            console.log('AliExpress API response received:', JSON.stringify(data, null, 2));
-
-            if (data.aliexpress_affiliate_product_query_response?.resp_result?.result?.products) {
-              const products = data.aliexpress_affiliate_product_query_response.resp_result.result.products.product;
-              console.log(`Found ${products.length} products for category: ${category}`);
-              
-              for (const product of products) {
-                try {
-                  const processed = await processAliExpressProduct(product, network);
-                  if (processed) {
-                    totalSynced++;
-                  }
-                } catch (error) {
-                  console.error('Error processing AliExpress product:', error);
-                }
-              }
-              
-              success = true; // Mark as successful
-              break;
-            } else if (data.error_response) {
-              console.error('AliExpress API error response:', data.error_response);
-              throw new Error(`AliExpress API Error: ${JSON.stringify(data.error_response)}`);
-            } else {
-              console.log('No products found in AliExpress response for category:', category);
-            }
-          } catch (fetchError) {
-            console.error(`Fetch error for ${endpoint}:`, fetchError);
-            continue; // Try next combination
-          }
+        console.log(`Response status: ${response.status} ${response.statusText}`);
+        
+        if (!response.ok) {
+          const errorText = await response.text();
+          console.error(`AliExpress API error: ${response.status} - ${errorText}`);
+          throw new Error(`AliExpress API returned ${response.status}: ${errorText}`);
         }
-      }
-      
-      if (!success) {
-        throw new Error(`Failed to fetch products from AliExpress for category: ${category}. All endpoints and timestamp formats failed.`);
+
+        const data = await response.json();
+        console.log('AliExpress API response received:', JSON.stringify(data, null, 2));
+
+        // Handle different response structures
+        if (data.aliexpress_affiliate_product_query_response?.resp_result?.result?.products) {
+          const products = data.aliexpress_affiliate_product_query_response.resp_result.result.products.product || [];
+          console.log(`Found ${products.length} products for category: ${category}`);
+          
+          for (const product of products) {
+            try {
+              const processed = await processAliExpressProduct(product, network);
+              if (processed) {
+                totalSynced++;
+              }
+            } catch (error) {
+              console.error('Error processing AliExpress product:', error);
+            }
+          }
+        } else if (data.error_response) {
+          console.error('AliExpress API error response:', data.error_response);
+          throw new Error(`AliExpress API Error: ${JSON.stringify(data.error_response)}`);
+        } else {
+          console.log('No products found in AliExpress response for category:', category);
+          console.log('Full response structure:', Object.keys(data));
+        }
+
+      } catch (fetchError) {
+        console.error(`Fetch error for AliExpress API:`, fetchError);
+        throw fetchError;
       }
 
     } catch (error) {
@@ -954,8 +938,8 @@ async function searchAliExpressProductsDirect(keywords: string, options: any = {
     if (minPrice) params.min_sale_price = minPrice.toString();
     if (maxPrice) params.max_sale_price = maxPrice.toString();
 
-    // Generate signature using correct format
-    const signature = generateAliExpressSignatureCorrect(params, appSecret);
+    // Generate signature using HMAC-SHA256
+    const signature = await generateAliExpressSignatureHMAC(params, appSecret, method);
     params.sign = signature;
 
     console.log('Making AliExpress API request with correct format...');
@@ -997,34 +981,51 @@ async function searchAliExpressProductsDirect(keywords: string, options: any = {
   }
 }
 
-// Fixed AliExpress signature generation based on official API documentation
-function generateAliExpressSignatureCorrect(params: Record<string, string>, secret: string): string {
+// AliExpress HMAC-SHA256 signature generation according to official docs
+async function generateAliExpressSignatureHMAC(params: Record<string, string>, secret: string, apiPath: string): Promise<string> {
   // Remove sign parameter if it exists
   const cleanParams = { ...params };
   delete cleanParams.sign;
   
-  // Sort parameters alphabetically by key
+  // Sort parameters alphabetically by key (ASCII order)
   const sortedKeys = Object.keys(cleanParams).sort();
   
   // Create parameter string in format: key1value1key2value2...
   const paramString = sortedKeys.map(key => `${key}${cleanParams[key]}`).join('');
   
-  // Create signature string: SECRET + paramString + SECRET  
-  const signString = secret + paramString + secret;
+  // For Business APIs: prepend API path to parameter string before signing
+  const signString = apiPath + paramString;
   
-  console.log('AliExpress signature generation (fixed):', {
+  console.log('AliExpress HMAC-SHA256 signature generation:', {
+    apiPath,
     sortedKeys,
     paramString: paramString.substring(0, 100) + '...',
     signStringLength: signString.length
   });
   
-  // Generate MD5 hash and convert to uppercase
-  return md5(signString).toUpperCase();
+  // Generate HMAC-SHA256 signature
+  const encoder = new TextEncoder();
+  const keyData = encoder.encode(secret);
+  const messageData = encoder.encode(signString);
+  
+  const cryptoKey = await crypto.subtle.importKey(
+    'raw',
+    keyData,
+    { name: 'HMAC', hash: 'SHA-256' },
+    false,
+    ['sign']
+  );
+  
+  const signature = await crypto.subtle.sign('HMAC', cryptoKey, messageData);
+  const hashArray = Array.from(new Uint8Array(signature));
+  const hashHex = hashArray.map(b => b.toString(16).padStart(2, '0')).join('');
+  
+  return hashHex.toUpperCase();
 }
 
 async function generateAliExpressSignature(params: Record<string, string>, secret: string, method: string): Promise<string> {
-  // Use the correct signature generation function
-  return generateAliExpressSignatureCorrect(params, secret);
+  // Use the new HMAC-SHA256 signature generation function
+  return await generateAliExpressSignatureHMAC(params, secret, method);
 }
 
 // Simple MD5 implementation for AliExpress API signatures
