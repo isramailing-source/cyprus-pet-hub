@@ -9,23 +9,23 @@ const Footer = () => {
           
           {/* Quick Links */}
           <div>
-            <h4 className="font-semibold mb-4">Quick Links</h4>
+            <h4 className="font-semibold mb-4">Company</h4>
             <ul className="space-y-2 text-sm">
-              <li><Link to="/blog" className="opacity-80 hover:opacity-100 transition-opacity">Pet Care Guides</Link></li>
-              <li><Link to="/forum" className="opacity-80 hover:opacity-100 transition-opacity">Community Forum</Link></li>
-              <li><Link to="/shop" className="opacity-80 hover:opacity-100 transition-opacity">Pet Resources</Link></li>
-              <li><Link to="/blog" className="opacity-80 hover:opacity-100 transition-opacity">Success Stories</Link></li>
+              <li><Link to="/about" className="opacity-80 hover:opacity-100 transition-opacity">About Us</Link></li>
+              <li><Link to="/forum" className="opacity-80 hover:opacity-100 transition-opacity">Community</Link></li>
+              <li><Link to="/contact" className="opacity-80 hover:opacity-100 transition-opacity">Contact</Link></li>
+              <li><Link to="/blog" className="opacity-80 hover:opacity-100 transition-opacity">Blog</Link></li>
             </ul>
           </div>
           
-          {/* Categories */}
+          {/* Legal */}
           <div>
-            <h4 className="font-semibold mb-4">Pet Categories</h4>
+            <h4 className="font-semibold mb-4">Legal</h4>
             <ul className="space-y-2 text-sm">
-              <li><Link to="/shop" className="opacity-80 hover:opacity-100 transition-opacity">Dogs</Link></li>
-              <li><Link to="/shop" className="opacity-80 hover:opacity-100 transition-opacity">Cats</Link></li>
-              <li><Link to="/shop" className="opacity-80 hover:opacity-100 transition-opacity">Birds</Link></li>
-              <li><Link to="/shop" className="opacity-80 hover:opacity-100 transition-opacity">Pet Equipment</Link></li>
+              <li><Link to="/privacy" className="opacity-80 hover:opacity-100 transition-opacity">Privacy Policy</Link></li>
+              <li><Link to="/terms" className="opacity-80 hover:opacity-100 transition-opacity">Terms of Service</Link></li>
+              <li><Link to="/privacy" className="opacity-80 hover:opacity-100 transition-opacity">Cookie Policy</Link></li>
+              <li><Link to="/about" className="opacity-80 hover:opacity-100 transition-opacity">Disclaimer</Link></li>
             </ul>
           </div>
           

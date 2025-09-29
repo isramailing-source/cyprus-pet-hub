@@ -15,6 +15,10 @@ import Auth from "./pages/Auth";
 import NotFound from "./pages/NotFound";
 import Affiliate from "./pages/Affiliate";
 import Search from "./pages/Search";
+import About from "./pages/About";
+import Privacy from "./pages/Privacy";
+import Terms from "./pages/Terms";
+import Contact from "./pages/Contact";
 
 const queryClient = new QueryClient();
 const App = () => {
@@ -39,6 +43,10 @@ const App = () => {
                   <Route path="/admin" element={<Admin />} />
                   <Route path="/affiliate" element={<Affiliate />} />
                   <Route path="/search" element={<Search />} />
+                  <Route path="/about" element={<About />} />
+                  <Route path="/privacy" element={<Privacy />} />
+                  <Route path="/terms" element={<Terms />} />
+                  <Route path="/contact" element={<Contact />} />
                   <Route path="*" element={<NotFound />} />
                 </Routes>
               </BrowserRouter>

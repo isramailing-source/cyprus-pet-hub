@@ -25,14 +25,9 @@ const Blog = () => {
         <main>
           <BlogSection />
           
-          {/* AdSense In-Article Ad */}
-          <section className="py-4">
-            <div className="container mx-auto px-4">
-              <AdSenseInArticle />
-            </div>
-          </section>
+          <FeaturedPetTips />
           
-          {/* Strategic affiliate placement in blog */}
+          {/* Single strategic affiliate placement */}
           <section className="py-8 bg-muted/30">
             <div className="container mx-auto px-4">
               <AffiliateNetworkBanner 
@@ -42,53 +37,8 @@ const Blog = () => {
               />
             </div>
           </section>
-          
-          <FeaturedPetTips />
-          
-          {/* AdSense Fluid Ad */}
-          <section className="py-4">
-            <div className="container mx-auto px-4">
-              <AdSenseFluid />
-            </div>
-          </section>
-          
-          {/* AdSense AutoRelaxed Ad */}
-          <section className="py-4">
-            <div className="container mx-auto px-4">
-              <AdSenseAutoRelaxed />
-            </div>
-          </section>
-          
-          {/* AdSense Banner Ad */}
-          <section className="py-4">
-            <div className="container mx-auto px-4">
-              <AdBanner slot="4366187899" />
-            </div>
-          </section>
-          
-          {/* Additional affiliate space at bottom */}
-          <section className="py-6">
-            <div className="container mx-auto px-4">
-              <AffiliateSpaceManager 
-                spaceType="mixed"
-                placement="inline"
-                currentPage="blog"
-                adSenseSlot="blog-bottom"
-                className="justify-center"
-              />
-            </div>
-          </section>
         </main>
         
-        {/* Blog sidebar with affiliate links */}
-        <aside className="fixed right-4 top-1/3 w-64 z-40 hidden xl:block">
-          <AffiliateSpaceManager 
-            spaceType="affiliate-only"
-            placement="sidebar"
-            currentPage="blog"
-            showDisclosure={false}
-          />
-        </aside>
         
         <Footer />
       </div>

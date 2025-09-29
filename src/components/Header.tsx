@@ -43,6 +43,8 @@ const Header = () => {
           <Link to="/blog" className={`hover:text-primary ${isActive('/blog') ? 'text-primary' : ''}`}>Blog</Link>
           <Link to="/shop" className={`hover:text-primary ${isActive('/shop') ? 'text-primary' : ''}`}>{t('shop')}</Link>
           <Link to="/forum" className={`hover:text-primary ${isActive('/forum') ? 'text-primary' : ''}`}>{t('community')}</Link>
+          <Link to="/about" className={`hover:text-primary ${isActive('/about') ? 'text-primary' : ''}`}>About</Link>
+          <Link to="/contact" className={`hover:text-primary ${isActive('/contact') ? 'text-primary' : ''}`}>Contact</Link>
         </nav>
 
         {/* Spacer */}

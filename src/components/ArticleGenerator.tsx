@@ -15,10 +15,10 @@ const ArticleGenerator = () => {
   const [generatedCount, setGeneratedCount] = useState(0);
   const [customArticle, setCustomArticle] = useState({
     topic: '',
-    lengthWords: 2000,
+    lengthWords: 1500,
     keywords: [] as string[],
     additionalInstructions: '',
-    targetAudience: 'advanced, knowledgeable pet owners who want in-depth insights'
+    targetAudience: 'Cyprus pet owners seeking comprehensive Mediterranean care advice'
   });
   const [keywordInput, setKeywordInput] = useState('');
   const [generatedHtml, setGeneratedHtml] = useState('');
@@ -153,7 +153,8 @@ const ArticleGenerator = () => {
       <CardHeader>
         <CardTitle>Article Generator</CardTitle>
         <CardDescription>
-          Generate comprehensive pet psychology articles using AI assistant integration
+          Generate comprehensive, high-quality pet care articles for Cyprus Mediterranean climate. 
+          Enhanced for Google AdSense compliance with detailed, valuable content.
         </CardDescription>
       </CardHeader>
       <CardContent>
@@ -176,7 +177,7 @@ const ArticleGenerator = () => {
                     Generating Articles... ({generatedCount})
                   </>
                 ) : (
-                  'Generate 5-10 New Articles'
+                  'Generate 3-5 Quality Articles (1500+ words each)'
                 )}
               </Button>
               
@@ -194,7 +195,7 @@ const ArticleGenerator = () => {
                 <Label htmlFor="topic">Article Topic *</Label>
                 <Input
                   id="topic"
-                  placeholder="e.g., Hydrotherapy for Dogs in Cyprus"
+                  placeholder="e.g., Complete Guide to Dog Training in Cyprus Mediterranean Climate"
                   value={customArticle.topic}
                   onChange={(e) => setCustomArticle(prev => ({ ...prev, topic: e.target.value }))}
                 />
@@ -205,9 +206,11 @@ const ArticleGenerator = () => {
                 <Input
                   id="length"
                   type="number"
-                  placeholder="2000"
+                  placeholder="1500"
                   value={customArticle.lengthWords}
-                  onChange={(e) => setCustomArticle(prev => ({ ...prev, lengthWords: parseInt(e.target.value) || 2000 }))}
+                  min={800}
+                  max={5000}
+                  onChange={(e) => setCustomArticle(prev => ({ ...prev, lengthWords: parseInt(e.target.value) || 1500 }))}
                 />
               </div>
               
@@ -215,7 +218,7 @@ const ArticleGenerator = () => {
                 <Label htmlFor="targetAudience">Target Audience</Label>
                 <Input
                   id="targetAudience"
-                  placeholder="e.g., beginner pet owners, advanced trainers, etc."
+                  placeholder="Cyprus pet owners seeking expert Mediterranean care advice"
                   value={customArticle.targetAudience}
                   onChange={(e) => setCustomArticle(prev => ({ ...prev, targetAudience: e.target.value }))}
                 />
@@ -253,9 +256,10 @@ const ArticleGenerator = () => {
                 <Label htmlFor="instructions">Additional Instructions</Label>
                 <Textarea
                   id="instructions"
-                  placeholder="Any specific requests, style preferences, or focus areas..."
+                  placeholder="Focus on Cyprus Mediterranean climate considerations, local veterinary services, seasonal care tips, cost estimates in Euros, practical advice for island living with pets, and references to major Cyprus cities."
                   value={customArticle.additionalInstructions}
                   onChange={(e) => setCustomArticle(prev => ({ ...prev, additionalInstructions: e.target.value }))}
+                  rows={3}
                 />
               </div>
               
