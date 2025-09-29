@@ -14,21 +14,33 @@ export default function TestAffiliateSync() {
     setResult(null);
     
     try {
+      console.log('Syncing real affiliate products from multiple networks...');
+      
+      // Sync real products from AliExpress and other networks
       const { data, error } = await supabase.functions.invoke('affiliate-content-manager', {
-        body: { action: 'sync_products' }
+        body: { 
+          action: 'sync_products',
+          network: 'all',
+          categories: ['pet supplies', 'dog supplies', 'cat supplies', 'pet toys', 'pet food', 'pet care'],
+          limit: 100,
+          update_existing: true
+        }
       });
 
       if (error) {
         console.error('Sync error:', error);
-        toast.error('Failed to sync products: ' + error.message);
+        toast.error('Failed to sync real products: ' + error.message);
+        setResult({ error: error.message });
       } else {
-        console.log('Sync result:', data);
+        console.log('Real products sync result:', data);
         setResult(data);
-        toast.success('Products synced successfully!');
+        toast.success('Real products synced successfully! Check the shop page.');
       }
-    } catch (error) {
+    } catch (error: any) {
       console.error('Sync error:', error);
-      toast.error('Failed to sync products');
+      const errorMessage = error?.message || 'Unknown error occurred';
+      toast.error('Failed to sync real products: ' + errorMessage);
+      setResult({ error: errorMessage });
     } finally {
       setIsLoading(false);
     }

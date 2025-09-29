@@ -14,6 +14,7 @@ import { TestPerplexityGenerator } from "@/components/TestPerplexityGenerator";
 import TestAliExpressIntegration from "@/components/TestAliExpressIntegration";
 import TestAmazonIntegration from "@/components/TestAmazonIntegration";
 import AliExpressTestButton from "@/components/AliExpressTestButton";
+import RealProductSyncButton from "@/components/RealProductSyncButton";
 import { AdSenseTestComponent } from "@/components/ads";
 import ComprehensiveSystemTest from "@/components/ComprehensiveSystemTest";
 import EnhancedTestAffiliateAutomation from "@/components/EnhancedTestAffiliateAutomation";
@@ -198,6 +199,7 @@ const Admin = () => {
 
                 <TabsContent value="aliexpress" className="mt-4">
                   <div className="space-y-6">
+                    <RealProductSyncButton />
                     <TestAliExpressIntegration />
                     <AliExpressTestButton />
                   </div>

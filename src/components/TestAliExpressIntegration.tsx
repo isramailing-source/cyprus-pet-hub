@@ -14,20 +14,25 @@ export default function TestAliExpressIntegration() {
     setResult(null);
     
     try {
-      console.log('Testing AliExpress integration...');
+      console.log('Testing AliExpress integration with real products...');
       
-      // Call the affiliate content manager to sync AliExpress products
+      // Call the affiliate content manager to sync real AliExpress products
       const { data, error } = await supabase.functions.invoke('affiliate-content-manager', {
         body: { 
-          action: 'sync_products'
+          action: 'sync_products',
+          network: 'aliexpress',
+          categories: ['pet supplies', 'dog supplies', 'cat supplies', 'pet toys', 'pet food', 'pet care'],
+          limit: 50
         }
       });
 
       if (error) {
-        toast.error(`Error: ${error.message}`);
+        console.error('AliExpress sync error:', error);
+        toast.error(`Sync failed: ${error.message}`);
         setResult({ error: error.message });
       } else {
-        toast.success('AliExpress sync completed successfully!');
+        console.log('AliExpress sync completed:', data);
+        toast.success('Real AliExpress products synced successfully!');
         setResult(data);
       }
     } catch (error) {
